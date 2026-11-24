@@ -9,7 +9,7 @@ AbsenceCritic is Apache-2.0. Origin and architecture: [Guzino](https://github.co
 
 ## Humans
 
-1. Read [`docs/00-README.md`](docs/00-README.md) for the design, then [`AGENTS.md`](AGENTS.md) for the code layout and SOLID mapping. Phase 1 execution order: [`plans/phase-1.md`](plans/phase-1.md) (working plan; do not treat it as origin).
+1. Read [`docs/00-README.md`](docs/00-README.md) for the design, then [`AGENTS.md`](AGENTS.md) for the code layout and SOLID mapping. Execution order: [`plans/`](plans/README.md) (working plans; do not treat them as origin).
 2. Keep the Wald invariant: the generator never reads the Non-Survivor Store.
 3. Land work on a branch and open a pull request against `main`. Do not push features to `main`.
 4. Run `python -m pytest` and `python eval/run_eval.py --provider fixture` before a PR. GitHub Actions runs the same pair (fixture provider only; no API keys) on `main` and every pull request. Pytest includes a UTF-8/control-character check so GitHub summaries cannot pick up BEL or replacement glyphs.

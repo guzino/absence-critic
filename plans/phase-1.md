@@ -5,6 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 
 # Phase 1 working plan: Persistent Failure Memory
 
+**Status (2026-11-24):** slices A-F landed on `main` (PRs #6-#10). Two-pass critic was the optional D path and was not shipped. Leftovers that Document 04 still names (live crawlers, real ACL) stay out of this phase on purpose; they are restated as empty regions below, not as unfinished homework.
+
 This is an **engineering working plan**, not an origin document. Conceptual spec remains [`docs/03-bulletproof-shield-design.md`](../docs/03-bulletproof-shield-design.md) and the phase list in [`docs/04-implementation-roadmap.md`](../docs/04-implementation-roadmap.md). Do not "improve" those files while executing this plan.
 
 Policy: [`AGENTS.md`](../AGENTS.md). One concern per GitHub PR. CI stays fixture-only.
