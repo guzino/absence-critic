@@ -15,6 +15,12 @@ from pathlib import Path
 import yaml
 
 _BENCH_DIR = Path(__file__).resolve().parent
+_ROOT = _BENCH_DIR.parents[1]
+_SRC = _ROOT / "src"
+if str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+from absencecritic.envfile import load_repo_env  # noqa: E402
+
 if str(_BENCH_DIR) not in sys.path:
     sys.path.insert(0, str(_BENCH_DIR))
 from judge import judge_answer  # noqa: E402
@@ -131,6 +137,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Rubric judge beside the regex scorer (never the critic under test)",
     )
     args = parser.parse_args(argv)
+    load_repo_env()
     loaded = load_items(args.items)
     items = {item["id"]: item for item in loaded}
     if args.answers is None:
