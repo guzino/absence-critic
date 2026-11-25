@@ -13,6 +13,8 @@ Labels (human/frozen):
 - `should_not_abstain`
 - `must_mention_missing_data`
 
+Large live judged JSONL files are not stored in git; see [artifacts/README.md](artifacts/README.md).
+
 Run the arms, then score. Each item gets one draft that every arm reuses (baseline, generic caution, critic with no store, full shield; see the arm table in the main README), the same as `eval/run_eval.py`; answer rows carry `draft` and `retrieved_ids` so this can be checked. The regex scorer still matches words like "unknown"; the rubric judge (labelled `benchmark-rubric-heuristic` or `benchmark-rubric-llm`) does not call the critic under test. The report includes agreement between them.
 
 ```bash

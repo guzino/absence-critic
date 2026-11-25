@@ -5,6 +5,14 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## Unreleased
+
+### Eval
+
+- Benchmark judge plumbing: `ABSENCECRITIC_JUDGE_*` env vars, `judge_client()`, `--samples` on `eval/benchmark/run.py`, and `sample_spread` / `judge_model` on `eval/benchmark/score.py`.
+- `mentions_missing_data()` in `eval/answer_checks.py` centralises main-eval missing-data wording; wider phrases fix live pass gaps ([#107](https://github.com/guzino/absence-critic/issues/107)).
+- Live judged answer JSONL files are not shipped in git; see `eval/benchmark/artifacts/README.md` for how to save and cite a run.
+
 ## 0.1.4 - 2026-11-25
 
 ### Changed
