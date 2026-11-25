@@ -1,0 +1,22 @@
+# Copyright 2026 Guzino (https://github.com/guzino)
+# SPDX-License-Identifier: Apache-2.0
+
+train:
+  - city-bike
+  - ebike-commuter
+  - desk-lamp
+  - water-bottle
+  - kitchen-timer
+  - settings-phone
+  - onboarding
+  - file-picker
+  - error-state
+  - dark-mode-toggle
+  - chair-apartment
+  - backpack
+
+heldout:
+  - thermostat-ui
+  - checkout
+  - plant-pot
+  - paper-airplane-control

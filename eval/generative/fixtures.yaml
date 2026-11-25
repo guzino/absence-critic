@@ -1,0 +1,91 @@
+# Copyright 2026 Guzino (https://github.com/guzino)
+# SPDX-License-Identifier: Apache-2.0
+#
+# Recorded generative briefs for offline CI. Not measured findings.
+
+responses:
+  - query: "Design a city bicycle for daily commuting."
+    draft: "A conventional diamond-frame bicycle with a chain drive, two wheels, and a rear rack."
+    critique:
+      selection_filter: "Published product photos and bike-shop stock favor diamond-frame chain bikes."
+      visible_damage:
+        - "Diamond frame"
+        - "Chain drive"
+        - "Rear rack"
+      empty_regions:
+        - "Shaft or belt drives"
+        - "Step-through frames for cargo"
+      non_survivors: []
+      unknown_lethality:
+        - "Abandoned drivetrain experiments without a public write-up"
+      survivorship_risk: 0.55
+      confidence_adjustment: seek_more_data
+      caveats:
+        - "Shop floors over-represent the designs that stayed in production."
+      missing_categories: []
+      suggested_queries:
+        - "abandoned bicycle drivetrain"
+      assumptions:
+        - "The frame is a diamond"
+        - "Power goes through a chain"
+      untried_regions:
+        - "Belt drive with an open frame"
+        - "Front cargo that keeps the step-through"
+      revivable_entries: []
+    expand:
+      candidates:
+        - id: c1
+          design: "A step-through city bike with a belt drive and a low front rack for bags."
+          rationale: "Breaks the diamond-frame and chain assumptions; labeled as a hypothesis."
+        - id: c2
+          design: "A folding diamond-frame bike with a chain and rear rack for apartment storage."
+          rationale: "Stays close to the draft; weak gap exploration."
+        - id: c3
+          design: "A recumbent with a patented 1994 shaft drive revived after the old blocker expired."
+          rationale: "Invented dead design; must not win."
+    scores:
+      scores:
+        - candidate_id: c1
+          novelty: 0.7
+          feasibility: 0.8
+          usefulness: 0.75
+          rationale_quality: 0.8
+          invented_source: false
+          invented_dead_design: false
+          rank: 1
+          rationale: "Useful gap exploration without invented history."
+        - candidate_id: c2
+          novelty: 0.3
+          feasibility: 0.9
+          usefulness: 0.6
+          rationale_quality: 0.4
+          invented_source: false
+          invented_dead_design: false
+          rank: 2
+          rationale: "Too close to the conventional draft."
+        - candidate_id: c3
+          novelty: 0.9
+          feasibility: 0.5
+          usefulness: 0.4
+          rationale_quality: 0.2
+          invented_source: false
+          invented_dead_design: true
+          rank: 3
+          rationale: "Invented a dead design that was not in the critique."
+
+  - query: "How do I fold a paper airplane?"
+    draft: "Take a rectangular sheet, fold it in half lengthwise, then fold the top corners to the center line to make a point, fold the sides in again, and crease the body."
+    critique:
+      selection_filter: "none"
+      visible_damage: []
+      empty_regions: []
+      non_survivors: []
+      unknown_lethality: []
+      survivorship_risk: 0.05
+      confidence_adjustment: unchanged
+      caveats: []
+      missing_categories: []
+      suggested_queries: []
+      assumptions: []
+      untried_regions: []
+      revivable_entries: []

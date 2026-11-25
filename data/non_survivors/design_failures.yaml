@@ -1,0 +1,73 @@
+# Copyright 2026 Guzino (https://github.com/guzino)
+# SPDX-License-Identifier: Apache-2.0
+#
+# Design-failure notes for generative mode. Cited public discontinuations only.
+# blocker_status is conservative: use unknown unless a source shows the original
+# constraint no longer holds. A revival sketch is not legal clearance.
+# See eval/generative/README.md for provenance and IP rules.
+
+- id: google-glass-explorer-2015
+  domain: product_design
+  kind: design_failure
+  selection_process: Wearable case studies and product roundups overweight headsets that stayed on sale or moved into enterprise catalogs.
+  survivor_pattern: Consumer smart glasses presented as a continuous category of shipped headsets.
+  non_survivor_evidence: Google ended consumer sales of the Glass Explorer Edition on 19 January 2015, while saying support for existing users and enterprise Glass at Work would continue and that future versions were still planned.
+  death_reason: Consumer Explorer sales stopped; the company said it would stop producing Glass in that form and work on future versions.
+  blocker: Consumer product-market fit and form for the Explorer Edition were not ready for ongoing retail sales.
+  blocker_status: unknown
+  event_date: "2015-01-19"
+  confidence: 0.85
+  provenance: "BBC News, Google Glass sales halted but firm says kit is not dead (15 January 2015)"
+  source_url: "https://www.bbc.com/news/technology-30831128"
+
+- id: amazon-fire-phone-2015
+  domain: product_design
+  kind: design_failure
+  selection_process: Smartphone advice and teardown galleries overweight phones that remained in production and app ecosystems that kept growing.
+  survivor_pattern: Flagship phones with conventional app stores and camera-first interaction.
+  non_survivor_evidence: Amazon ceased sales of the Fire Phone in August 2015 after inventory was exhausted, and said it had no plans to replenish stock. The company earlier recorded a large inventory writedown related to the device.
+  death_reason: Sales stopped after inventory ran out; Amazon did not restock the phone.
+  blocker: Weak consumer demand relative to inventory and competing phones with larger app ecosystems.
+  blocker_status: unknown
+  event_date: "2015-08"
+  confidence: 0.9
+  provenance: "Amazon.com, Inc. SEC correspondence (28 July 2016) stating Amazon ceased sales of the Fire phone in August 2015; contemporaneous BBC report (9 September 2015)"
+  source_url: "https://www.sec.gov/Archives/edgar/data/1018724/000101872416000284/filename1.htm"
+
+- id: microsoft-bob-1995
+  domain: software_ux
+  kind: design_failure
+  selection_process: Desktop UI histories and pattern libraries overweight interfaces that remained in shipping OS releases.
+  survivor_pattern: Direct window and icon desktops without a cartoon household metaphor.
+  non_survivor_evidence: Microsoft Bob was a social-interface shell for Windows 3.1 that flopped commercially. A Microsoft history piece later called it one of the worst-received technology products of its time, and later Windows releases did not ship Bob as the primary shell.
+  death_reason: Product discontinued after poor reception; the household-room metaphor did not become the default Windows shell.
+  blocker: The social / rooms metaphor did not win enough consumer adoption to remain a shipping shell.
+  blocker_status: unknown
+  event_date: "1996"
+  confidence: 0.75
+  provenance: "Raymond Chen, Windows Confidential / TechNet Magazine, History Taking Up Space (Microsoft Bob flop and later ballast use)"
+  source_url: "https://learn.microsoft.com/en-us/previous-versions/technet-magazine/cc565089(v=msdn.10)"
+
+- id: windows-8-start-screen-primary
+  domain: software_ux
+  kind: design_failure
+  selection_process: Mobile-influenced UI galleries overweight full-screen Start experiences that stayed the only primary desktop shell.
+  survivor_pattern: A visible Start button on the desktop taskbar as a familiar launch affordance.
+  non_survivor_evidence: Windows 8 removed the desktop Start button in favor of a full-screen Start screen. Windows 8.1, announced as available on 17 October 2013, brought the Start button back as a familiar navigation point and let customers start on the desktop.
+  death_reason: The Start-button-less desktop shell was rolled back; Windows 8.1 restored the Start button.
+  blocker: Desktop users needed a familiar Start affordance and an optional path to the desktop.
+  blocker_status: unknown
+  event_date: "2013-10-17"
+  confidence: 0.85
+  provenance: "Microsoft Source, Windows 8.1 is available now (17 October 2013); Start button restored"
+  source_url: "https://news.microsoft.com/source/2013/10/17/windows-8-1-is-available-now-2/"
+
+- id: consumer-device-hidden-battery-convention
+  domain: product_design
+  kind: design_failure
+  selection_process: Consumer device galleries and teardown blogs overweight products that hid the battery in the chassis.
+  survivor_pattern: Smooth sealed bodies with an internal battery pack.
+  non_survivor_evidence: External or user-swappable packs are rarely the hero image in shipping consumer catalogs, so alternatives stay under-documented relative to sealed chassis designs.
+  blocker_status: unknown
+  confidence: 0.4
+  provenance: "Author prior, low confidence; names a convention only, not a specific killed product"

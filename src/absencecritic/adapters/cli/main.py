@@ -11,7 +11,12 @@ from pathlib import Path
 
 from absencecritic.adapters.llm.fixture import FixtureLLM, FixtureQueryNotFound
 from absencecritic.adapters.llm.local import LocalCritic
-from absencecritic.adapters.llm.openai_compat import LLMError, MissingAPIKey, OpenAICompat
+from absencecritic.adapters.llm.openai_compat import (
+    LLMError,
+    MissingAPIKey,
+    OpenAICompat,
+    design_openai_compat,
+)
 from absencecritic.adapters.store.catalog import ingest_catalog
 from absencecritic.adapters.store.feedback import accept_feedback, queue_feedback
 from absencecritic.adapters.store.ingest import ingest_yaml
@@ -24,9 +29,14 @@ from absencecritic.adapters.store.embedding import (
     OpenAIEmbedder,
 )
 from absencecritic.adapters.store.yaml_store import YamlStore
+from absencecritic.application.generative import run_generative
 from absencecritic.application.loop import CritiqueParseError, run, score
 from absencecritic.envfile import load_repo_env
-from absencecritic.paths import default_fixture_path, default_store_dir
+from absencecritic.paths import (
+    default_fixture_path,
+    default_generative_fixture_path,
+    default_store_dir,
+)
 
 
 def _llm(name: str):
@@ -34,6 +44,14 @@ def _llm(name: str):
         return FixtureLLM(default_fixture_path())
     if name == "openai":
         return OpenAICompat()
+    raise ValueError(f"Unknown provider: {name}")
+
+
+def _design_llm(name: str):
+    if name == "fixture":
+        return FixtureLLM(default_generative_fixture_path())
+    if name == "openai":
+        return design_openai_compat()
     raise ValueError(f"Unknown provider: {name}")
 
 
@@ -122,6 +140,98 @@ def _feedback_cmd(argv: list[str]) -> int:
     return 0
 
 
+def _design_cmd(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="absencecritic design",
+        description="Gap-directed designs from a brief. Experimental; not the shield.",
+    )
+    parser.add_argument("brief", help="Design brief")
+    parser.add_argument(
+        "--no-store",
+        action="store_true",
+        help="Critic-only arm: no store retrieval",
+    )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        dest="as_json",
+        help="Print the full generative result as JSON",
+    )
+    parser.add_argument(
+        "--show-critique",
+        action="store_true",
+        help="Print the design critique after the ranked designs",
+    )
+    parser.add_argument(
+        "--provider",
+        choices=("fixture", "openai"),
+        default=_default_provider_name(),
+        help="LLM backend (default: fixture unless OPENAI_API_KEY is set)",
+    )
+    parser.add_argument(
+        "--store",
+        type=Path,
+        default=default_store_dir(),
+        help="Directory of Non-Survivor Store YAML/JSONL files",
+    )
+    parser.add_argument("--debug", action="store_true", help="Show full provider tracebacks")
+    args = parser.parse_args(argv)
+    try:
+        store = YamlStore(args.store)
+        provider = _design_llm(args.provider)
+        result = run_generative(
+            args.brief,
+            provider=provider,
+            store=store,
+            use_store=not args.no_store,
+        )
+    except (FixtureQueryNotFound, MissingAPIKey, LLMError, CritiqueParseError) as error:
+        if args.debug:
+            raise
+        if isinstance(error, FixtureQueryNotFound):
+            message = (
+                "Fixture design mode only supports recorded briefs. "
+                "Use --provider openai with OPENAI_API_KEY for your own brief."
+            )
+        elif isinstance(error, MissingAPIKey):
+            message = "Set OPENAI_API_KEY for the live provider or choose --provider fixture."
+        elif isinstance(error, LLMError):
+            status = f" (HTTP {error.status})" if error.status is not None else ""
+            message = f"The live provider request failed{status}. Check the provider configuration."
+        else:
+            message = "The design loop returned an invalid reply. Try again."
+        print(f"Error: {message}", file=sys.stderr)
+        return 1
+
+    if args.as_json:
+        payload = {
+            "brief": result.brief,
+            "draft": result.draft,
+            "drafts": result.drafts,
+            "retrieved_ids": result.retrieved_ids,
+            "critique": result.critique.model_dump(mode="json") if result.critique else None,
+            "candidates": [c.model_dump(mode="json") for c in result.candidates],
+            "scores": result.scores.model_dump(mode="json") if result.scores else None,
+            "ranked": [c.model_dump(mode="json") for c in result.ranked],
+            "store_used": result.store_used,
+        }
+        print(json.dumps(payload, indent=2))
+        return 0
+    if not result.ranked:
+        print(result.draft)
+    else:
+        for index, candidate in enumerate(result.ranked, start=1):
+            print(f"{index}. {candidate.design}")
+            if candidate.rationale:
+                print(f"   {candidate.rationale}")
+            if index < len(result.ranked):
+                print()
+    if args.show_critique and result.critique is not None:
+        print("\n--- critique ---\n")
+        print(json.dumps(result.critique.model_dump(mode="json"), indent=2))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     load_repo_env()
     argv = list(sys.argv[1:] if argv is None else argv)
@@ -129,6 +239,8 @@ def main(argv: list[str] | None = None) -> int:
         return _ingest_cmd(argv[1:])
     if argv and argv[0] == "feedback":
         return _feedback_cmd(argv[1:])
+    if argv and argv[0] == "design":
+        return _design_cmd(argv[1:])
     parser = argparse.ArgumentParser(
         prog="absencecritic",
         description="Run the AbsenceCritic Wald loop: draft → critic → revise.",

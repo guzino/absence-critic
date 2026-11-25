@@ -29,3 +29,15 @@ class StorePort(Protocol):
 
     def format_hits(self, hits: list[tuple[StoreEntry, float]]) -> str:
         ...
+
+
+class DesignGeneratorPort(Protocol):
+    def expand(self, *, query: str, draft: str, critique_json: str) -> str:
+        """Produce gap-directed designs from critique JSON. Must not receive store hits."""
+
+
+class DesignCriticPort(Protocol):
+    def score_designs(
+        self, *, query: str, draft: str, critique_json: str, candidates: str
+    ) -> str:
+        """Return DesignScoreSheet JSON. Must not receive raw store hits."""

@@ -32,3 +32,13 @@ def default_fixture_path() -> Path:
     if checkout.is_file():
         return checkout
     return PACKAGED_DATA / "fixtures" / "responses.yaml"
+
+
+def default_generative_fixture_path() -> Path:
+    env = os.environ.get("ABSENCECRITIC_GENERATIVE_FIXTURES")
+    if env:
+        return Path(env)
+    checkout = repo_root() / "eval" / "generative" / "fixtures.yaml"
+    if checkout.is_file():
+        return checkout
+    return PACKAGED_DATA / "generative" / "fixtures.yaml"

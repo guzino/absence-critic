@@ -1,7 +1,13 @@
 # Copyright 2026 Guzino (https://github.com/guzino)
 # SPDX-License-Identifier: Apache-2.0
 
-from absencecritic.prompts import CRITIC_SYSTEM, REVISE_SYSTEM
+from absencecritic.prompts import (
+    CRITIC_DESIGN_SYSTEM,
+    CRITIC_SYSTEM,
+    EXPAND_SYSTEM,
+    REVISE_SYSTEM,
+    SCORE_DESIGN_SYSTEM,
+)
 
 
 def test_critic_prompt_covers_textual_plans():
@@ -37,3 +43,16 @@ def test_revise_prompt_keeps_draft_steps_when_caveating():
     text = REVISE_SYSTEM.lower()
     assert "keep those steps" in text
     assert "replacing the list" in text
+
+
+def test_design_prompts_forbid_invented_dead_designs():
+    critic = CRITIC_DESIGN_SYSTEM.lower()
+    expand = EXPAND_SYSTEM.lower()
+    score = SCORE_DESIGN_SYSTEM.lower()
+    assert "do not invent a lapsed patent" in critic
+    assert "do not upgrade" in critic
+    assert "author_prior" in critic or "author prior" in critic
+    assert "hypotheses" in expand
+    assert "not legal clearance" in expand
+    assert "invented_dead_design" in score
+    assert "rank 1" in score
