@@ -22,6 +22,19 @@ python eval/benchmark/score.py --answers eval/benchmark/answers.jsonl
 
 Each answer row: `{"id": "water-formula", "answer": "H2O"}`. Optional `arm` and `abstained` bool. `--judge none` skips the rubric. `--judge openai` is a separate live call, not `critic.critique`.
 
+## Graded rubric
+
+Pass/fail saturates: any caveat about missing data passes, so a one-line generic reminder scores like the full shield. On items labelled `should_caveate`, the judge also grades the caveat, one point each:
+
+| Point | Meaning |
+|-------|---------|
+| `specific_filter` | Names this question's selection filter, not only "survivorship bias". |
+| `concrete_evidence` | Gives a base rate, count, or named evidence about the missing cases. |
+| `settling_data` | Says what data or comparison would settle the question. |
+| `no_invented_sources` | Cites nothing fabricated. LLM judge only; the heuristic leaves it `null`. |
+
+`rubric_score` is the fraction of scored points, and `rubric_by_arm` in the report gives the mean and per-point rates for each arm. The heuristic grades caveat paragraphs with keyword rules (query-word overlap, numbers, comparison words), so treat it as a floor and a CI check. Compare arms with `--judge openai`, and prefer a judge model different from the one that wrote the answers.
+
 ## Coverage and independence
 
 `python eval/benchmark/score.py` with no `--answers` prints the current stats. As of this change: 26 items (18 biased, 8 control) across 23 domains, most of them not represented in the Non-Survivor Store.

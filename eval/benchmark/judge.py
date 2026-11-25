@@ -13,7 +13,7 @@ from pathlib import Path
 _EVAL_DIR = Path(__file__).resolve().parents[1]
 if str(_EVAL_DIR) not in sys.path:
     sys.path.insert(0, str(_EVAL_DIR))
-from answer_checks import adds_unneeded_caveat  # noqa: E402
+from answer_checks import SURVIVORSHIP_CAVEAT_RE, adds_unneeded_caveat  # noqa: E402
 
 JUDGE_KIND_HEURISTIC = "benchmark-rubric-heuristic"
 JUDGE_KIND_LLM = "benchmark-rubric-llm"
@@ -24,13 +24,43 @@ ABSTAIN_RE = re.compile(r"\b(abstain|cannot recommend|i cannot answer|won't advi
 # Selection-process language, not a passing "unknown".
 _MISSING_DATA_RE = re.compile(
     r"unpublished|file[- ]drawer|non-survivors?|did not return|"
-    r"never recorded|under-report|silent fail|base[- ]rates?|"
+    r"never (recorded|published|reported|written up)|"
+    r"(was|were) not (published|reported|recorded)|under-report|silent fail|base[- ]rates?|"
     r"missing (people|data|cases|exits|attempts|firms|studies)",
     re.I,
 )
 _CAVEAT_RE = re.compile(
-    r"selection filter|survivor[- ]condition|visible sample|"
+    r"selection filter|survivor[- ]condition|visible sample|survivorship|"
     r"only (the )?(published|famous|successful)",
+    re.I,
+)
+
+# Graded rubric for items that should caveat. Each key is one point.
+RUBRIC_KEYS = ("specific_filter", "concrete_evidence", "settling_data", "no_invented_sources")
+_PARAGRAPH_RE = re.compile(r"\n\s*\n")
+_CAVEAT_CUE_RE = re.compile(
+    r"are visible|outside the sample|(did not|didn't|never) (survive|make it|publish|report)|"
+    r"remains? unknown|cannot show|missing|survivor|selection|left (early|earlier)|"
+    r"(failed|closed|cancelled|abandoned) (ones|cases|attempts|firms|funds)",
+    re.I,
+)
+_WORD_RE = re.compile(r"[a-z][a-z'-]{3,}")
+_QUERY_STOP = frozenset(
+    "which what when where should would could does that this these those with from "
+    "have has only based still because their there they them about after before same "
+    "into than then more most best work works worked make made using used every each "
+    "some other people team teams just like also been being were will".split()
+)
+_EVIDENCE_RE = re.compile(
+    r"\d|percent|\bhalf\b|\bmajority\b|\bone in (two|three|four|five|ten)\b|"
+    r"\b(two|three|four|five|six|seven|eight|nine|ten)[- ]thirds?\b",
+    re.I,
+)
+_SETTLING_RE = re.compile(
+    r"\b(compare|comparing|comparison|track|tracking|collect|denominator|"
+    r"control group|full (list|cohort|record|population|set)|"
+    r"including (those|the ones|failures|the failures)|all (the )?\w+ that (tried|started|applied|launched)|"
+    r"before (deciding|concluding|drawing)|ask for|look for data)\b",
     re.I,
 )
 
@@ -61,6 +91,39 @@ def _pass_from_labels(
     return True
 
 
+def rubric_score(rubric: dict | None) -> float | None:
+    """Fraction of scored rubric points; keys set to None were not scored."""
+    if not rubric:
+        return None
+    scored = [bool(v) for v in rubric.values() if v is not None]
+    return sum(scored) / len(scored) if scored else None
+
+
+def _content_words(text: str) -> set[str]:
+    words = (w.rstrip("s") for w in _WORD_RE.findall(text.lower()))
+    return {w for w in words if len(w) >= 4 and w not in _QUERY_STOP}
+
+
+def heuristic_rubric(item: dict, answer: str) -> dict | None:
+    """Deterministic rubric on caveat paragraphs. Cannot tell invented sources, so leaves them None."""
+    if not item["labels"]["should_caveate"]:
+        return None
+    caveats = [
+        p for p in _PARAGRAPH_RE.split(answer or "")
+        if any(
+            rx.search(p)
+            for rx in (_MISSING_DATA_RE, _CAVEAT_RE, SURVIVORSHIP_CAVEAT_RE, _CAVEAT_CUE_RE)
+        )
+    ]
+    query_words = _content_words(item["query"])
+    return {
+        "specific_filter": any(query_words & _content_words(p) for p in caveats),
+        "concrete_evidence": any(_EVIDENCE_RE.search(p) for p in caveats),
+        "settling_data": bool(_SETTLING_RE.search(answer or "")),
+        "no_invented_sources": None,
+    }
+
+
 def heuristic_judge(
     item: dict,
     answer: str,
@@ -81,12 +144,15 @@ def heuristic_judge(
         abstained=did_abstain,
         unneeded_caveat=unneeded,
     )
+    rubric = heuristic_rubric(item, text)
     return {
         "kind": JUDGE_KIND_HEURISTIC,
         "caveat_present": caveat,
         "mentions_missing_data": mentioned,
         "abstained": did_abstain,
         "unneeded_caveat": unneeded,
+        "rubric": rubric,
+        "rubric_score": rubric_score(rubric),
         "pass": ok,
         "rationale": (
             "frozen labels satisfied"
@@ -129,12 +195,18 @@ def llm_judge(
         abstained=did_abstain,
         unneeded_caveat=unneeded,
     )
+    rubric = None
+    if labels["should_caveate"]:
+        raw_rubric = payload.get("rubric") or {}
+        rubric = {key: bool(raw_rubric.get(key)) for key in RUBRIC_KEYS}
     return {
         "kind": JUDGE_KIND_LLM,
         "caveat_present": caveat,
         "mentions_missing_data": mentioned,
         "abstained": did_abstain,
         "unneeded_caveat": unneeded,
+        "rubric": rubric,
+        "rubric_score": rubric_score(rubric),
         "pass": ok,
         "rationale": str(payload.get("rationale") or ""),
     }
