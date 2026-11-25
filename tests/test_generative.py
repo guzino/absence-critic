@@ -3,6 +3,8 @@
 
 import json
 
+import yaml
+
 from absencecritic import run_generative
 from absencecritic.adapters.llm.fixture import FixtureLLM
 from absencecritic.application.generative import sanitize_revivable_entries
@@ -12,7 +14,14 @@ from absencecritic.domain.models import (
     RevivableHit,
     StoreEntry,
 )
-from absencecritic.paths import default_generative_fixture_path
+from absencecritic.paths import default_generative_fixture_path, repo_root
+
+
+def _frozen_brief(brief_id: str) -> str:
+    raw = yaml.safe_load(
+        (repo_root() / "eval" / "generative" / "briefs.yaml").read_text(encoding="utf-8")
+    )
+    return next(item["brief"] for item in raw["briefs"] if item["id"] == brief_id)
 
 
 class _Empty:
@@ -26,7 +35,7 @@ class _Empty:
 def test_fixture_generative_ranks_without_invented_history():
     provider = FixtureLLM(default_generative_fixture_path())
     result = run_generative(
-        "Design a city bicycle for daily commuting.",
+        _frozen_brief("city-bike"),
         provider=provider,
         store=_Empty(),
         use_store=False,
@@ -134,6 +143,7 @@ def test_expand_is_not_passed_store_hits():
     params = inspect.signature(DesignGeneratorPort.expand).parameters
     assert "store_hits" not in params
     assert "store" not in params
+    seen: dict = {}
 
     class _Provider:
         def generate(self, *, query: str) -> str:
@@ -152,6 +162,9 @@ def test_expand_is_not_passed_store_hits():
             )
 
         def expand(self, *, query: str, draft: str, critique_json: str) -> str:
+            seen["query"] = query
+            seen["draft"] = draft
+            seen["critique_json"] = critique_json
             return json.dumps(
                 {
                     "candidates": [
@@ -207,6 +220,52 @@ def test_expand_is_not_passed_store_hits():
         store=_Store(),
     )
     assert result.ranked[0].id == "c1"
+    assert set(seen) == {"query", "draft", "critique_json"}
+    blob = " ".join(seen.values())
+    assert "Side rails were abandoned" not in blob
+    assert "ux-tabs" not in blob
+    assert "author prior" not in blob.lower()
+
+
+def test_howto_brief_does_not_expand_even_when_the_critic_is_loud():
+    from absencecritic.application.generative import brief_is_howto
+
+    assert brief_is_howto("How do I fold a paper airplane?")
+    assert not brief_is_howto(_frozen_brief("city-bike"))
+
+    class _Loud:
+        def __init__(self) -> None:
+            self.expanded = 0
+
+        def generate(self, *, query: str) -> str:
+            return "Fold the paper into a dart."
+
+        def critique(self, *, query: str, draft: str, store_hits: str) -> str:
+            return json.dumps(
+                DesignCritique(
+                    selection_filter="origami books",
+                    survivorship_risk=0.9,
+                    confidence_adjustment="seek_more_data",
+                    untried_regions=["A fold that was never published"],
+                ).model_dump(mode="json")
+            )
+
+        def expand(self, *, query: str, draft: str, critique_json: str) -> str:
+            self.expanded += 1
+            return json.dumps({"candidates": [{"id": "c1", "design": "A new fold."}]})
+
+        def score_designs(self, **kwargs) -> str:
+            raise AssertionError("score_designs should not run")
+
+    model = _Loud()
+    result = run_generative(
+        "How do I fold a paper airplane?",
+        provider=model,
+        store=_Empty(),
+    )
+    assert model.expanded == 0
+    assert result.ranked == []
+    assert result.draft == "Fold the paper into a dart."
 
 
 def test_cli_design_fixture(capsys):
@@ -218,7 +277,7 @@ def test_cli_design_fixture(capsys):
             "--provider",
             "fixture",
             "--json",
-            "Design a city bicycle for daily commuting.",
+            _frozen_brief("city-bike"),
         ]
     )
     assert code == 0

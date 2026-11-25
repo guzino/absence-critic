@@ -33,6 +33,7 @@ from absencecritic.application.generative import run_generative
 from absencecritic.application.loop import CritiqueParseError, run, score
 from absencecritic.envfile import load_repo_env
 from absencecritic.paths import (
+    default_design_store_dir,
     default_fixture_path,
     default_generative_fixture_path,
     default_store_dir,
@@ -171,8 +172,11 @@ def _design_cmd(argv: list[str]) -> int:
     parser.add_argument(
         "--store",
         type=Path,
-        default=default_store_dir(),
-        help="Directory of Non-Survivor Store YAML/JSONL files",
+        default=default_design_store_dir(),
+        help=(
+            "Directory of design-failure notes. Defaults to the generative store, "
+            "not the shield's Non-Survivor Store."
+        ),
     )
     parser.add_argument("--debug", action="store_true", help="Show full provider tracebacks")
     args = parser.parse_args(argv)

@@ -1,16 +1,17 @@
 # Copyright 2026 Guzino (https://github.com/guzino)
 # SPDX-License-Identifier: Apache-2.0
 
-from pathlib import Path
+import yaml
 
 from absencecritic.adapters.store.yaml_store import YamlStore
-from absencecritic.paths import default_store_dir, repo_root
+from absencecritic.domain.models import StoreKind
+from absencecritic.paths import default_design_store_dir, default_store_dir, repo_root
 
 ROOT = repo_root()
 
 
 def test_design_failure_seed_loads_and_retrieves():
-    store = YamlStore(default_store_dir())
+    store = YamlStore(default_design_store_dir())
     ids = {entry.id for entry in store.entries}
     assert "google-glass-explorer-2015" in ids
     assert "amazon-fire-phone-2015" in ids
@@ -24,6 +25,51 @@ def test_design_failure_seed_loads_and_retrieves():
         k=5,
     )
     assert any(entry.id == "google-glass-explorer-2015" for entry, _ in hits)
+
+
+def test_chair_brief_does_not_retrieve_glass_or_the_fire_phone():
+    store = YamlStore(default_design_store_dir())
+    briefs = yaml.safe_load(
+        (ROOT / "eval" / "generative" / "briefs.yaml").read_text(encoding="utf-8")
+    )["briefs"]
+    by_id = {item["id"]: item["brief"] for item in briefs}
+    blocked = {
+        "google-glass-explorer-2015",
+        "amazon-fire-phone-2015",
+        "consumer-device-hidden-battery-convention",
+    }
+    chair = [entry.id for entry, _score in store.retrieve(by_id["chair-apartment"], k=5)]
+    assert not (blocked & set(chair))
+    # The bottle brief says "no glass", so the Glass note can match on that word.
+    # The Fire Phone and the battery note must not come along with it.
+    bottle = [entry.id for entry, _score in store.retrieve(by_id["water-bottle"], k=5)]
+    assert "amazon-fire-phone-2015" not in bottle
+    assert "consumer-device-hidden-battery-convention" not in bottle
+
+
+def test_shield_questions_never_retrieve_design_failures():
+    shield = YamlStore(default_store_dir())
+    assert all(entry.kind is StoreKind.evidence for entry in shield.entries)
+    queries = yaml.safe_load(
+        (ROOT / "eval" / "queries.yaml").read_text(encoding="utf-8")
+    )["queries"]
+    items = yaml.safe_load(
+        (ROOT / "eval" / "benchmark" / "items.yaml").read_text(encoding="utf-8")
+    )["items"]
+    for row in list(queries) + list(items):
+        hits = shield.retrieve(row["query"], k=5)
+        assert all(entry.kind is StoreKind.evidence for entry, _score in hits), row["id"]
+
+
+def test_bike_fixture_uses_the_frozen_brief():
+    briefs = yaml.safe_load(
+        (ROOT / "eval" / "generative" / "briefs.yaml").read_text(encoding="utf-8")
+    )["briefs"]
+    frozen = next(item["brief"] for item in briefs if item["id"] == "city-bike")
+    recorded = yaml.safe_load(
+        (ROOT / "eval" / "generative" / "fixtures.yaml").read_text(encoding="utf-8")
+    )["responses"]
+    assert any(item["query"] == frozen for item in recorded)
 
 
 def test_generative_briefs_and_splits_are_frozen():

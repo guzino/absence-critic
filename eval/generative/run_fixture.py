@@ -15,20 +15,29 @@ sys.path.insert(0, str(ROOT / "src"))
 from absencecritic.adapters.llm.fixture import FixtureLLM
 from absencecritic.adapters.store.yaml_store import YamlStore
 from absencecritic.application.generative import run_generative
-from absencecritic.paths import default_generative_fixture_path, default_store_dir
+from absencecritic.paths import default_design_store_dir, default_generative_fixture_path
+
+
+def _frozen_brief(brief_id: str) -> str:
+    import yaml
+
+    briefs = yaml.safe_load(
+        (ROOT / "eval" / "generative" / "briefs.yaml").read_text(encoding="utf-8")
+    )["briefs"]
+    return next(item["brief"] for item in briefs if item["id"] == brief_id)
 
 
 def main() -> int:
     provider = FixtureLLM(default_generative_fixture_path())
-    store = YamlStore(default_store_dir())
+    store = YamlStore(default_design_store_dir())
     quiet = run_generative(
-        "How do I fold a paper airplane?",
+        _frozen_brief("paper-airplane-control"),
         provider=provider,
         store=store,
         use_store=False,
     )
     bike = run_generative(
-        "Design a city bicycle for daily commuting.",
+        _frozen_brief("city-bike"),
         provider=provider,
         store=store,
     )

@@ -55,7 +55,7 @@ Author = "https://github.com/guzino"
 "src/absencecritic/prompts/expand.md" = "absencecritic/prompts/expand.md"
 "src/absencecritic/prompts/score_design.md" = "absencecritic/prompts/score_design.md"
 "data/non_survivors/entries.yaml" = "absencecritic/_data/non_survivors/entries.yaml"
-"data/non_survivors/design_failures.yaml" = "absencecritic/_data/non_survivors/design_failures.yaml"
+"data/design_failures/entries.yaml" = "absencecritic/_data/design_failures/entries.yaml"
 "eval/fixtures/responses.yaml" = "absencecritic/_data/fixtures/responses.yaml"
 "eval/generative/fixtures.yaml" = "absencecritic/_data/generative/fixtures.yaml"
 

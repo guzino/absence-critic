@@ -4,7 +4,7 @@
 # Recorded generative briefs for offline CI. Not measured findings.
 
 responses:
-  - query: "Design a city bicycle for daily commuting."
+  - query: "Design a city bicycle for daily commuting. Hard constraints: two wheels, human power or assist under 250 W, under 20 kg. Useful means a rider can carry a bag and lock the bike outdoors."
     draft: "A conventional diamond-frame bicycle with a chain drive, two wheels, and a rear rack."
     critique:
       selection_filter: "Published product photos and bike-shop stock favor diamond-frame chain bikes."

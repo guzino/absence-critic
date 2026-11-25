@@ -13,7 +13,7 @@ Offline harness for the gap-directed design loop. This is not a measured finding
 
 ## Design-failure notes
 
-Public seed: [`data/non_survivors/design_failures.yaml`](../../data/non_survivors/design_failures.yaml).
+Public seed: [`data/design_failures/entries.yaml`](../../data/design_failures/entries.yaml). It is not in the shield's default store (`data/non_survivors/`). `absencecritic design` reads this directory unless `--store` is set. The domain `discontinued_hardware` does not split into the words "design" or "product".
 
 | Rule | Detail |
 |------|--------|
@@ -27,7 +27,7 @@ Public seed: [`data/non_survivors/design_failures.yaml`](../../data/non_survivor
 
 ```text
 python eval/generative/run_fixture.py
-absencecritic design --provider fixture "Design a city bicycle for daily commuting."
+absencecritic design --provider fixture "Design a city bicycle for daily commuting. Hard constraints: two wheels, human power or assist under 250 W, under 20 kg. Useful means a rider can carry a bag and lock the bike outdoors."
 ```
 
 ## Frozen live protocol

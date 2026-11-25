@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Optional
 
 from absencecritic.application.jsonutil import parse_json_object
@@ -28,6 +29,15 @@ from absencecritic.domain.models import (
     RevivableHit,
     StoreEntry,
 )
+
+
+# A procedural how-to is not a design brief. The critic prompt says to stay
+# quiet; this is the code backstop when the model does not.
+_HOWTO = re.compile(r"^\s*how (?:do|to|can|should)\b", re.I)
+
+
+def brief_is_howto(brief: str) -> bool:
+    return bool(_HOWTO.match(brief.strip()))
 
 
 def _parse_candidates(raw: str) -> list[DesignCandidate]:
@@ -187,7 +197,7 @@ def run_generative(
         and not critique.untried_regions
         and not critique.revivable_entries
     )
-    if quiet:
+    if quiet or brief_is_howto(brief):
         return GenerativeResult(
             brief=brief,
             draft=text,

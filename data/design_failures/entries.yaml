@@ -7,7 +7,7 @@
 # See eval/generative/README.md for provenance and IP rules.
 
 - id: google-glass-explorer-2015
-  domain: product_design
+  domain: discontinued_hardware
   kind: design_failure
   selection_process: Wearable case studies and product roundups overweight headsets that stayed on sale or moved into enterprise catalogs.
   survivor_pattern: Consumer smart glasses presented as a continuous category of shipped headsets.
@@ -21,7 +21,7 @@
   source_url: "https://www.bbc.com/news/technology-30831128"
 
 - id: amazon-fire-phone-2015
-  domain: product_design
+  domain: discontinued_hardware
   kind: design_failure
   selection_process: Smartphone advice and teardown galleries overweight phones that remained in production and app ecosystems that kept growing.
   survivor_pattern: Flagship phones with conventional app stores and camera-first interaction.
@@ -63,7 +63,7 @@
   source_url: "https://news.microsoft.com/source/2013/10/17/windows-8-1-is-available-now-2/"
 
 - id: consumer-device-hidden-battery-convention
-  domain: product_design
+  domain: discontinued_hardware
   kind: design_failure
   selection_process: Consumer device galleries and teardown blogs overweight products that hid the battery in the chassis.
   survivor_pattern: Smooth sealed bodies with an internal battery pack.
