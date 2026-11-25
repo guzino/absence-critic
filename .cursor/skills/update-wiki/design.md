@@ -6,9 +6,11 @@ Match this. Do not invent a second layout, a second emoji for the same idea, or 
 
 | File | Role |
 |------|------|
-| `Home.md` | Story, one rule, findings |
+| `Home.md` | Story, one rule, a short finding |
 | `How-it-works.md` | Four steps |
-| `Try-it.md` | Commands |
+| `Try-it.md` | Commands, live models, library, eval entry points |
+| `Measured-results.md` | Full test numbers and how to rerun them |
+| `Examples.md` | Live answer excerpts |
 | `Words.md` | Short dictionary |
 | `What-comes-next.md` | Open jobs |
 | `_Sidebar.md` | Links on every page |
@@ -75,6 +77,6 @@ Regenerate a picture only when the page's meaning changed. Keep the file name if
 
 ## Chrome
 
-Sidebar starts with **🛡️ AbsenceCritic**, one line on what it is, then the five page links with the emojis above, then Code and Design papers.
+Sidebar starts with **🛡️ AbsenceCritic**, one line on what it is, then the page links, then Code and Design papers. The README is the short front door. Numbers and command detail stay on the wiki, not in the README.
 
 Footer is one centered line: designed by Guzino, Wald 1943, design papers, Apache-2.0.

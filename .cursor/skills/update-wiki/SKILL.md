@@ -20,9 +20,9 @@ Update the wiki in the same piece of work when a reader of that page would now b
 
 | Change | Page |
 |--------|------|
-| Measured finding, sample size, or what the helper did vs a sticky note | `Home.md` |
+| Measured finding, sample size, or what the helper did vs a sticky note | `Home.md` (short) and `Measured-results.md` (full) |
 | Loop order, who may read the notebook, worry threshold, judge mode | `How-it-works.md` and the one-rule callout on `Home.md` if that rule changed |
-| Install, CLI flag, practice command, or where private notes go | `Try-it.md` |
+| Install, CLI flag, practice command, live model, or where private notes go | `Try-it.md` |
 | A new word a reader must know | `Words.md` |
 | What is next, what already shipped, or an open issue the roadmap names | `What-comes-next.md` |
 
@@ -30,7 +30,7 @@ One change often touches one page. Do not rewrite the other pages to look busy.
 
 ## When to leave it
 
-Skip the wiki for refactors, tests, encoding, CI, and prompt edits that do not change the story those pages tell. Skip it when the only new text would be a number you cannot point at in the README, changelog, or eval report. Do not invent findings.
+Skip the wiki for refactors, tests, encoding, CI, and prompt edits that do not change the story those pages tell. Skip it when the only new text would be a number you cannot point at in the changelog, an eval report, or `Measured-results.md`. Do not invent findings. Do not put the scoreboard or the command catalog back on the README. The README stays the short front door.
 
 ## Procedure
 
