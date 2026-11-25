@@ -1,0 +1,258 @@
+{
+  "passed": 305,
+  "total": 456,
+  "judge_kind": "benchmark-rubric-llm",
+  "judge_model": "grok-4-fast-non-reasoning @ api.x.ai",
+  "agreement": 0.9057017543859649,
+  "sample_spread": {
+    "baseline": {
+      "judge_pass": {
+        "per_sample": [
+          0.4473684210526316,
+          0.5,
+          0.5
+        ],
+        "spread": 0.05263157894736842
+      },
+      "rubric_mean": {
+        "per_sample": [
+          0.2980769230769231,
+          0.3269230769230769,
+          0.3076923076923077
+        ],
+        "spread": 0.028846153846153855
+      }
+    },
+    "generic": {
+      "judge_pass": {
+        "per_sample": [
+          0.6842105263157895,
+          0.6842105263157895,
+          0.6842105263157895
+        ],
+        "spread": 0.0
+      },
+      "rubric_mean": {
+        "per_sample": [
+          0.5288461538461539,
+          0.5288461538461539,
+          0.5288461538461539
+        ],
+        "spread": 0.0
+      }
+    },
+    "critic_only": {
+      "judge_pass": {
+        "per_sample": [
+          0.868421052631579,
+          0.8421052631578947,
+          0.9210526315789473
+        ],
+        "spread": 0.07894736842105265
+      },
+      "rubric_mean": {
+        "per_sample": [
+          0.6057692307692307,
+          0.5961538461538461,
+          0.6153846153846154
+        ],
+        "spread": 0.019230769230769273
+      }
+    },
+    "shield": {
+      "judge_pass": {
+        "per_sample": [
+          0.868421052631579,
+          0.8947368421052632,
+          0.9473684210526315
+        ],
+        "spread": 0.07894736842105254
+      },
+      "rubric_mean": {
+        "per_sample": [
+          0.5961538461538461,
+          0.6057692307692307,
+          0.6153846153846154
+        ],
+        "spread": 0.019230769230769273
+      }
+    }
+  },
+  "control_false_alarm_rate": {
+    "baseline": 0.0,
+    "generic": 0.8888888888888888,
+    "critic_only": 0.0,
+    "shield": 0.0
+  },
+  "rubric_by_arm": {
+    "baseline": {
+      "n": 78,
+      "mean": 0.3108974358974359,
+      "dimensions": {
+        "specific_filter": 0.2564102564102564,
+        "concrete_evidence": 0.01282051282051282,
+        "settling_data": 0.14102564102564102,
+        "no_invented_sources": 0.8333333333333334
+      }
+    },
+    "generic": {
+      "n": 78,
+      "mean": 0.5288461538461539,
+      "dimensions": {
+        "specific_filter": 0.8846153846153846,
+        "concrete_evidence": 0.0,
+        "settling_data": 0.23076923076923078,
+        "no_invented_sources": 1.0
+      }
+    },
+    "critic_only": {
+      "n": 78,
+      "mean": 0.6057692307692307,
+      "dimensions": {
+        "specific_filter": 0.8205128205128205,
+        "concrete_evidence": 0.038461538461538464,
+        "settling_data": 0.5897435897435898,
+        "no_invented_sources": 0.9743589743589743
+      }
+    },
+    "shield": {
+      "n": 78,
+      "mean": 0.6057692307692307,
+      "dimensions": {
+        "specific_filter": 0.8717948717948718,
+        "concrete_evidence": 0.2692307692307692,
+        "settling_data": 0.5512820512820513,
+        "no_invented_sources": 0.7307692307692307
+      }
+    }
+  },
+  "by_difficulty": {
+    "hard": {
+      "judge_pass_by_arm": {
+        "baseline": 0.6111111111111112,
+        "generic": 0.6666666666666666,
+        "critic_only": 0.8333333333333334,
+        "shield": 0.8333333333333334
+      },
+      "control_false_alarm_rate": {
+        "baseline": 0.0,
+        "generic": 0.9166666666666666,
+        "critic_only": 0.0,
+        "shield": 0.0
+      },
+      "rubric_by_arm": {
+        "baseline": {
+          "n": 24,
+          "mean": 0.4270833333333333,
+          "dimensions": {
+            "specific_filter": 0.4583333333333333,
+            "concrete_evidence": 0.041666666666666664,
+            "settling_data": 0.25,
+            "no_invented_sources": 0.9583333333333334
+          }
+        },
+        "generic": {
+          "n": 24,
+          "mean": 0.5625,
+          "dimensions": {
+            "specific_filter": 0.9583333333333334,
+            "concrete_evidence": 0.0,
+            "settling_data": 0.2916666666666667,
+            "no_invented_sources": 1.0
+          }
+        },
+        "critic_only": {
+          "n": 24,
+          "mean": 0.59375,
+          "dimensions": {
+            "specific_filter": 0.75,
+            "concrete_evidence": 0.08333333333333333,
+            "settling_data": 0.5416666666666666,
+            "no_invented_sources": 1.0
+          }
+        },
+        "shield": {
+          "n": 24,
+          "mean": 0.5416666666666666,
+          "dimensions": {
+            "specific_filter": 0.7916666666666666,
+            "concrete_evidence": 0.2916666666666667,
+            "settling_data": 0.5,
+            "no_invented_sources": 0.5833333333333334
+          }
+        }
+      }
+    },
+    "standard": {
+      "judge_pass_by_arm": {
+        "baseline": 0.4230769230769231,
+        "generic": 0.6923076923076923,
+        "critic_only": 0.8974358974358975,
+        "shield": 0.9358974358974359
+      },
+      "control_false_alarm_rate": {
+        "baseline": 0.0,
+        "generic": 0.875,
+        "critic_only": 0.0,
+        "shield": 0.0
+      },
+      "rubric_by_arm": {
+        "baseline": {
+          "n": 54,
+          "mean": 0.25925925925925924,
+          "dimensions": {
+            "specific_filter": 0.16666666666666666,
+            "concrete_evidence": 0.0,
+            "settling_data": 0.09259259259259259,
+            "no_invented_sources": 0.7777777777777778
+          }
+        },
+        "generic": {
+          "n": 54,
+          "mean": 0.5138888888888888,
+          "dimensions": {
+            "specific_filter": 0.8518518518518519,
+            "concrete_evidence": 0.0,
+            "settling_data": 0.2037037037037037,
+            "no_invented_sources": 1.0
+          }
+        },
+        "critic_only": {
+          "n": 54,
+          "mean": 0.6111111111111112,
+          "dimensions": {
+            "specific_filter": 0.8518518518518519,
+            "concrete_evidence": 0.018518518518518517,
+            "settling_data": 0.6111111111111112,
+            "no_invented_sources": 0.9629629629629629
+          }
+        },
+        "shield": {
+          "n": 54,
+          "mean": 0.6342592592592593,
+          "dimensions": {
+            "specific_filter": 0.9074074074074074,
+            "concrete_evidence": 0.25925925925925924,
+            "settling_data": 0.5740740740740741,
+            "no_invented_sources": 0.7962962962962963
+          }
+        }
+      }
+    }
+  },
+  "answering_model": "meta-llama/llama-3.3-70b-instruct",
+  "judge_model_note": "Grok (xAI) judge — different family from Meta answering model. 6 arm CritiqueParseErrors in answers.",
+  "arm_errors_in_answers": 6,
+  "main_eval": {
+    "baseline": 0.28,
+    "generic": 0.81,
+    "critic_only": 0.51,
+    "shield": 0.91,
+    "errored": 1
+  },
+  "org_store": {
+    "shield_fact_rate": 0.75,
+    "right_entry_rate": 0.875,
+    "arm_errors": 1
+  }
+}
