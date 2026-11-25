@@ -92,7 +92,7 @@ The useful setup is the helper on answers, and the notebook pointed at failure n
 
 [Apache License 2.0](LICENSE).
 
-[Guzino](https://github.com/guzino). *AbsenceCritic: A Survivorship-Bias Shield for Language Models*. Version 0.1.4, 2026. https://github.com/guzino/absence-critic
+[Guzino](https://github.com/guzino). *AbsenceCritic: A Survivorship-Bias Shield for Language Models*. Version 0.1.5, 2026. https://github.com/guzino/absence-critic
 
 ```bibtex
 @software{guzino_absencecritic_2026,
@@ -100,7 +100,7 @@ The useful setup is the helper on answers, and the notebook pointed at failure n
   title   = {AbsenceCritic: A Survivorship-Bias Shield for Language Models},
   year    = {2026},
   url     = {https://github.com/guzino/absence-critic},
-  version = {0.1.4},
+  version = {0.1.5},
   license = {Apache-2.0},
   note    = {Original design and conceptual origin by Guzino (https://github.com/guzino)}
 }

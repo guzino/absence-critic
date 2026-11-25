@@ -7,23 +7,27 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Unreleased
 
+## 0.1.5 - 2026-11-25
+
+Eval, hardening, and published multi-model findings. Package API and prompts are unchanged from 0.1.4 except the critic-call retry.
+
+### Changed
+
+- Critic calls retry once when the reply is not valid Critique JSON (helps open-weight models).
+
 ### Eval
 
 - Benchmark judge plumbing: `ABSENCECRITIC_JUDGE_*` env vars, `judge_client()`, `--samples` on `eval/benchmark/run.py`, and `sample_spread` / `judge_model` on `eval/benchmark/score.py`.
-- `mentions_missing_data()` in `eval/answer_checks.py` centralises main-eval missing-data wording; wider phrases fix live pass gaps ([#107](https://github.com/guzino/absence-critic/issues/107)).
-- Live judged answer JSONL files are not shipped in git; see `eval/benchmark/artifacts/README.md` for how to save and cite a run.
+- `mentions_missing_data()` in `eval/answer_checks.py` centralises main-eval missing-data wording ([#107](https://github.com/guzino/absence-critic/issues/107)).
+- Biased main-eval pass accepts `confidence_adjustment: unchanged` when the answer still names missing data.
+- Benchmark and org-store runners record arm errors (bad critic JSON) and continue ([#120](https://github.com/guzino/absence-critic/pull/120), [#121](https://github.com/guzino/absence-critic/pull/121)).
+- Aggregate score JSON and answer JSONL for published runs live under `eval/benchmark/artifacts/` (no per-answer cases in `*.score.json`).
 
-### Findings (published [#109](https://github.com/guzino/absence-critic/issues/109#issuecomment-7161446355))
+### Findings
 
-- Second answering model `openai/gpt-4o-mini` (OpenRouter), same independent judge and 3-sample benchmark: critic arms still 0 control false alarms; shield pass 0.86 on hard biased items; critic_only rubric 0.52 vs generic 0.68 (weak evidence writing); public store lift larger than on Grok; org-store shield 7/8 private facts.
-- Main eval on 4o-mini: critic_only regex mean 0.44, shield 0.67, generic control false-alarm rate 0.67.
-- Aggregate score JSON and 4o-mini answers live under `eval/benchmark/artifacts/` (no per-answer cases in `*.score.json`).
-- Open-weight answering model `meta-llama/llama-3.3-70b-instruct` with **Grok** judge (cross-family): shield/critic_only stay quiet on controls (0 false alarms); shield pass 0.94 std / 0.83 hard; concrete evidence rises with the store (0.04 critic_only vs 0.27 shield). Org-store shield fact rate 0.75. Six arm parse errors recorded. Artifacts: `llama-3.3-70b.{answers.jsonl,score.json}`.
-- Benchmark runner records arm errors and continues; critic call retries once on bad JSON; org-store records arm parse errors ([#120](https://github.com/guzino/absence-critic/pull/120), [#121](https://github.com/guzino/absence-critic/pull/121)).
-
-### Fixed
-
-- Main-eval biased pass no longer rejects answers that name missing data when `confidence_adjustment` is `unchanged`.
+- Independent judge (`gpt-4.1-mini`) on Grok answers: shield and critic_only beat the generic reminder; shield 0 control false alarms vs 34/36 for generic ([#106](https://github.com/guzino/absence-critic/issues/106)).
+- Second answering model `openai/gpt-4o-mini`: critic arms still quiet on controls; sticky note can beat critic_only on overall rubric; store lift larger than on Grok ([#109](https://github.com/guzino/absence-critic/issues/109)).
+- Open-weight `meta-llama/llama-3.3-70b-instruct` judged by Grok (cross-family): shield pass 0.94 std / 0.83 hard; concrete evidence 0.27 with store vs 0.04 without; org-store shield fact rate 0.75.
 
 ## 0.1.4 - 2026-11-25
 
