@@ -15,6 +15,7 @@ from absencecritic.adapters.llm.openai_compat import LLMError, MissingAPIKey, Op
 from absencecritic.adapters.store.catalog import ingest_catalog
 from absencecritic.adapters.store.feedback import accept_feedback, queue_feedback
 from absencecritic.adapters.store.ingest import ingest_yaml
+from absencecritic.adapters.store.embedding import EmbedError, EmbeddingStore, MissingEmbedKey, OpenAIEmbedder
 from absencecritic.adapters.store.yaml_store import YamlStore
 from absencecritic.application.loop import CritiqueParseError, run, score
 from absencecritic.envfile import load_repo_env
@@ -27,6 +28,12 @@ def _llm(name: str):
     if name == "openai":
         return OpenAICompat()
     raise ValueError(f"Unknown provider: {name}")
+
+
+def _store(args):
+    if args.retrieve == "embedding":
+        return EmbeddingStore(args.store, OpenAIEmbedder())
+    return YamlStore(args.store)
 
 
 def _critic(name: str, generator):
@@ -161,6 +168,12 @@ def main(argv: list[str] | None = None) -> int:
         default=default_store_dir(),
         help="Directory of Non-Survivor Store YAML/JSONL files",
     )
+    parser.add_argument(
+        "--retrieve",
+        choices=("keyword", "embedding"),
+        default="keyword",
+        help="How the critic finds store notes (default: keyword)",
+    )
     parser.add_argument("--debug", action="store_true", help="Show full provider tracebacks")
     args = parser.parse_args(argv)
     if args.judge and args.no_shield:
@@ -171,7 +184,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--draft-file requires --judge")
 
     try:
-        store = YamlStore(args.store)
+        store = _store(args)
         generator = _llm(args.provider)
         critic = _critic(args.critic, generator)
         if args.judge:
@@ -189,7 +202,7 @@ def main(argv: list[str] | None = None) -> int:
                 store=store,
                 shield=not args.no_shield,
             )
-    except (FixtureQueryNotFound, MissingAPIKey, LLMError, CritiqueParseError) as error:
+    except (FixtureQueryNotFound, MissingAPIKey, MissingEmbedKey, EmbedError, LLMError, CritiqueParseError) as error:
         if args.debug:
             raise
         if isinstance(error, FixtureQueryNotFound):
@@ -199,6 +212,11 @@ def main(argv: list[str] | None = None) -> int:
             )
         elif isinstance(error, MissingAPIKey):
             message = "Set OPENAI_API_KEY for the live provider or choose --provider fixture."
+        elif isinstance(error, MissingEmbedKey):
+            message = "Set OPENAI_API_KEY for embedding retrieval or choose --retrieve keyword."
+        elif isinstance(error, EmbedError):
+            status = f" (HTTP {error.status})" if error.status is not None else ""
+            message = f"The embeddings request failed{status}. Check the provider configuration."
         elif isinstance(error, LLMError):
             status = f" (HTTP {error.status})" if error.status is not None else ""
             message = f"The live provider request failed{status}. Check the provider configuration."

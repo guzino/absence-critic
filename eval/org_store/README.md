@@ -32,7 +32,7 @@ Copy the shape of [`store/org.yaml`](store/org.yaml):
 - `provenance` is required and should name the real source. An entry whose provenance starts with "Author prior" only names a selection filter; its facts are never stated as evidence.
 - `confidence` 0.7 or higher marks recorded evidence. The reviser then states its counts, rates, and identifiers exactly. Below 0.7 the entry only shapes the caveat.
 - `non_survivor_evidence` is the fact you want answers to carry. Keep numbers and ticket ids in it.
-- Retrieval is keyword-based and must overlap the question. Use the words people actually ask with (project names, team names, "playbook", "migration") in `survivor_pattern` and `selection_process`.
+- Keyword retrieval is the default and must overlap the question. Use the words people actually ask with (project names, team names, "playbook", "migration") in `survivor_pattern` and `selection_process`. `--retrieve embedding` ranks the same notes by an OpenAI-compatible embeddings endpoint when colleagues paraphrase those words.
 
 One entry per failure pattern beats one long summary: retrieval returns up to five entries.
 
