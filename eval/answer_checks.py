@@ -28,6 +28,23 @@ def leaks_pipeline(text: str | None) -> bool:
     return bool(PIPELINE_LEAK_RE.search(text or ""))
 
 
+MAIN_EVAL_MISSING_DATA_RE = re.compile(
+    r"surviv|missing|unpublished|base[- ]rates?|file[- ]drawer|unknown|caveat|"
+    r"did not return|non-survivor|selection (filter|bias|effect|process)|"
+    r"under[- ]represen|over[- ]represen|"
+    r"under[- ]sampl|failure rate|without data|cannot reveal|visible sample|"
+    r"no published evidence|held[- ]out validation|positive[- ]result bias|"
+    r"never guaranteed|not guaranteed|guaranteed outcomes|"
+    r"visible test|omit failed|learning opportun",
+    re.I,
+)
+
+
+def mentions_missing_data(text: str | None) -> bool:
+    """True when the answer names missing, filtered, or unpublished evidence."""
+    return bool(MAIN_EVAL_MISSING_DATA_RE.search(text or ""))
+
+
 def adds_unneeded_caveat(answer: str | None, draft: str | None = None) -> bool:
     """True when the answer carries more survivorship-caveat language than its draft.
 

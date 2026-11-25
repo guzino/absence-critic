@@ -31,18 +31,16 @@ from absencecritic.envfile import load_repo_env  # noqa: E402
 EVAL_DIR = ROOT / "eval"
 if str(EVAL_DIR) not in sys.path:
     sys.path.insert(0, str(EVAL_DIR))
-from answer_checks import adds_unneeded_caveat, leaks_pipeline  # noqa: E402
+from answer_checks import (  # noqa: E402
+    adds_unneeded_caveat,
+    leaks_pipeline,
+    mentions_missing_data,
+)
 from eval_arms import FIXTURE_NOTE, generic_arm  # noqa: E402
 from metering import MeteredProvider, add_cost, cost_summary  # noqa: E402
 
 ARMS = ("baseline", "generic", "critic_only", "shield")
 
-MISSING_RE = re.compile(
-    r"surviv|missing|unpublished|base[- ]rate|file drawer|unknown|caveat|"
-    r"did not return|non-survivor|selection|under-report|failure rate|"
-    r"without data|cannot reveal|visible sample",
-    re.I,
-)
 RAW_CRITIQUE_LIMIT = 4000
 ABSTAIN_RE = re.compile(
     r"\b(abstain|cannot recommend|i cannot answer|won't advise)\b", re.I
@@ -56,7 +54,7 @@ def load_queries(path: Path) -> list[dict]:
 def _arm_pass(kind: str, text: str, critique, *, draft: str | None = None) -> bool:
     if leaks_pipeline(text):
         return False
-    missing_lang = bool(MISSING_RE.search(text or ""))
+    missing_lang = mentions_missing_data(text)
     abstained_text = bool(ABSTAIN_RE.search(text or ""))
     adjustment = critique.confidence_adjustment.value if critique else None
     if kind == "control":
@@ -84,7 +82,7 @@ def score_arm(item: dict, result) -> dict:
         "retrieved_ids": result.retrieved_ids,
         "survivorship_risk": critique.survivorship_risk if critique else None,
         "confidence_adjustment": adjustment,
-        "missing_data_language": bool(MISSING_RE.search(text or "")),
+        "missing_data_language": mentions_missing_data(text),
         "used_store_ids": used_store,
         "pipeline_leak": leaks_pipeline(text),
         "unneeded_caveat": item["kind"] == "control"
