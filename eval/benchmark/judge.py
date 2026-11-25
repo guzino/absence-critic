@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -162,6 +163,28 @@ def heuristic_judge(
     }
 
 
+def judge_client():
+    """OpenAI-compatible client for the judge, separate from the answering model.
+
+    ABSENCECRITIC_JUDGE_BASE_URL / _MODEL / _API_KEY override the OPENAI_* and
+    ABSENCECRITIC_MODEL settings. A judge base URL without its own key is refused,
+    so the answering provider's key is never sent to another host.
+    """
+    from absencecritic.adapters.llm.openai_compat import OpenAICompat
+
+    base_url = os.environ.get("ABSENCECRITIC_JUDGE_BASE_URL") or None
+    api_key = os.environ.get("ABSENCECRITIC_JUDGE_API_KEY") or None
+    if base_url and not api_key:
+        raise ValueError(
+            "ABSENCECRITIC_JUDGE_BASE_URL is set without ABSENCECRITIC_JUDGE_API_KEY"
+        )
+    return OpenAICompat(
+        api_key=api_key,
+        base_url=base_url,
+        model=os.environ.get("ABSENCECRITIC_JUDGE_MODEL") or None,
+    )
+
+
 def llm_judge(
     item: dict,
     answer: str,
@@ -170,9 +193,7 @@ def llm_judge(
     client=None,
 ) -> dict:
     """Live rubric call. Uses a judge prompt, never critic.critique."""
-    from absencecritic.adapters.llm.openai_compat import OpenAICompat
-
-    llm = client or OpenAICompat()
+    llm = client or judge_client()
     labels = item["labels"]
     user = (
         f"Query:\n{item['query']}\n\n"
@@ -219,11 +240,12 @@ def judge_answer(
     abstained: bool | None = None,
     kind: str = "heuristic",
     draft: str | None = None,
+    client=None,
 ) -> dict:
     if kind in {"none", ""}:
         return {"kind": "none", "pass": None}
     if kind == "openai":
-        return llm_judge(item, answer, abstained=abstained)
+        return llm_judge(item, answer, abstained=abstained, client=client)
     if kind != "heuristic":
         raise ValueError(f"unknown judge kind: {kind}")
     return heuristic_judge(item, answer, abstained=abstained, draft=draft)

@@ -11,6 +11,7 @@ import re
 import sys
 from collections import Counter
 from pathlib import Path
+from urllib.parse import urlparse
 
 import yaml
 
@@ -22,7 +23,7 @@ from absencecritic.envfile import load_repo_env  # noqa: E402
 
 if str(_BENCH_DIR) not in sys.path:
     sys.path.insert(0, str(_BENCH_DIR))
-from judge import RUBRIC_KEYS, judge_answer  # noqa: E402
+from judge import RUBRIC_KEYS, judge_answer, judge_client  # noqa: E402
 
 if str(_BENCH_DIR.parent) not in sys.path:
     sys.path.insert(0, str(_BENCH_DIR.parent))
@@ -159,6 +160,29 @@ def rubric_by_arm(rows: list[dict]) -> dict:
     return out
 
 
+def sample_spread(rows: list[dict]) -> dict | None:
+    """Per-arm judge pass rate and rubric mean for each sample, with max minus min."""
+    samples = sorted({row["sample"] for row in rows})
+    if len(samples) < 2:
+        return None
+    out: dict[str, dict] = {}
+    for sample in samples:
+        picked = [row for row in rows if row["sample"] == sample]
+        for arm, rate in judge_pass_by_arm(picked).items():
+            out.setdefault(arm, {"judge_pass": [], "rubric_mean": []})["judge_pass"].append(rate)
+        for arm, rubric in rubric_by_arm(picked).items():
+            out.setdefault(arm, {"judge_pass": [], "rubric_mean": []})["rubric_mean"].append(
+                rubric["mean"]
+            )
+    return {
+        arm: {
+            key: {"per_sample": values, "spread": max(values) - min(values) if values else None}
+            for key, values in stats.items()
+        }
+        for arm, stats in out.items()
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Score answer JSONL against eval/benchmark/items.yaml labels."
@@ -182,6 +206,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.answers is None:
         print(json.dumps(item_stats(loaded), indent=2))
         return 0
+    client = judge_client() if args.judge == "openai" else None
     rows = []
     for line in args.answers.read_text(encoding="utf-8").splitlines():
         if not line.strip():
@@ -194,11 +219,12 @@ def main(argv: list[str] | None = None) -> int:
         draft = payload.get("draft")
         regex = score_answer(item, answer, abstained=abstained_flag, draft=draft)
         judged = judge_answer(
-            item, answer, abstained=abstained_flag, kind=args.judge, draft=draft
+            item, answer, abstained=abstained_flag, kind=args.judge, draft=draft, client=client
         )
         row = dict(regex)
         if payload.get("arm"):
             row["arm"] = payload["arm"]
+        row["sample"] = payload.get("sample", 0)
         row["difficulty"] = item.get("difficulty", "standard")
         row["regex_pass"] = regex["pass"]
         row["judge"] = judged
@@ -216,7 +242,9 @@ def main(argv: list[str] | None = None) -> int:
         "judge_kind": None if args.judge == "none" else judged_rows[0]["judge"]["kind"]
         if judged_rows
         else args.judge,
+        "judge_model": None if client is None else f"{client.model} @ {urlparse(client.base_url).netloc}",
         "agreement": (n_agree / len(judged_rows)) if judged_rows else None,
+        "sample_spread": sample_spread(rows),
         "control_false_alarm_rate": false_alarm_rates(rows, items),
         "rubric_by_arm": rubric_by_arm(rows),
         "by_difficulty": {

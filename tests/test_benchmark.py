@@ -350,3 +350,56 @@ def test_score_reports_rubric_means_per_arm(tmp_path, capsys):
             "no_invented_sources": None,
         },
     }
+
+
+def test_judge_client_uses_its_own_settings(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "answer-key")
+    monkeypatch.setenv("OPENAI_BASE_URL", "https://answer.example/v1")
+    monkeypatch.setenv("ABSENCECRITIC_MODEL", "answer-model")
+    monkeypatch.setenv("ABSENCECRITIC_JUDGE_BASE_URL", "https://judge.example/v1")
+    monkeypatch.setenv("ABSENCECRITIC_JUDGE_API_KEY", "judge-key")
+    monkeypatch.setenv("ABSENCECRITIC_JUDGE_MODEL", "judge-model")
+    client = _judge_mod().judge_client()
+    assert (client.base_url, client.api_key, client.model) == (
+        "https://judge.example/v1",
+        "judge-key",
+        "judge-model",
+    )
+
+
+def test_judge_client_never_sends_the_answer_key_to_another_host(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "answer-key")
+    monkeypatch.setenv("ABSENCECRITIC_JUDGE_BASE_URL", "https://judge.example/v1")
+    monkeypatch.delenv("ABSENCECRITIC_JUDGE_API_KEY", raising=False)
+    with pytest.raises(ValueError, match="JUDGE_API_KEY"):
+        _judge_mod().judge_client()
+
+
+def test_judge_client_falls_back_to_the_answering_provider(monkeypatch):
+    for name in ("BASE_URL", "API_KEY", "MODEL"):
+        monkeypatch.delenv(f"ABSENCECRITIC_JUDGE_{name}", raising=False)
+    monkeypatch.setenv("OPENAI_API_KEY", "answer-key")
+    monkeypatch.setenv("ABSENCECRITIC_MODEL", "answer-model")
+    client = _judge_mod().judge_client()
+    assert (client.api_key, client.model) == ("answer-key", "answer-model")
+
+
+def test_score_reports_spread_across_samples(tmp_path, capsys):
+    rows = [
+        {"id": "decade-stayer-shortlist", "arm": "shield", "sample": 0, "answer": SPECIFIC_CAVEAT},
+        {"id": "decade-stayer-shortlist", "arm": "shield", "sample": 1, "answer": GENERIC_CAVEAT},
+    ]
+    answers = tmp_path / "answers.jsonl"
+    answers.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+    _score_mod().main(["--answers", str(answers)])
+    spread = json.loads(capsys.readouterr().out)["sample_spread"]["shield"]
+    assert spread["rubric_mean"] == {"per_sample": [1.0, 0.0], "spread": 1.0}
+
+
+def test_runner_tags_samples(tmp_path, capsys):
+    out = tmp_path / "answers.jsonl"
+    assert _run_mod().main(["--provider", "fixture", "--out", str(out), "--samples", "2"]) == 0
+    capsys.readouterr()
+    lines = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines()]
+    assert {row["sample"] for row in lines} == {0, 1}
+    assert len(lines) == 40
