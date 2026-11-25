@@ -9,10 +9,11 @@ AbsenceCritic is a survivorship-bias shield for language models: a dedicated cri
 
 ## What it does, measured
 
-Two findings from live runs on `grok-4-fast-non-reasoning` (small samples, one model; rerun them on yours):
+Three findings from live runs on `grok-4-fast-non-reasoning` (small samples, one model; rerun them on yours):
 
 1. **The critic knows when to stay quiet.** On the main eval (15 questions, 3 samples each), the plain draft passed 24% of samples. A one-line "watch for survivorship bias" reminder fixed every biased question, and so did the critic. The difference is on control questions: the reminder added an unneeded bias caveat to 14 of 17 control answers ("Paris." plus a warning about missing failures), while the critic added one to 0 of 17. A blanket caution is cheap; one that leaves "What is 2+2?" alone needs a critic.
-2. **The store is for failures the model cannot know.** On public questions, strong models already know the classic evidence, so the Non-Survivor Store changed little. With a team's own post-mortems in the store, it is the only arm that brings them in: on [`eval/org_store/`](eval/org_store/) (8 fictional internal records), the full shield used the private fact in 8 of 8 answers, and the plain draft and the critic without a store used it in 0 of 8.
+2. **The critic writes a better caveat.** On the [benchmark's graded rubric](eval/benchmark/README.md#graded-rubric) (18 biased questions, judged by the same model), the reminder scored 0.58 and the critic 0.78 out of 1. The reminder named the selection filter but never gave evidence about the missing cases (0 of 18) and rarely said what data would settle the question; the critic did both far more often (evidence about a third of the time, settling data about three quarters).
+3. **The store is for failures the model cannot know.** On public questions, strong models already know the classic evidence, so the Non-Survivor Store changed little. With a team's own post-mortems in the store, it is the only arm that brings them in: on [`eval/org_store/`](eval/org_store/) (8 fictional internal records), the full shield used the private fact in 8 of 8 answers, and the plain draft and the critic without a store used it in 0 of 8.
 
 So the useful setup is the critic everywhere, and the store pointed at failure records your organisation has and the model has never seen.
 
