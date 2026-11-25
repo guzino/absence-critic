@@ -5,6 +5,22 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 0.1.4 - 2026-11-25
+
+### Changed
+
+- When the critic rates survivorship risk below 0.3, the loop returns the draft as the answer and skips the revise call. The critique is still returned. This removes unneeded caveats and saves a model call on low-risk questions.
+- The critic no longer treats how-to, procedural, recipe, grammar, or style questions as survivor-filtered unless the draft generalises from success stories. A caveat needs a nameable process that removed failed cases from view.
+
+### Eval
+
+- `eval/run_eval.py` reports `cost_by_arm`: calls, prompt and completion tokens, and seconds per question for each arm, overall and by biased and control. `OpenAICompat` keeps running usage totals from the provider's `usage` field.
+- 12 hard benchmark items (`difficulty: hard`): biased questions that do not name the filter, and how-to controls that need no caveat. The score report gains `by_difficulty`. Labels are agent-drafted and not independent.
+
+### Findings
+
+On grok-4-fast-non-reasoning, the hard how-to controls showed the critic inventing caveats (3 of 4 without the store, 2 of 4 with it). After this release both critic arms are at 0 of 4 and pass 12 of 12 hard items, and the shield's cost on control questions drops from about 8 to 6 times the plain answer's tokens. Trade-off: when the critic without a store rates a vague question near zero risk, the draft now stands instead of getting a caveat.
+
 ## 0.1.3 - 2026-11-25
 
 Eval and documentation release. No changes to the package API, prompts, or store schema.
