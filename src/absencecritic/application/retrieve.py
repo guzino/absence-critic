@@ -33,6 +33,19 @@ _JUSTIFIED = re.compile(r"\b(because|since|given|judging|according to|if)\b", re
 _FACTOID_MAX_WORDS = 16
 _META = re.compile(r"\b(quote|define|insight)\b", re.I)
 _METHOD = re.compile(r"\b(wald|survivorship|survivorship-bias)\b", re.I)
+# A filtered record the question names outright. Not the broad retrieval list
+# above: bare words such as "only", "score", "famous", "published", and
+# "based on" also appear in how-to and fact questions.
+_NAMED_FILTER = re.compile(
+    r"\b(?:the literature|published(?:\s+\w+){0,2}\s+studies|"
+    r"famous cases|what survived)\b",
+    re.I,
+)
+
+
+def query_names_selection(query: str) -> bool:
+    """True when the question names a filtered record, such as "the literature"."""
+    return bool(_NAMED_FILTER.search(query))
 
 
 def suggested_retrieve_k(query: str, *, high: int = 5) -> int:
