@@ -403,3 +403,43 @@ def test_runner_tags_samples(tmp_path, capsys):
     lines = [json.loads(line) for line in out.read_text(encoding="utf-8").splitlines()]
     assert {row["sample"] for row in lines} == {0, 1}
     assert len(lines) == 40
+
+
+def test_write_answers_records_arm_errors(tmp_path):
+    from absencecritic.application.loop import CritiqueParseError
+    from absencecritic.domain.models import PipelineResult
+
+    run_mod = _run_mod()
+
+    class _Boom:
+        def generate(self, *, query: str) -> str:
+            return "draft"
+
+        def critique(self, **kwargs):
+            raise CritiqueParseError("bad json", raw="{")
+
+        def revise(self, **kwargs) -> str:
+            return "revised"
+
+    out = (tmp_path / "answers.jsonl").open("w", encoding="utf-8")
+    rows = run_mod.write_answers(
+        [{"id": "x", "query": "Q?"}],
+        provider=_Boom(),
+        store=type(
+            "S",
+            (),
+            {
+                "retrieve": lambda self, *a, **k: [],
+                "format_hits": lambda self, hits: "",
+            },
+        )(),
+        out=out,
+        samples=1,
+    )
+    out.close()
+    by_arm = {r["arm"]: r for r in rows}
+    assert "error" not in by_arm["baseline"]
+    assert by_arm["baseline"]["answer"] == "draft"
+    assert "CritiqueParseError" in by_arm["critic_only"]["error"]
+    assert by_arm["critic_only"]["answer"] == ""
+    assert "CritiqueParseError" in by_arm["shield"]["error"]
