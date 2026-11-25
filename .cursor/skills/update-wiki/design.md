@@ -55,7 +55,7 @@ Use GitHub alerts, not a new box style.
 |------|----------------|
 | 🛡️ | The shield, the product, the fixed answer |
 | ✈️ | The airplane story |
-| 🤖 | A chatbot or a smaller helper |
+| 🤖 | A language model, or a smaller helper |
 | ✍️ | The writer, a first answer |
 | 🔍 | Lookup |
 | 📓 | The failure notebook |
@@ -77,6 +77,6 @@ Regenerate a picture only when the page's meaning changed. Keep the file name if
 
 ## Chrome
 
-Sidebar starts with **🛡️ AbsenceCritic**, one line on what it is, then the page links, then Code and Design papers. The README is the short front door. Numbers and command detail stay on the wiki, not in the README.
+Sidebar starts with **🛡️ AbsenceCritic**, one line on what it is, then the page links, then Code and Design papers. The claim is a second brain for language models. "Helper" and "writer" are the plain names. Do not headline it as a chatbot enhancer. The README is the short front door. Numbers and command detail stay on the wiki, not in the README.
 
 Footer is one centered line: designed by Guzino, Wald 1943, design papers, Apache-2.0.

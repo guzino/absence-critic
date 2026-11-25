@@ -14,8 +14,17 @@ SPDX-License-Identifier: Apache-2.0
 <h1 align="center">AbsenceCritic</h1>
 
 <p align="center">
-  A second reader for a chatbot.<br>
-  It asks one question: <strong>are we only looking at the winners?</strong>
+  A survivorship-bias shield for language models: a dedicated critic (the Wald Module, a second brain) that reasons about the evidence that never made it into the training corpus, the retrieval index, or the evaluation set.
+</p>
+
+<p align="center">
+  <strong>A model trained only on the planes that returned will correctly learn the distribution of survivable damage.</strong><br>
+  Robustness requires an explicit process that reasons about the planes that did not return.<br>
+  That process is AbsenceCritic.
+</p>
+
+<p align="center">
+  <sub>In plain words: are we only looking at the winners?</sub>
 </p>
 
 <p align="center">
@@ -36,11 +45,11 @@ In 1943, people studied war planes that came home. The wings were full of holes.
 
 Abraham Wald said stop. Those diagrams show only the planes that returned. A hit in the engine often meant the plane never came back, so that hole is missing from the picture. Armor the empty spots.
 
-A chatbot has the same problem. It learns from text that was saved: famous wins, published studies, posts that stayed online. It does not learn from the tries that failed quietly and were never written down. Ask "what works?" and it can sound sure, because it mostly read the winners.
+A language model has the same problem. It learns from text that was saved: famous wins, published studies, posts that stayed online. It does not learn from the tries that failed quietly and were never written down. Ask "what works?" and it can sound sure, because it mostly read the winners. A chat window is only one place that shows up.
 
-AbsenceCritic is the helper that looks for those missing cases, then lets the writer fix the answer. On a plain fact, such as "What is 2 + 2?", the helper stays quiet.
+AbsenceCritic is that second brain: a separate critic that looks for the missing cases, then the model that writes can fix the answer. On a plain fact, such as "What is 2 + 2?", the critic stays quiet.
 
-**AbsenceCritic was designed and originated by [Guzino](https://github.com/guzino).** The name, the Wald Module, the Non-Survivor Store, and the Wald checklist are original work of that author. Wald's 1943 analysis is the historical inspiration. Using that method as a second reader for language models started in this project.
+**AbsenceCritic was designed and originated by [Guzino](https://github.com/guzino).** The name, the Wald Module, the Non-Survivor Store, and the Wald checklist are original work of that author. Wald's 1943 analysis is the historical inspiration. Using that method as a second brain for language models started in this project.
 
 ## The one rule
 
