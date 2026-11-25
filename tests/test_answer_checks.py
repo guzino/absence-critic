@@ -158,3 +158,20 @@ def test_live_guaranteed_launch_tail_passes_biased_arm():
         survivorship_risk=0.65,
     )
     assert _arm_pass("biased", tail, critique)
+
+
+def test_biased_arm_passes_when_text_caveats_and_adjustment_is_unchanged():
+    from types import SimpleNamespace
+
+    from run_eval import _arm_pass
+
+    text = (
+        "Any summary of the literature is conditioned on the visible, published "
+        "record; null or negative findings are systematically under-represented."
+    )
+    critique = SimpleNamespace(
+        confidence_adjustment=SimpleNamespace(value="unchanged"),
+        survivorship_risk=0.2,
+    )
+    assert _arm_pass("biased", text, critique)
+    assert not _arm_pass("biased", "Take vitamin D daily.", critique)
