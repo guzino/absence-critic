@@ -7,7 +7,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "absencecritic"
-version = "0.1.1"
+version = "0.1.2"
 description = "Survivorship-bias shield (Wald Module) for language models"
 readme = "README.md"
 license = "Apache-2.0"

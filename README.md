@@ -182,7 +182,7 @@ If you use AbsenceCritic, please cite it as follows.
 
 **Text**
 
-[Guzino](https://github.com/guzino). *AbsenceCritic: A Survivorship-Bias Shield for Language Models*. Version 0.1.1, 2026. https://github.com/guzino/absence-critic
+[Guzino](https://github.com/guzino). *AbsenceCritic: A Survivorship-Bias Shield for Language Models*. Version 0.1.2, 2026. https://github.com/guzino/absence-critic
 
 **BibTeX**
 
@@ -192,7 +192,7 @@ If you use AbsenceCritic, please cite it as follows.
   title   = {AbsenceCritic: A Survivorship-Bias Shield for Language Models},
   year    = {2026},
   url     = {https://github.com/guzino/absence-critic},
-  version = {0.1.1},
+  version = {0.1.2},
   license = {Apache-2.0},
   note    = {Original design and conceptual origin by Guzino (https://github.com/guzino)}
 }
