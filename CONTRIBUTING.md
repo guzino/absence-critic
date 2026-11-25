@@ -40,4 +40,4 @@ Any tool: treat [`AGENTS.md`](AGENTS.md) as canonical. Do not fork rules per pro
 - **Cursor** loads `.cursor/rules/` and `.cursor/skills/` (skill *bodies* are generic; that directory is only the auto-load location).
 - **GitHub Copilot** loads [`.github/copilot-instructions.md`](.github/copilot-instructions.md).
 
-Skills live in one place (`.cursor/skills/*/SKILL.md`) so they cannot drift. Claude should `@` those paths rather than a duplicate `.claude/skills` tree. PR open/review skills are `open-pull-request` and `review-pull-request`.
+Skills live in one place (`.cursor/skills/*/SKILL.md`) so they cannot drift. Claude should `@` those paths rather than a duplicate `.claude/skills` tree. PR open/review skills are `open-pull-request` and `review-pull-request`. The public wiki stays in the published design via `update-wiki`.

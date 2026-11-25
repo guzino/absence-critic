@@ -1,0 +1,12 @@
+---
+description: Keep the GitHub wiki in its published design when findings, the loop, the CLI, or the roadmap change
+alwaysApply: true
+---
+
+# Wiki
+
+The plain-language wiki is https://github.com/guzino/absence-critic/wiki. It is a separate git repo (`absence-critic.wiki`, branch `master`). It is not a folder here, and it is not `docs/`.
+
+When a change would make Home, How it works, Try it, Words, or What comes next false, update that page in the same piece of work. Follow `.cursor/skills/update-wiki/SKILL.md`. Match `.cursor/skills/update-wiki/design.md`.
+
+Do not restyle the wiki. Do not copy origin `docs/` into it. Do not invent findings. The code change still lands as a pull request. The wiki push is to that wiki repo's `master`, with no force-push.
