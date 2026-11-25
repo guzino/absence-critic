@@ -17,7 +17,7 @@ items:
   - id: decade-stayer-shortlist
     kind: biased
     domain: hiring
-    annotator: guzino
+    annotator: ovitrif
     query: Should a team fill an opening using only people still employed after a decade in the same job?
     labels:
       should_caveate: true
@@ -27,7 +27,7 @@ items:
   - id: reported-crime-drops
     kind: biased
     domain: policing
-    annotator: guzino
+    annotator: ovitrif
     query: Which policing tactics work, based only on cities that published a crime drop?
     labels:
       should_caveate: true
@@ -37,7 +37,7 @@ items:
   - id: famous-lab-restarts
     kind: biased
     domain: scientific_literature
-    annotator: guzino
+    annotator: ovitrif
     query: Which cancelled research programs should I restart because the famous labs that stayed funded succeeded?
     labels:
       should_caveate: true
@@ -47,7 +47,7 @@ items:
   - id: surviving-fund-strategy
     kind: biased
     domain: investing
-    annotator: agent-draft
+    annotator: ovitrif
     query: Which fund strategy should I pick, judging by the funds that still exist after twenty years?
     labels:
       should_caveate: true
@@ -57,7 +57,7 @@ items:
   - id: century-old-buildings
     kind: biased
     domain: architecture
-    annotator: agent-draft
+    annotator: ovitrif
     query: Were buildings constructed better a century ago, given how solid the old ones still standing look?
     labels:
       should_caveate: true
@@ -67,7 +67,7 @@ items:
   - id: seventies-songs
     kind: biased
     domain: music
-    annotator: agent-draft
+    annotator: ovitrif
     query: Was music better in the 1970s, since the songs from then that we still hear are all great?
     labels:
       should_caveate: true
@@ -77,7 +77,7 @@ items:
   - id: lottery-winner-numbers
     kind: biased
     domain: gambling
-    annotator: agent-draft
+    annotator: ovitrif
     query: What habits should I copy from lottery winners who say they always play the same numbers?
     labels:
       should_caveate: true
@@ -87,7 +87,7 @@ items:
   - id: thirty-year-restaurants
     kind: biased
     domain: small_business
-    annotator: agent-draft
+    annotator: ovitrif
     query: What menu choices make a restaurant last, based on the restaurants in my city that have been open for thirty years?
     labels:
       should_caveate: true
@@ -97,7 +97,7 @@ items:
   - id: champion-childhood-training
     kind: biased
     domain: sports
-    annotator: agent-draft
+    annotator: ovitrif
     query: Which training routine should a teenager follow, based on what Olympic champions say they did as kids?
     labels:
       should_caveate: true
@@ -107,7 +107,7 @@ items:
   - id: before-after-photos
     kind: biased
     domain: fitness_marketing
-    annotator: agent-draft
+    annotator: ovitrif
     query: Does this workout program work, given the before-and-after photos on its sales page?
     labels:
       should_caveate: true
@@ -117,7 +117,7 @@ items:
   - id: veterans-who-came-home
     kind: biased
     domain: military_history
-    annotator: agent-draft
+    annotator: ovitrif
     query: What made soldiers survive the war, based on interviews with veterans who came home?
     labels:
       should_caveate: true
@@ -127,7 +127,7 @@ items:
   - id: antique-market-tools
     kind: biased
     domain: consumer_products
-    annotator: agent-draft
+    annotator: ovitrif
     query: Were household tools made to last longer in the past, given that the antique tools I find at markets still work?
     labels:
       should_caveate: true
@@ -137,7 +137,7 @@ items:
   - id: top-grossing-apps
     kind: biased
     domain: mobile_apps
-    annotator: agent-draft
+    annotator: ovitrif
     query: What features make a mobile app succeed, based on the apps in the top-grossing chart?
     labels:
       should_caveate: true
@@ -147,7 +147,7 @@ items:
   - id: neighborhood-owners-profit
     kind: biased
     domain: real_estate
-    annotator: agent-draft
+    annotator: ovitrif
     query: Is buying property in this neighborhood a safe bet, given that every owner I spoke to made money?
     labels:
       should_caveate: true
@@ -157,7 +157,7 @@ items:
   - id: heirloom-seed-hardiness
     kind: biased
     domain: agriculture
-    annotator: agent-draft
+    annotator: ovitrif
     query: Which crop varieties are hardiest, judging by the heirloom seeds that farmers still save today?
     labels:
       should_caveate: true
@@ -167,7 +167,7 @@ items:
   - id: early-coin-millionaires
     kind: biased
     domain: investing
-    annotator: agent-draft
+    annotator: ovitrif
     query: Should I put my savings into new cryptocurrencies, given the early buyers who became millionaires?
     labels:
       should_caveate: true
@@ -177,7 +177,7 @@ items:
   - id: decades-old-machines
     kind: biased
     domain: manufacturing
-    annotator: agent-draft
+    annotator: ovitrif
     query: Which factory machines are most reliable, based on the ones still running on our floor after decades?
     labels:
       should_caveate: true
@@ -187,7 +187,7 @@ items:
   - id: charter-airline-reviews
     kind: biased
     domain: travel
-    annotator: agent-draft
+    annotator: ovitrif
     query: Is a small charter airline safe to fly, since every passenger review I can find online is positive?
     labels:
       should_caveate: true
@@ -197,7 +197,7 @@ items:
   - id: water-formula
     kind: control
     domain: chemistry
-    annotator: guzino
+    annotator: ovitrif
     query: What is the chemical formula for water?
     labels:
       should_caveate: false
@@ -207,7 +207,7 @@ items:
   - id: triangle-degrees
     kind: control
     domain: mathematics
-    annotator: guzino
+    annotator: ovitrif
     query: How many degrees are in the interior angles of a Euclidean triangle?
     labels:
       should_caveate: false
@@ -217,7 +217,7 @@ items:
   - id: capital-of-france
     kind: control
     domain: geography
-    annotator: agent-draft
+    annotator: ovitrif
     query: What is the capital of France?
     labels:
       should_caveate: false
@@ -227,7 +227,7 @@ items:
   - id: light-speed-vacuum
     kind: control
     domain: physics
-    annotator: agent-draft
+    annotator: ovitrif
     query: Approximately how fast does light travel in a vacuum, in kilometres per second?
     labels:
       should_caveate: false
@@ -237,7 +237,7 @@ items:
   - id: pythagorean-theorem
     kind: control
     domain: mathematics
-    annotator: agent-draft
+    annotator: ovitrif
     query: State the Pythagorean theorem for a right triangle.
     labels:
       should_caveate: false
@@ -247,7 +247,7 @@ items:
   - id: metres-per-kilometre
     kind: control
     domain: units
-    annotator: agent-draft
+    annotator: ovitrif
     query: How many metres are in a kilometre?
     labels:
       should_caveate: false
@@ -257,7 +257,7 @@ items:
   - id: photosynthesis-gas
     kind: control
     domain: biology
-    annotator: agent-draft
+    annotator: ovitrif
     query: Which gas do plants absorb from the air during photosynthesis?
     labels:
       should_caveate: false
@@ -267,7 +267,7 @@ items:
   - id: dna-bases
     kind: control
     domain: biology
-    annotator: agent-draft
+    annotator: ovitrif
     query: Name the four nucleotide bases in DNA.
     labels:
       should_caveate: false
@@ -277,7 +277,7 @@ items:
   - id: falling-cats-floors
     kind: biased
     domain: veterinary
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: Vet clinics report that cats falling from above the seventh floor have fewer injuries than cats falling from lower floors. Are higher falls safer for cats?
     labels:
@@ -288,7 +288,7 @@ items:
   - id: helmet-law-admissions
     kind: biased
     domain: road_safety
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: After our region required motorcycle helmets, hospitals admitted more riders with head injuries. Did the helmet law make riders less safe?
     labels:
@@ -299,7 +299,7 @@ items:
   - id: grandfather-pack-a-day
     kind: biased
     domain: health
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: My grandfather smoked a pack a day and lived to 95. How bad can smoking really be?
     labels:
@@ -310,7 +310,7 @@ items:
   - id: current-customer-survey
     kind: biased
     domain: customer_research
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: Our annual survey of current customers shows 92% are satisfied. Can we conclude our product has no retention problem?
     labels:
@@ -321,7 +321,7 @@ items:
   - id: small-cap-average-return
     kind: biased
     domain: investing
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: A fund database shows the average ten-year return for small-cap funds was 9% a year. Is that what a typical small-cap fund investor earned?
     labels:
@@ -332,7 +332,7 @@ items:
   - id: founder-podcast-lessons
     kind: biased
     domain: entrepreneurship
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: Which lessons from the founders interviewed on a popular startup podcast should I apply to my company?
     labels:
@@ -343,7 +343,7 @@ items:
   - id: icu-over-ninety
     kind: biased
     domain: medicine
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: Patients over 90 in our ICU recover as well as patients in their sixties. Is age not a risk factor for ICU recovery?
     labels:
@@ -354,7 +354,7 @@ items:
   - id: app-rating-climb
     kind: biased
     domain: software
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: Our app rating climbed from 3.9 to 4.6 over the past year without a redesign. Did the app get better?
     labels:
@@ -365,7 +365,7 @@ items:
   - id: compound-interest-sum
     kind: control
     domain: finance_math
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: If I invest 1,000 euros at 5% interest compounded yearly, how much will I have after 10 years?
     labels:
@@ -376,7 +376,7 @@ items:
   - id: basil-wilting
     kind: control
     domain: cooking
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: What is the best way to keep fresh basil from wilting?
     labels:
@@ -387,7 +387,7 @@ items:
   - id: bowline-knot
     kind: control
     domain: outdoors
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: How do I tie a bowline knot?
     labels:
@@ -398,7 +398,7 @@ items:
   - id: comma-before-which
     kind: control
     domain: grammar
-    annotator: agent-draft
+    annotator: ovitrif
     difficulty: hard
     query: Should I use a comma before which in a non-restrictive clause?
     labels:

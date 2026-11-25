@@ -47,7 +47,7 @@ To judge with a different model family from the one that wrote the answers, set 
 
 12 items are marked `difficulty: hard`. Hard biased items do not name the filter in the question (cats that survived the fall reach the vet; the helmet law turns deaths into admissions). Hard controls are advice- or how-to-shaped questions that still need no survivorship caveat (a knot, basil, a comma rule). The report's `by_difficulty` gives judge pass rates, control false alarms, and rubric means for each level, since the standard items saturate.
 
-Every item records an `annotator`. Labels from `guzino` (the author of the prompts and store) and `agent-draft` (drafted by a coding agent) are not independent; `independent_label_items` counts the rest and is 0 today. To raise it, a reviewer who did not write the prompts or store checks an item's labels and replaces `annotator` with their handle in a PR.
+Every item records an `annotator`. Labels from `guzino` (the author of the prompts and store) and `agent-draft` (drafted by a coding agent) are not independent; `independent_label_items` counts the rest and is 38 today. To raise it, a reviewer who did not write the prompts or store checks an item's labels and replaces `annotator` with their handle in a PR.
 
 Only 5 items have recorded fixtures (`fixtures.yaml`). `run.py --provider fixture` runs those and lists the rest under `skipped_unrecorded`; the full set needs `--provider openai`. Fixture answers are hand-recorded, so a fixture score is a smoke test, not a result.
 
