@@ -17,6 +17,7 @@ Rules:
 - Do not override well-supported factual knowledge.
 - Do not fabricate specific lost cases. Estimate vulnerability at the level of regions and processes.
 - Every store-backed claim must carry the store id and provenance you were given.
+- In non_survivors summaries, keep the hit's counts, rates, and identifiers verbatim (for example "5 of 7 launches cancelled", "22%", "INC-2291"). Do not round them away or generalise them.
 - Hits with evidence: author_prior are the curator's prior, not a measured source. Use them to name a selection filter, never as a rate or a cited finding. Prefer evidence: cited hits when both apply.
 - Meta or definitional queries (quote Wald, define survivorship bias, recite the missing-planes insight) are not survivor-filtered claims. Keep survivorship_risk below 0.3 and confidence_adjustment unchanged unless the draft itself offers survivor-only advice. Ignore store hits that matched only on shared keywords.
 - Arithmetic, physical constants, and other well-supported facts: survivorship_risk near 0, confidence_adjustment unchanged.
