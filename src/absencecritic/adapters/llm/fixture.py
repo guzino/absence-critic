@@ -64,3 +64,29 @@ class FixtureLLM:
     def revise(self, *, query: str, draft: str, critique_json: str) -> str:
         del draft, critique_json
         return str(self._lookup(query)["revision"])
+
+    def expand(self, *, query: str, draft: str, critique_json: str) -> str:
+        del draft, critique_json
+        item = self._lookup(query)
+        expand = item.get("expand")
+        if expand is None:
+            raise FixtureQueryNotFound(
+                f"No expand fixture for query {query!r}. Add an expand field."
+            )
+        if isinstance(expand, str):
+            return expand
+        return json.dumps(expand)
+
+    def score_designs(
+        self, *, query: str, draft: str, critique_json: str, candidates: str
+    ) -> str:
+        del draft, critique_json, candidates
+        item = self._lookup(query)
+        scores = item.get("scores")
+        if scores is None:
+            raise FixtureQueryNotFound(
+                f"No scores fixture for query {query!r}. Add a scores field."
+            )
+        if isinstance(scores, str):
+            return scores
+        return json.dumps(scores)

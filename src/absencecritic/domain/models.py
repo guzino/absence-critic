@@ -33,6 +33,17 @@ class StoreEvidence(str, Enum):
     author_prior = "author_prior"
 
 
+class StoreKind(str, Enum):
+    evidence = "evidence"
+    design_failure = "design_failure"
+
+
+class BlockerStatus(str, Enum):
+    active = "active"
+    expired = "expired"
+    unknown = "unknown"
+
+
 AUTHOR_PRIOR_PREFIX = "author prior"
 MAX_AUTHOR_PRIOR_CONFIDENCE = 0.5
 
@@ -57,6 +68,45 @@ class Critique(BaseModel):
     suggested_queries: list[str] = Field(default_factory=list)
 
 
+class RevivableHit(BaseModel):
+    id: str
+    summary: str
+    provenance: str
+    confidence: float = Field(ge=0.0, le=1.0)
+    death_reason: str = ""
+    blocker: str = ""
+    blocker_status: BlockerStatus = BlockerStatus.unknown
+    revival_rationale: str = ""
+
+
+class DesignCritique(Critique):
+    assumptions: list[str] = Field(default_factory=list)
+    untried_regions: list[str] = Field(default_factory=list)
+    revivable_entries: list[RevivableHit] = Field(default_factory=list)
+
+
+class DesignCandidate(BaseModel):
+    id: str
+    design: str
+    rationale: str = ""
+
+
+class DesignScore(BaseModel):
+    candidate_id: str
+    novelty: float = Field(ge=0.0, le=1.0)
+    feasibility: float = Field(ge=0.0, le=1.0)
+    usefulness: float = Field(ge=0.0, le=1.0)
+    rationale_quality: float = Field(ge=0.0, le=1.0)
+    invented_source: bool = False
+    invented_dead_design: bool = False
+    rank: int = Field(ge=1)
+    rationale: str = ""
+
+
+class DesignScoreSheet(BaseModel):
+    scores: list[DesignScore] = Field(default_factory=list)
+
+
 class StoreEntry(BaseModel):
     id: str
     domain: str
@@ -68,6 +118,11 @@ class StoreEntry(BaseModel):
     collection: StoreCollection = StoreCollection.seed
     status: StoreStatus = StoreStatus.accepted
     evidence: StoreEvidence = StoreEvidence.cited
+    kind: StoreKind = StoreKind.evidence
+    death_reason: Optional[str] = None
+    blocker: Optional[str] = None
+    blocker_status: Optional[BlockerStatus] = None
+    event_date: Optional[str] = None
     source_url: Optional[str] = None
     ingested_at: Optional[str] = None
     source_path: Optional[str] = None
@@ -87,3 +142,16 @@ class PipelineResult:
     critique: Optional[Critique] = None
     final: str = ""
     shielded: bool = True
+
+
+@dataclass
+class GenerativeResult:
+    brief: str
+    draft: str
+    drafts: list[str] = field(default_factory=list)
+    retrieved_ids: list[str] = field(default_factory=list)
+    critique: Optional[DesignCritique] = None
+    candidates: list[DesignCandidate] = field(default_factory=list)
+    scores: Optional[DesignScoreSheet] = None
+    ranked: list[DesignCandidate] = field(default_factory=list)
+    store_used: bool = False

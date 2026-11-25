@@ -1,0 +1,148 @@
+# Copyright 2026 Guzino (https://github.com/guzino)
+# SPDX-License-Identifier: Apache-2.0
+#
+# Frozen generative briefs. Do not paste store entry text into a brief.
+# Hold out ids listed in splits.yaml from prompt iteration.
+
+briefs:
+  - id: city-bike
+    domain: product_design
+    brief: "Design a city bicycle for daily commuting. Hard constraints: two wheels, human power or assist under 250 W, under 20 kg. Useful means a rider can carry a bag and lock the bike outdoors."
+    known_designs:
+      - "Diamond-frame chain-drive bicycle with rear rack"
+      - "Step-through city bike with chain guard"
+      - "Folding bike with small wheels"
+    useful: "Daily commute with a bag and outdoor locking."
+
+  - id: ebike-commuter
+    domain: product_design
+    brief: "Design an e-bike for short urban trips. Hard constraints: removable or chargeable battery, legal assist limits for bicycle paths. Useful means a new rider can charge at home and ride 15 km."
+    known_designs:
+      - "Frame-integrated battery diamond e-bike"
+      - "Rear-hub motor with downtube battery"
+      - "Cargo longtail with battery in the frame"
+    useful: "Short urban trips with home charging."
+
+  - id: desk-lamp
+    domain: product_design
+    brief: "Design a desk lamp for late-night reading. Hard constraints: mains or USB power, adjustable beam, no open flame. Useful means a reader can aim light at a page without glare on a screen."
+    known_designs:
+      - "Articulated arm lamp with shade"
+      - "LED bar clamp lamp"
+      - "Minimal weighted-base dome lamp"
+    useful: "Aimable reading light without screen glare."
+
+  - id: water-bottle
+    domain: product_design
+    brief: "Design a reusable water bottle for a school bag. Hard constraints: leak-resistant lid, dishwasher-safe or easy hand wash, no glass. Useful means it survives drops in a backpack."
+    known_designs:
+      - "Cylindrical plastic bottle with screw lid"
+      - "Insulated steel bottle with loop lid"
+      - "Collapsible silicone bottle"
+    useful: "Leak-resistant daily carry in a bag."
+
+  - id: kitchen-timer
+    domain: product_design
+    brief: "Design a kitchen timer for boiling eggs. Hard constraints: readable from two meters, works after a wet hand touch, no phone required. Useful means a cook can set 6 to 12 minutes quickly."
+    known_designs:
+      - "Twist mechanical dial"
+      - "Digital button timer with LCD"
+      - "Magnetic back digital timer"
+    useful: "Fast 6-12 minute egg timing without a phone."
+
+  - id: settings-phone
+    domain: software_ux
+    brief: "Design a settings screen for a phone app with twenty options. Hard constraints: one-handed use on a small phone, searchable, no horizontal scrolling. Useful means a user finds Wi-Fi and notification controls in under ten seconds."
+    known_designs:
+      - "Scrollable grouped list with section headers"
+      - "Bottom tab bar plus nested pages"
+      - "Search bar over a flat alphabetical list"
+    useful: "Find Wi-Fi and notifications in under ten seconds."
+
+  - id: onboarding
+    domain: software_ux
+    brief: "Design first-run onboarding for a notes app. Hard constraints: three screens or fewer, skippable, no account wall before the first note. Useful means a new user creates a note in under one minute."
+    known_designs:
+      - "Three full-screen cards with Next"
+      - "Single tooltip coach marks on the composer"
+      - "Empty-state illustration with one Create button"
+    useful: "Create a first note in under one minute."
+
+  - id: file-picker
+    domain: software_ux
+    brief: "Design a file picker for attaching a PDF on mobile. Hard constraints: works offline on already-downloaded files, shows file size, supports cancel. Useful means a user attaches one PDF without leaving the compose screen for long."
+    known_designs:
+      - "System share-sheet style list"
+      - "Folder tree with breadcrumbs"
+      - "Recent files grid with search"
+    useful: "Attach one local PDF quickly."
+
+  - id: error-state
+    domain: software_ux
+    brief: "Design an offline error state for a news reader. Hard constraints: no fake articles, clear retry, keep previously opened articles readable. Useful means a reader understands they are offline and can keep reading cached stories."
+    known_designs:
+      - "Full-screen illustration with Retry"
+      - "Banner above a cached feed"
+      - "Inline empty list with last-updated time"
+    useful: "Explain offline and keep cached reading."
+
+  - id: dark-mode-toggle
+    domain: software_ux
+    brief: "Design a theme control for a reading app. Hard constraints: system follow, manual light, manual dark, change applies without restart. Useful means a user switches theme in two taps or fewer."
+    known_designs:
+      - "Settings list with three radio options"
+      - "Quick settings toggle with long-press menu"
+      - "Segmented control in the reader chrome"
+    useful: "Switch theme in two taps or fewer."
+
+  - id: chair-apartment
+    domain: product_design
+    brief: "Design a chair for a small apartment. Hard constraints: under 8 kg, no permanent wall mount, seat height for a standard table. Useful means one adult can move it alone and sit for an hour."
+    known_designs:
+      - "Four-leg wood side chair"
+      - "Folding metal frame chair"
+      - "Stacking polypropylene chair"
+    useful: "Movable by one adult; hour-long sitting."
+
+  - id: backpack
+    domain: product_design
+    brief: "Design a school backpack. Hard constraints: laptop sleeve up to 14 inches, two outer pockets, under 1.2 kg empty. Useful means a student can organize books and a bottle without a second bag."
+    known_designs:
+      - "Two-compartment fabric pack with front pocket"
+      - "Roll-top pack with side bottle pocket"
+      - "Messenger-style flap pack"
+    useful: "Books plus bottle without a second bag."
+
+  - id: thermostat-ui
+    domain: software_ux
+    brief: "Design a thermostat status screen for a wall tablet. Hard constraints: readable at two meters, current temperature and set point both visible, one-tap nudge up or down. Useful means a guest can raise heat without a manual."
+    known_designs:
+      - "Large number with circular dial"
+      - "Two stacked numbers with chevron buttons"
+      - "Card with slider and schedule link"
+    useful: "Guest can nudge heat without a manual."
+
+  - id: checkout
+    domain: software_ux
+    brief: "Design a one-item checkout confirmation. Hard constraints: show price and shipping estimate before pay, allow cancel, no account creation required for guest checkout. Useful means a buyer finishes or cancels in under one minute."
+    known_designs:
+      - "Summary card with Pay and Cancel"
+      - "Multi-step wizard with progress dots"
+      - "Bottom sheet with line items and CTA"
+    useful: "Finish or cancel guest checkout in under one minute."
+
+  - id: plant-pot
+    domain: product_design
+    brief: "Design a pot for a windowsill herb. Hard constraints: drainage without flooding the sill, under 15 cm width, indoor use. Useful means basil roots stay watered without a daily saucer spill."
+    known_designs:
+      - "Ceramic pot with separate saucer"
+      - "Self-watering reservoir pot"
+      - "Fabric grow bag on a tray"
+    useful: "Herbs watered without daily saucer spills."
+
+  - id: paper-airplane-control
+    domain: control
+    brief: "How do I fold a paper airplane?"
+    known_designs:
+      - "Standard dart fold from a rectangular sheet"
+    useful: "A flyable paper dart from one sheet."

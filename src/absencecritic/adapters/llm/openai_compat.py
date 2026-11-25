@@ -11,11 +11,16 @@ import urllib.error
 import urllib.request
 
 from absencecritic.prompts import (
+    CRITIC_DESIGN_SYSTEM,
     CRITIC_SYSTEM,
     DRAFT_SYSTEM,
+    EXPAND_SYSTEM,
     REVISE_SYSTEM,
+    SCORE_DESIGN_SYSTEM,
     critic_user_message,
+    expand_user_message,
     revise_user_message,
+    score_design_user_message,
 )
 
 _RETRY_STATUS = frozenset({429, 500, 502, 503, 504})
@@ -73,6 +78,7 @@ class OpenAICompat:
         base_url: str | None = None,
         model: str | None = None,
         *,
+        critic_system: str | None = None,
         timeout: float | None = None,
         retries: int | None = None,
         urlopen=None,
@@ -85,6 +91,7 @@ class OpenAICompat:
             or "https://api.openai.com/v1"
         ).rstrip("/")
         self.model = model or os.environ.get("ABSENCECRITIC_MODEL") or "gpt-4o-mini"
+        self.critic_system = critic_system or CRITIC_SYSTEM
         self.timeout = (
             timeout
             if timeout is not None
@@ -109,7 +116,7 @@ class OpenAICompat:
 
     def critique(self, *, query: str, draft: str, store_hits: str) -> str:
         return self._chat(
-            CRITIC_SYSTEM,
+            self.critic_system,
             critic_user_message(query, draft, store_hits),
             temperature=0.2,
             json_object=True,
@@ -121,6 +128,24 @@ class OpenAICompat:
             revise_user_message(query, draft, critique_json),
             temperature=0.4,
             json_object=False,
+        )
+
+    def expand(self, *, query: str, draft: str, critique_json: str) -> str:
+        return self._chat(
+            EXPAND_SYSTEM,
+            expand_user_message(query, draft, critique_json),
+            temperature=0.5,
+            json_object=True,
+        )
+
+    def score_designs(
+        self, *, query: str, draft: str, critique_json: str, candidates: str
+    ) -> str:
+        return self._chat(
+            SCORE_DESIGN_SYSTEM,
+            score_design_user_message(query, draft, critique_json, candidates),
+            temperature=0.2,
+            json_object=True,
         )
 
     def _count_usage(self, body: dict) -> None:
@@ -212,3 +237,8 @@ class OpenAICompat:
                 self._sleep(min(0.5 * (2**attempt), 8.0))
         assert last_error is not None
         raise last_error
+
+
+def design_openai_compat(**kwargs) -> OpenAICompat:
+    """OpenAI-compatible provider wired to the design-filter critic prompt."""
+    return OpenAICompat(critic_system=CRITIC_DESIGN_SYSTEM, **kwargs)

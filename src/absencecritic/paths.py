@@ -24,6 +24,17 @@ def default_store_dir() -> Path:
     return PACKAGED_DATA / "non_survivors"
 
 
+def default_design_store_dir() -> Path:
+    """Design-failure notes for generative mode. Not the shield's default store."""
+    env = os.environ.get("ABSENCECRITIC_DESIGN_STORE")
+    if env:
+        return Path(env)
+    checkout = repo_root() / "data" / "design_failures"
+    if checkout.is_dir():
+        return checkout
+    return PACKAGED_DATA / "design_failures"
+
+
 def default_fixture_path() -> Path:
     env = os.environ.get("ABSENCECRITIC_FIXTURES")
     if env:
@@ -32,3 +43,13 @@ def default_fixture_path() -> Path:
     if checkout.is_file():
         return checkout
     return PACKAGED_DATA / "fixtures" / "responses.yaml"
+
+
+def default_generative_fixture_path() -> Path:
+    env = os.environ.get("ABSENCECRITIC_GENERATIVE_FIXTURES")
+    if env:
+        return Path(env)
+    checkout = repo_root() / "eval" / "generative" / "fixtures.yaml"
+    if checkout.is_file():
+        return checkout
+    return PACKAGED_DATA / "generative" / "fixtures.yaml"

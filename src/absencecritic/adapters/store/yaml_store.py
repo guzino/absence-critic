@@ -310,19 +310,26 @@ class YamlStore:
             return "(none retrieved)"
         blocks = []
         for entry, score in hits:
-            blocks.append(
-                "\n".join(
-                    [
-                        f"id: {entry.id}",
-                        f"domain: {entry.domain}",
-                        f"retrieval_score: {score:.3f}",
-                        f"selection_process: {entry.selection_process}",
-                        f"survivor_pattern: {entry.survivor_pattern}",
-                        f"non_survivor_evidence: {entry.non_survivor_evidence}",
-                        f"confidence: {entry.confidence}",
-                        f"evidence: {entry.evidence.value}",
-                        f"provenance: {entry.provenance}",
-                    ]
-                )
-            )
+            lines = [
+                f"id: {entry.id}",
+                f"domain: {entry.domain}",
+                f"retrieval_score: {score:.3f}",
+                f"selection_process: {entry.selection_process}",
+                f"survivor_pattern: {entry.survivor_pattern}",
+                f"non_survivor_evidence: {entry.non_survivor_evidence}",
+                f"confidence: {entry.confidence}",
+                f"evidence: {entry.evidence.value}",
+                f"provenance: {entry.provenance}",
+            ]
+            if entry.kind is not None and entry.kind.value != "evidence":
+                lines.append(f"kind: {entry.kind.value}")
+            if entry.death_reason:
+                lines.append(f"death_reason: {entry.death_reason}")
+            if entry.blocker:
+                lines.append(f"blocker: {entry.blocker}")
+            if entry.blocker_status is not None:
+                lines.append(f"blocker_status: {entry.blocker_status.value}")
+            if entry.event_date:
+                lines.append(f"event_date: {entry.event_date}")
+            blocks.append("\n".join(lines))
         return "\n---\n".join(blocks)

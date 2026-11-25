@@ -5,7 +5,7 @@ SPDX-License-Identifier: Apache-2.0
 
 # Generative design working plan
 
-**Status (2026-11-25):** next experiment. No code, no store entries, no live run, no finding. The spec is [`docs/05-generative-absencecritic.md`](../docs/05-generative-absencecritic.md). This file is the build order. Do not treat either file as a result.
+**Status (2026-11-25):** slices A-D shipped as engineering. Slice E (live run) is not done and needs an explicit ask. No finding. The spec is [`docs/05-generative-absencecritic.md`](../docs/05-generative-absencecritic.md). This file is the build order. Do not treat either file as a result.
 
 The question: the shield already asks what evidence is missing from an answer. Generative mode asks what the design space is missing from a brief, then steers new designs into those gaps. Product and industrial design, and software or UX patterns, are the only two domains. Drug and molecule design stay out.
 
