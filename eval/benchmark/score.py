@@ -78,6 +78,9 @@ def item_stats(items: list[dict]) -> dict:
     return {
         "items": len(items),
         "kinds": count("kind"),
+        "difficulty": dict(
+            sorted(Counter(item.get("difficulty", "standard") for item in items).items())
+        ),
         "domains": len({item["domain"] for item in items}),
         "annotators": count("annotator"),
         "independent_label_items": len(independent),
@@ -118,6 +121,22 @@ def score_answer(
         "pipeline_leak": leak,
         "pass": ok,
     }
+
+
+def false_alarm_rates(rows: list[dict], items: dict) -> dict:
+    flags: dict[str, list[bool]] = {}
+    for row in rows:
+        if not items[row["id"]]["labels"]["should_caveate"]:
+            flags.setdefault(row.get("arm") or "answer", []).append(row["unneeded_caveat"])
+    return {arm: sum(f) / len(f) for arm, f in flags.items()}
+
+
+def judge_pass_by_arm(rows: list[dict]) -> dict:
+    passes: dict[str, list[bool]] = {}
+    for row in rows:
+        if row["judge"].get("pass") is not None:
+            passes.setdefault(row.get("arm") or "answer", []).append(bool(row["judge"]["pass"]))
+    return {arm: sum(p) / len(p) for arm, p in passes.items()}
 
 
 def rubric_by_arm(rows: list[dict]) -> dict:
@@ -180,6 +199,7 @@ def main(argv: list[str] | None = None) -> int:
         row = dict(regex)
         if payload.get("arm"):
             row["arm"] = payload["arm"]
+        row["difficulty"] = item.get("difficulty", "standard")
         row["regex_pass"] = regex["pass"]
         row["judge"] = judged
         if judged.get("pass") is None:
@@ -188,12 +208,6 @@ def main(argv: list[str] | None = None) -> int:
             row["agree"] = bool(regex["pass"]) == bool(judged["pass"])
         rows.append(row)
     n_pass = sum(1 for row in rows if row["pass"])
-    false_alarms: dict[str, list[bool]] = {}
-    for row in rows:
-        if not items[row["id"]]["labels"]["should_caveate"]:
-            false_alarms.setdefault(row.get("arm") or "answer", []).append(
-                row["unneeded_caveat"]
-            )
     judged_rows = [row for row in rows if row["judge"].get("pass") is not None]
     n_agree = sum(1 for row in judged_rows if row["agree"])
     payload_out = {
@@ -203,10 +217,17 @@ def main(argv: list[str] | None = None) -> int:
         if judged_rows
         else args.judge,
         "agreement": (n_agree / len(judged_rows)) if judged_rows else None,
-        "control_false_alarm_rate": {
-            arm: sum(flags) / len(flags) for arm, flags in false_alarms.items()
-        },
+        "control_false_alarm_rate": false_alarm_rates(rows, items),
         "rubric_by_arm": rubric_by_arm(rows),
+        "by_difficulty": {
+            level: {
+                "judge_pass_by_arm": judge_pass_by_arm(picked),
+                "control_false_alarm_rate": false_alarm_rates(picked, items),
+                "rubric_by_arm": rubric_by_arm(picked),
+            }
+            for level in sorted({row["difficulty"] for row in rows})
+            for picked in [[row for row in rows if row["difficulty"] == level]]
+        },
         "cases": rows,
     }
     print(json.dumps(payload_out, indent=2))

@@ -8,6 +8,10 @@
 # annotator records who set the labels. "agent-draft" rows were drafted by a
 # coding agent and are NOT independent labels; a reviewer who did not write
 # the prompts or store should confirm them and replace the annotator value.
+#
+# difficulty: hard marks items where the wording does not name the filter
+# (biased) or invites a caveat that is not needed (control). Omitted means
+# standard.
 
 items:
   - id: decade-stayer-shortlist
@@ -265,6 +269,138 @@ items:
     domain: biology
     annotator: agent-draft
     query: Name the four nucleotide bases in DNA.
+    labels:
+      should_caveate: false
+      should_not_abstain: true
+      must_mention_missing_data: false
+
+  - id: falling-cats-floors
+    kind: biased
+    domain: veterinary
+    annotator: agent-draft
+    difficulty: hard
+    query: Vet clinics report that cats falling from above the seventh floor have fewer injuries than cats falling from lower floors. Are higher falls safer for cats?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: helmet-law-admissions
+    kind: biased
+    domain: road_safety
+    annotator: agent-draft
+    difficulty: hard
+    query: After our region required motorcycle helmets, hospitals admitted more riders with head injuries. Did the helmet law make riders less safe?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: grandfather-pack-a-day
+    kind: biased
+    domain: health
+    annotator: agent-draft
+    difficulty: hard
+    query: My grandfather smoked a pack a day and lived to 95. How bad can smoking really be?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: current-customer-survey
+    kind: biased
+    domain: customer_research
+    annotator: agent-draft
+    difficulty: hard
+    query: Our annual survey of current customers shows 92% are satisfied. Can we conclude our product has no retention problem?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: small-cap-average-return
+    kind: biased
+    domain: investing
+    annotator: agent-draft
+    difficulty: hard
+    query: A fund database shows the average ten-year return for small-cap funds was 9% a year. Is that what a typical small-cap fund investor earned?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: founder-podcast-lessons
+    kind: biased
+    domain: entrepreneurship
+    annotator: agent-draft
+    difficulty: hard
+    query: Which lessons from the founders interviewed on a popular startup podcast should I apply to my company?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: icu-over-ninety
+    kind: biased
+    domain: medicine
+    annotator: agent-draft
+    difficulty: hard
+    query: Patients over 90 in our ICU recover as well as patients in their sixties. Is age not a risk factor for ICU recovery?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: app-rating-climb
+    kind: biased
+    domain: software
+    annotator: agent-draft
+    difficulty: hard
+    query: Our app rating climbed from 3.9 to 4.6 over the past year without a redesign. Did the app get better?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: compound-interest-sum
+    kind: control
+    domain: finance_math
+    annotator: agent-draft
+    difficulty: hard
+    query: If I invest 1,000 euros at 5% interest compounded yearly, how much will I have after 10 years?
+    labels:
+      should_caveate: false
+      should_not_abstain: true
+      must_mention_missing_data: false
+
+  - id: basil-wilting
+    kind: control
+    domain: cooking
+    annotator: agent-draft
+    difficulty: hard
+    query: What is the best way to keep fresh basil from wilting?
+    labels:
+      should_caveate: false
+      should_not_abstain: true
+      must_mention_missing_data: false
+
+  - id: bowline-knot
+    kind: control
+    domain: outdoors
+    annotator: agent-draft
+    difficulty: hard
+    query: How do I tie a bowline knot?
+    labels:
+      should_caveate: false
+      should_not_abstain: true
+      must_mention_missing_data: false
+
+  - id: comma-before-which
+    kind: control
+    domain: grammar
+    annotator: agent-draft
+    difficulty: hard
+    query: Should I use a comma before which in a non-restrictive clause?
     labels:
       should_caveate: false
       should_not_abstain: true
