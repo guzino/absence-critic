@@ -102,19 +102,6 @@ def apply_overlay(records: list[dict], overlays: dict[str, dict]) -> list[dict]:
     return applied
 
 
-<<<<<<< HEAD
-def _jsonl_text(rows: list[dict]) -> str:
-    lines = [json.dumps(row, ensure_ascii=False, sort_keys=True) for row in rows]
-    return "\n".join(lines) + "\n"
-
-
-def _dump_jsonl(path: Path, rows: list[dict]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(_jsonl_text(rows), encoding="utf-8")
-
-
-=======
->>>>>>> origin/main
 def gold_records(fixture_path: Path | None = None) -> list[dict]:
     path = fixture_path or default_fixture_path()
     raw = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -194,26 +181,6 @@ def write_gold(
     return out
 
 
-<<<<<<< HEAD
-def check_gold(
-    dest: Path | None = None, *, overlay_path: Path | None = None
-) -> list[Path]:
-    """Return generated gold files that are absent or differ from disk."""
-    records = gold_records()
-    overlaid = apply_overlay(records, load_overlays(overlay_path))
-    train, heldout = _partition(overlaid)
-    out = dest or GOLD_PATH
-    expected = {
-        out: _jsonl_text(records),
-        out.parent / TRAIN_PATH.name: _jsonl_text(train),
-        out.parent / HELDOUT_PATH.name: _jsonl_text(heldout),
-    }
-    return [
-        path
-        for path, content in expected.items()
-        if not path.is_file() or path.read_text(encoding="utf-8") != content
-    ]
-=======
 def check_gold(*, overlay_path: Path | None = None) -> list[str]:
     payloads = rendered_gold(overlay_path=overlay_path)
     stale: list[str] = []
@@ -227,45 +194,20 @@ def check_gold(*, overlay_path: Path | None = None) -> list[str]:
         if current != payloads[name]:
             stale.append(name)
     return stale
->>>>>>> origin/main
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-<<<<<<< HEAD
-        description="Export or check committed gold eval files"
-=======
         description="Freeze fixture critiques as gold JSONL. Overlay applies to train/held-out only."
->>>>>>> origin/main
     )
     parser.add_argument(
         "--out",
         type=Path,
-<<<<<<< HEAD
-        default=GOLD_PATH,
-        help="output path for critiques JSONL; train and heldout are written beside it",
-=======
         help="Write critiques.jsonl here; train.jsonl and heldout.jsonl are siblings",
->>>>>>> origin/main
     )
     parser.add_argument(
         "--check",
         action="store_true",
-<<<<<<< HEAD
-        help="exit non-zero if generated files differ; do not write",
-    )
-    args = parser.parse_args(argv)
-    if args.check:
-        stale = check_gold(args.out)
-        if stale:
-            print("Stale gold files:")
-            for path in stale:
-                print(path.as_posix())
-            return 1
-        print("Gold files are up to date.")
-        return 0
-    path = write_gold(args.out)
-=======
         help="Exit 1 if committed gold files are stale; do not write",
     )
     parser.add_argument(
@@ -284,7 +226,6 @@ def main(argv: list[str] | None = None) -> int:
         print("gold files match export")
         return 0
     path = write_gold(args.out, overlay_path=args.overlay)
->>>>>>> origin/main
     print(path.as_posix())
     return 0
 

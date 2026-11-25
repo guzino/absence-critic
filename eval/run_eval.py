@@ -3,14 +3,8 @@
 
 """Compare baseline vs shielded answers using fixtures (no API key).
 
-<<<<<<< HEAD
-To refresh fixtures from a live model, follow the manual workflow in README.md:
-run each query through the CLI with --provider openai --json and copy the
-result into the matching entry in eval/fixtures/responses.yaml.
-=======
 Regenerate live fixtures later:
   python eval/record_fixtures.py --provider openai --out eval/fixtures/responses.yaml
->>>>>>> origin/main
 """
 
 from __future__ import annotations
