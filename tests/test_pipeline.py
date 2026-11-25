@@ -1,6 +1,8 @@
 # Copyright 2026 Guzino (https://github.com/guzino)
 # SPDX-License-Identifier: Apache-2.0
 
+import json
+
 from absencecritic import run
 from absencecritic.adapters.llm.fixture import FixtureLLM
 from absencecritic.adapters.store.yaml_store import YamlStore
@@ -122,3 +124,43 @@ def test_plan_like_launch_query_still_caveats():
 def test_wald_quote_skips_store_retrieve():
     result = _run("Quote Abraham Wald's survivorship-bias insight in one sentence.")
     assert result.retrieved_ids == []
+
+
+class _ScriptedLLM:
+    def __init__(self, risk: float, adjustment: str) -> None:
+        self.risk = risk
+        self.adjustment = adjustment
+        self.revised = 0
+
+    def generate(self, *, query: str) -> str:
+        return "Draft answer."
+
+    def critique(self, *, query: str, draft: str, store_hits: str) -> str:
+        return json.dumps(
+            {
+                "selection_filter": "none",
+                "survivorship_risk": self.risk,
+                "confidence_adjustment": self.adjustment,
+                "unknown_lethality": ["something unrecorded"],
+            }
+        )
+
+    def revise(self, *, query: str, draft: str, critique_json: str) -> str:
+        self.revised += 1
+        return "Draft answer. Caveat: missing cases."
+
+
+def test_low_risk_critique_keeps_the_draft_without_revise():
+    llm = _ScriptedLLM(0.25, "seek_more_data")
+    result = run("How do I tie a bowline knot?", provider=llm, store=YamlStore(default_store_dir()))
+    assert llm.revised == 0
+    assert result.final == "Draft answer."
+    assert result.critique.survivorship_risk == 0.25
+    assert result.shielded is True
+
+
+def test_risky_critique_still_revises():
+    llm = _ScriptedLLM(0.3, "lower")
+    result = run("How do I tie a bowline knot?", provider=llm, store=YamlStore(default_store_dir()))
+    assert llm.revised == 1
+    assert result.final.endswith("missing cases.")

@@ -13,6 +13,11 @@ from absencecritic.application.retrieve import suggested_retrieve_k
 from absencecritic.domain.models import Critique, PipelineResult
 
 
+# Below this survivorship_risk the draft is the answer and revise is not called.
+# The critic and revise prompts use the same threshold.
+LOW_RISK = 0.3
+
+
 class CritiqueParseError(ValueError):
     """Critic reply was not a valid Critique. Keeps the raw reply for diagnosis."""
 
@@ -99,6 +104,15 @@ def run(
     retrieved_ids, critique = _critique_draft(
         query, text, critic=cri, store=store, retrieve_k=retrieve_k
     )
+    if critique.survivorship_risk < LOW_RISK:
+        return PipelineResult(
+            query=query,
+            draft=text,
+            retrieved_ids=retrieved_ids,
+            critique=critique,
+            final=text,
+            shielded=True,
+        )
     revision = gen.revise(
         query=query,
         draft=text,
