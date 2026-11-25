@@ -84,10 +84,22 @@ absencecritic --judge --draft-file draft.txt --json "What works for launching a 
 Live OpenAI-compatible calls (OpenAI, OpenRouter, or a local server):
 
 ```bash
-# Windows PowerShell
+# OpenAI (Windows PowerShell)
 $env:OPENAI_API_KEY = "..."
 $env:OPENAI_BASE_URL = "https://api.openai.com/v1"   # optional
 $env:ABSENCECRITIC_MODEL = "gpt-4o-mini"             # optional
+absencecritic --provider openai "What works for launching a startup?"
+
+# OpenRouter
+$env:OPENAI_API_KEY = "..."
+$env:OPENAI_BASE_URL = "https://openrouter.ai/api/v1"
+$env:ABSENCECRITIC_MODEL = "openai/gpt-4o-mini"      # choose an available model slug
+absencecritic --provider openai "What works for launching a startup?"
+
+# Local OpenAI-compatible server (adjust URL/model for your server)
+$env:OPENAI_API_KEY = "local"
+$env:OPENAI_BASE_URL = "http://127.0.0.1:8080/v1"
+$env:ABSENCECRITIC_MODEL = "local-model"
 absencecritic --provider openai "What works for launching a startup?"
 ```
 
@@ -98,12 +110,13 @@ Library:
 ```python
 from absencecritic import run, score
 from absencecritic.adapters.llm.fixture import FixtureLLM
+from absencecritic.adapters.llm.openai_compat import OpenAICompat
 from absencecritic.adapters.store.yaml_store import YamlStore
 from absencecritic.paths import default_fixture_path, default_store_dir
 
 result = run(
     "What works for launching a startup?",
-    provider=FixtureLLM(default_fixture_path()),  # or OpenAICompat()
+    provider=FixtureLLM(default_fixture_path()),  # or OpenAICompat() after setting provider env vars
     store=YamlStore(default_store_dir()),
     shield=True,
 )
@@ -127,7 +140,7 @@ python eval/benchmark/score.py
 python -m pytest
 ```
 
-[`eval/queries.yaml`](eval/queries.yaml) has ~12 survivor-biased questions and 3 controls. [`eval/fixtures/responses.yaml`](eval/fixtures/responses.yaml) holds recorded draft/critique/revision triples. Phase 2 gold critic JSONL is [`eval/gold/critiques.jsonl`](eval/gold/critiques.jsonl), split by committed ids in [`eval/gold/splits.yaml`](eval/gold/splits.yaml) into `train.jsonl` and `heldout.jsonl` (`python eval/export_gold.py` after fixture edits). Optional human edits go in [`eval/gold/overlay.yaml`](eval/gold/overlay.yaml) and win on the train/held-out export only; they do not rewrite fixtures. Live critic dumps go to gitignored `eval/gold/incoming/` via `python eval/log_incoming.py --query "..." --provider openai` and stay out of train until a human PR. Fixture 15/15 is product regression, not a training score. To refresh fixtures from a live model, run each query with `--provider openai --json` and replace the matching block in that file.
+[`eval/queries.yaml`](eval/queries.yaml) has ~12 survivor-biased questions and 3 controls. [`eval/fixtures/responses.yaml`](eval/fixtures/responses.yaml) holds recorded draft/critique/revision triples. Phase 2 gold critic JSONL is [`eval/gold/critiques.jsonl`](eval/gold/critiques.jsonl), split by committed ids in [`eval/gold/splits.yaml`](eval/gold/splits.yaml) into `train.jsonl` and `heldout.jsonl` (`python eval/export_gold.py` after fixture edits). Optional human edits go in [`eval/gold/overlay.yaml`](eval/gold/overlay.yaml) and win on the train/held-out export only; they do not rewrite fixtures. Live critic dumps go to gitignored `eval/gold/incoming/` via `python eval/log_incoming.py --query "..." --provider openai` and stay out of train until a human PR. Fixture 15/15 is product regression, not a training score. To refresh fixtures from a live model, run each query through the CLI with `--provider openai --json` and copy its output into the matching entry in that file. `python eval/export_gold.py --check` verifies committed gold exports without writing; `python eval/export_gold.py --out path/to/critiques.jsonl` writes exports to a chosen directory.
 
 Critic fine-tune stays off CI: [`scripts/critic_train.md`](scripts/critic_train.md) (`python scripts/train_critic.py --dry-run`). Serve the result through `--critic local`. Do not train the generator on critique JSON. Primary-model DPO on pair export is [`scripts/primary_preference.md`](scripts/primary_preference.md) (`python scripts/train_primary.py --pairs ... --dry-run`). The default generator stays `--provider`; if controls start abstaining, the experiment failed.
 

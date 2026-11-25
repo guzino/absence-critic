@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -101,10 +102,14 @@ def apply_overlay(records: list[dict], overlays: dict[str, dict]) -> list[dict]:
     return applied
 
 
+def _jsonl_text(rows: list[dict]) -> str:
+    lines = [json.dumps(row, ensure_ascii=False, sort_keys=True) for row in rows]
+    return "\n".join(lines) + "\n"
+
+
 def _dump_jsonl(path: Path, rows: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    lines = [json.dumps(row, ensure_ascii=False, sort_keys=True) for row in rows]
-    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    path.write_text(_jsonl_text(rows), encoding="utf-8")
 
 
 def gold_records(fixture_path: Path | None = None) -> list[dict]:
@@ -167,9 +172,52 @@ def write_gold(
     return out
 
 
+def check_gold(
+    dest: Path | None = None, *, overlay_path: Path | None = None
+) -> list[Path]:
+    """Return generated gold files that are absent or differ from disk."""
+    records = gold_records()
+    overlaid = apply_overlay(records, load_overlays(overlay_path))
+    train, heldout = _partition(overlaid)
+    out = dest or GOLD_PATH
+    expected = {
+        out: _jsonl_text(records),
+        out.parent / TRAIN_PATH.name: _jsonl_text(train),
+        out.parent / HELDOUT_PATH.name: _jsonl_text(heldout),
+    }
+    return [
+        path
+        for path, content in expected.items()
+        if not path.is_file() or path.read_text(encoding="utf-8") != content
+    ]
+
+
 def main(argv: list[str] | None = None) -> int:
-    del argv
-    path = write_gold()
+    parser = argparse.ArgumentParser(
+        description="Export or check committed gold eval files"
+    )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=GOLD_PATH,
+        help="output path for critiques JSONL; train and heldout are written beside it",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="exit non-zero if generated files differ; do not write",
+    )
+    args = parser.parse_args(argv)
+    if args.check:
+        stale = check_gold(args.out)
+        if stale:
+            print("Stale gold files:")
+            for path in stale:
+                print(path.as_posix())
+            return 1
+        print("Gold files are up to date.")
+        return 0
+    path = write_gold(args.out)
     print(path.as_posix())
     return 0
 
