@@ -10,9 +10,6 @@ import re
 from absencecritic.application.retrieve import query_names_selection
 from absencecritic.domain.models import ConfidenceAdjustment, Critique
 
-# Same cutoff as application.loop.LOW_RISK. At this score the reviser is called.
-_REVISE_AT = 0.3
-
 _MAX_WORDS = 30
 _ASSERTS = re.compile(r"\b(should|works|proven|always|best|guaranteed)\b", re.I)
 _CAVEAT = (
@@ -33,14 +30,17 @@ def apply_filtered_clarification(query: str, draft: str, critique: Critique) -> 
 
     How-to and plain-fact questions do not match, so a clarifying knot or sum stays quiet.
     """
-    if critique.survivorship_risk >= _REVISE_AT:
+    # Imported here so this module can load before loop finishes importing it.
+    from absencecritic.application.loop import LOW_RISK
+
+    if critique.survivorship_risk >= LOW_RISK:
         return critique
     if not draft_only_clarifies(draft) or not query_names_selection(query):
         return critique
     caveats = list(critique.caveats) or [_CAVEAT]
     return critique.model_copy(
         update={
-            "survivorship_risk": _REVISE_AT,
+            "survivorship_risk": LOW_RISK,
             "confidence_adjustment": ConfidenceAdjustment.seek_more_data,
             "caveats": caveats,
         }

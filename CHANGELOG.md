@@ -7,6 +7,10 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Unreleased
 
+### Fixed
+
+- A clarifying draft still gets one caveat when the question names a filtered record (the literature, published studies, famous cases, what survived). How-to and fact questions that only share a retrieval word such as "score", "published", or "based on" stay quiet.
+
 ## 0.1.5 - 2026-11-25
 
 Eval, hardening, and published multi-model findings. Package API and prompts are unchanged from 0.1.4 except the critic-call retry.
