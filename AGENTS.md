@@ -86,6 +86,7 @@ Shared skill files (Agent Skills format; content is generic):
 | Run pytest and fixture eval | `.cursor/skills/run-phase-eval/SKILL.md` |
 | Open a GitHub pull request | `.cursor/skills/open-pull-request/SKILL.md` |
 | Review a pull request | `.cursor/skills/review-pull-request/SKILL.md` |
+| Update the public wiki in its published design | `.cursor/skills/update-wiki/SKILL.md` |
 
 The `.cursor/skills/` path is where Cursor auto-loads skills. Claude Code should follow the same files via `CLAUDE.md`. Do not copy the bodies into a second tree.
 
