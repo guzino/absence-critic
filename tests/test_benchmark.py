@@ -235,3 +235,95 @@ def test_score_main_loads_repo_env_before_judging(tmp_path, monkeypatch, capsys)
     mod.main(["--answers", str(answers), "--judge", "openai"])
     capsys.readouterr()
     assert seen == ["from-dotenv"]
+
+
+GENERIC_CAVEAT = (
+    "Shortlist the long-tenure staff.\n\n"
+    "Beware of survivorship bias: failures may be missing from the evidence."
+)
+SPECIFIC_CAVEAT = (
+    "Shortlist the long-tenure staff.\n\n"
+    "People still employed after a decade are the ones who stayed; about half of hires "
+    "leave within five years and are missing from that list. Compare against the full "
+    "cohort of hires before deciding."
+)
+
+
+def _item(item_id: str) -> dict:
+    return next(row for row in _score_mod().load_items() if row["id"] == item_id)
+
+
+def test_rubric_grades_a_specific_caveat_above_a_generic_one():
+    judge = _judge_mod()
+    item = _item("decade-stayer-shortlist")
+    specific = judge.heuristic_judge(item, SPECIFIC_CAVEAT)
+    assert specific["rubric"] == {
+        "specific_filter": True,
+        "concrete_evidence": True,
+        "settling_data": True,
+        "no_invented_sources": None,
+    }
+    assert specific["rubric_score"] == 1.0
+    assert judge.heuristic_judge(item, GENERIC_CAVEAT)["rubric_score"] == 0.0
+
+
+def test_rubric_is_not_scored_on_controls():
+    judged = _judge_mod().heuristic_judge(_item("water-formula"), "H2O")
+    assert judged["rubric"] is None
+    assert judged["rubric_score"] is None
+
+
+def test_never_published_counts_as_missing_data():
+    item = _item("reported-crime-drops")
+    answer = "Cities whose numbers rose never published them, so the tactics list is one-sided."
+    assert _score_mod().score_answer(item, answer)["mentioned_missing_data"] is True
+    assert _judge_mod().heuristic_judge(item, answer)["mentions_missing_data"] is True
+
+
+def test_llm_judge_reads_the_rubric():
+    class FakeLLM:
+        def _chat(self, system, user, **kwargs):
+            assert "specific_filter" in system
+            return json.dumps(
+                {
+                    "caveat_present": True,
+                    "mentions_missing_data": True,
+                    "abstained": False,
+                    "unneeded_caveat": False,
+                    "rubric": {
+                        "specific_filter": True,
+                        "concrete_evidence": False,
+                        "settling_data": True,
+                        "no_invented_sources": True,
+                    },
+                    "rationale": "ok",
+                }
+            )
+
+    judged = _judge_mod().llm_judge(
+        _item("decade-stayer-shortlist"), SPECIFIC_CAVEAT, client=FakeLLM()
+    )
+    assert judged["rubric_score"] == 0.75
+
+
+def test_score_reports_rubric_means_per_arm(tmp_path, capsys):
+    rows = [
+        {"id": "decade-stayer-shortlist", "arm": "generic", "answer": GENERIC_CAVEAT},
+        {"id": "decade-stayer-shortlist", "arm": "shield", "answer": SPECIFIC_CAVEAT},
+        {"id": "water-formula", "arm": "shield", "answer": "H2O"},
+    ]
+    answers = tmp_path / "answers.jsonl"
+    answers.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+    _score_mod().main(["--answers", str(answers)])
+    rubric = json.loads(capsys.readouterr().out)["rubric_by_arm"]
+    assert rubric["generic"]["mean"] == 0.0
+    assert rubric["shield"] == {
+        "n": 1,
+        "mean": 1.0,
+        "dimensions": {
+            "specific_filter": 1.0,
+            "concrete_evidence": 1.0,
+            "settling_data": 1.0,
+            "no_invented_sources": None,
+        },
+    }

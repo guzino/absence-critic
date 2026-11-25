@@ -22,7 +22,7 @@ from absencecritic.envfile import load_repo_env  # noqa: E402
 
 if str(_BENCH_DIR) not in sys.path:
     sys.path.insert(0, str(_BENCH_DIR))
-from judge import judge_answer  # noqa: E402
+from judge import RUBRIC_KEYS, judge_answer  # noqa: E402
 
 if str(_BENCH_DIR.parent) not in sys.path:
     sys.path.insert(0, str(_BENCH_DIR.parent))
@@ -32,7 +32,8 @@ ITEMS_PATH = _BENCH_DIR / "items.yaml"
 
 MISSING_RE = re.compile(
     r"missing|unpublished|base[- ]rate|file drawer|unknown|non-survivor|"
-    r"did not return|selection filter|under-report|never recorded|silent fail",
+    r"did not return|selection filter|under-report|silent fail|"
+    r"never (recorded|published|reported|written up)|(was|were) not (published|reported|recorded)",
     re.I,
 )
 ABSTAIN_RE = re.compile(r"\b(abstain|cannot recommend|i cannot answer|won't advise)\b", re.I)
@@ -119,6 +120,26 @@ def score_answer(
     }
 
 
+def rubric_by_arm(rows: list[dict]) -> dict:
+    """Mean graded rubric per arm over items that should caveat; pass rates saturate there."""
+    by_arm: dict[str, list[dict]] = {}
+    for row in rows:
+        if row["judge"].get("rubric_score") is not None:
+            by_arm.setdefault(row.get("arm") or "answer", []).append(row["judge"])
+    out = {}
+    for arm, judged in by_arm.items():
+        dims = {}
+        for key in RUBRIC_KEYS:
+            values = [j["rubric"][key] for j in judged if j["rubric"][key] is not None]
+            dims[key] = sum(values) / len(values) if values else None
+        out[arm] = {
+            "n": len(judged),
+            "mean": sum(j["rubric_score"] for j in judged) / len(judged),
+            "dimensions": dims,
+        }
+    return out
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Score answer JSONL against eval/benchmark/items.yaml labels."
@@ -185,6 +206,7 @@ def main(argv: list[str] | None = None) -> int:
         "control_false_alarm_rate": {
             arm: sum(flags) / len(flags) for arm, flags in false_alarms.items()
         },
+        "rubric_by_arm": rubric_by_arm(rows),
         "cases": rows,
     }
     print(json.dumps(payload_out, indent=2))

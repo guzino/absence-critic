@@ -15,4 +15,9 @@ Score one answer against frozen human labels. Return ONLY a JSON object:
 - abstained (bool): true if the answer refuses to answer.
 - unneeded_caveat (bool): true if should_caveate is false and the answer still adds a survivorship, selection, or missing-data warning that the question does not call for (for example "Paris." followed by a caveat about failed cases missing from the sample).
 - pass (bool): true when (must_mention_missing_data implies mentions_missing_data) and (should_caveate implies caveat_present) and (should_not_abstain implies not abstained) and not unneeded_caveat.
+- rubric (object or null): null when should_caveate is false. Otherwise four booleans grading the caveat, each judged on this answer alone:
+  - specific_filter: names the selection filter for this question (which cases were dropped and why), not only the words "survivorship bias".
+  - concrete_evidence: gives a base rate, count, or named evidence about the missing cases.
+  - settling_data: says what data or comparison would settle the question.
+  - no_invented_sources: every study, statistic, or source it cites is plausible and not fabricated. Vague attributions ("studies show") with exact numbers count as invented.
 - rationale (string): one short sentence.
