@@ -7,6 +7,10 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Unreleased
 
+### Findings
+
+- Fourth answering model `anthropic/claude-sonnet-4.6` (OpenRouter), judged by Grok (xAI): critic arms 0/36 control false alarms; shield rubric mean 0.94 vs sticky note 0.88; concrete evidence 87% with store vs 82% without. Aggregate score and answers under `eval/benchmark/artifacts/claude-sonnet-4.6.*`. Org-store not re-run for this model.
+
 ### Fixed
 
 - A clarifying draft still gets one caveat when the question names a filtered record (the literature, published studies, famous cases, what survived). How-to and fact questions that only share a retrieval word such as "score", "published", or "based on" stay quiet.
