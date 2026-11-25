@@ -76,6 +76,8 @@ absencecritic --provider fixture --no-shield "What works for launching a startup
 
 Live models, adding your own notes, and the library call are on [Try it](https://github.com/guzino/absence-critic/wiki/Try-it). This is an early release. Limits are in the [changelog](CHANGELOG.md).
 
+`--retrieve embedding` sends your question and the full text of every store note to an embeddings endpoint. That text leaves the machine. Set `ABSENCECRITIC_EMBED_API_KEY` and `ABSENCECRITIC_EMBED_BASE_URL` when that endpoint should not be the chat provider (`ABSENCECRITIC_EMBED_MODEL` chooses the model). `--retrieve hash` stays on the machine. The similarity cutoff is unmeasured.
+
 ## Where the rest lives
 
 | You want | Go here |

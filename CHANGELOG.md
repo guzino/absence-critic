@@ -7,6 +7,10 @@ SPDX-License-Identifier: Apache-2.0
 
 ## Unreleased
 
+### Added
+
+- `--retrieve embedding` ranks store notes by cosine similarity. It sends the question and the full text of every store note to the embeddings endpoint. `ABSENCECRITIC_EMBED_API_KEY`, `ABSENCECRITIC_EMBED_BASE_URL`, and `ABSENCECRITIC_EMBED_MODEL` choose that endpoint; otherwise the chat key and URL are used. `--retrieve hash` stays on the machine and only matches shared words. The 0.72 cutoff is unmeasured, and the paraphrase tests use a scripted embedder.
+
 ## 0.1.5 - 2026-11-25
 
 Eval, hardening, and published multi-model findings. Package API and prompts are unchanged from 0.1.4 except the critic-call retry.

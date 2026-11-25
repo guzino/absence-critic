@@ -13,6 +13,8 @@ Expect an afternoon for about ten records and ten questions.
 
 In a live run the critic sends each retrieved entry to your LLM provider. Only put text in the store that you are allowed to send there, or point `OPENAI_BASE_URL` at a local server. The generator never sees the store, but the critic does.
 
+`--retrieve embedding` sends more than the retrieved hits. The question and the full text of every store note go to the embeddings endpoint, which is `ABSENCECRITIC_EMBED_BASE_URL` if set, otherwise `OPENAI_BASE_URL`, otherwise `https://api.openai.com/v1`. Give that call its own key (`ABSENCECRITIC_EMBED_API_KEY`) when the notes should not travel with the chat credential. `--retrieve hash` stays on the machine.
+
 Keep your store in its own directory outside this repository (for example on a private volume). Do not commit it. A folder named `private` nested inside a store is skipped by retrieval, so do not put your entries there.
 
 ## 2. Write one entry per post-mortem
@@ -32,7 +34,7 @@ Copy the shape of [`store/org.yaml`](store/org.yaml):
 - `provenance` is required and should name the real source. An entry whose provenance starts with "Author prior" only names a selection filter; its facts are never stated as evidence.
 - `confidence` 0.7 or higher marks recorded evidence. The reviser then states its counts, rates, and identifiers exactly. Below 0.7 the entry only shapes the caveat.
 - `non_survivor_evidence` is the fact you want answers to carry. Keep numbers and ticket ids in it.
-- Keyword retrieval is the default and must overlap the question. Use the words people actually ask with (project names, team names, "playbook", "migration") in `survivor_pattern` and `selection_process`. `--retrieve embedding` ranks the same notes by an OpenAI-compatible embeddings endpoint when colleagues paraphrase those words.
+- Keyword retrieval is the default and must overlap the question. Use the words people actually ask with (project names, team names, "playbook", "migration") in `survivor_pattern` and `selection_process`. `--retrieve embedding` can rank the same notes by cosine similarity. The 0.72 cutoff has not been measured on a live model. Tests that find every paraphrase use a scripted embedder, not a real one. `--retrieve hash` is local and only matches shared words.
 
 One entry per failure pattern beats one long summary: retrieval returns up to five entries.
 

@@ -21,12 +21,23 @@ from typing import Protocol
 from absencecritic.adapters.store.yaml_store import YamlStore, retrievable
 from absencecritic.domain.models import StoreEntry
 
-# Paraphrases of the same note land well above this; unrelated text does not.
+# Unmeasured. A scripted embedder scores an exact group at 1 and everything
+# else at 0, so tests that clear this floor are not a live-model result.
 COSINE_FLOOR = 0.72
+
+# One embeddings HTTP call carries at most this many strings.
+EMBED_BATCH = 96
+
+EMBED_UPLOAD_WARNING = (
+    "Warning: embedding retrieval sends the question and the full text of every "
+    "store note to the embeddings endpoint. Set ABSENCECRITIC_EMBED_BASE_URL and "
+    "ABSENCECRITIC_EMBED_API_KEY to choose that endpoint. Otherwise it uses "
+    "OPENAI_BASE_URL and OPENAI_API_KEY, or https://api.openai.com/v1."
+)
 
 
 class MissingEmbedKey(RuntimeError):
-    """OPENAI_API_KEY is required for the live embeddings endpoint."""
+    """An embeddings key is required. Store note text is sent to that endpoint."""
 
 
 class EmbedError(RuntimeError):
@@ -116,10 +127,16 @@ class OpenAIEmbedder:
         *,
         timeout: float = 60.0,
         urlopen=None,
+        batch_size: int = EMBED_BATCH,
     ):
-        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        self.api_key = (
+            api_key
+            or os.environ.get("ABSENCECRITIC_EMBED_API_KEY")
+            or os.environ.get("OPENAI_API_KEY")
+        )
         self.base_url = (
             base_url
+            or os.environ.get("ABSENCECRITIC_EMBED_BASE_URL")
             or os.environ.get("OPENAI_BASE_URL")
             or "https://api.openai.com/v1"
         ).rstrip("/")
@@ -127,15 +144,25 @@ class OpenAIEmbedder:
             model or os.environ.get("ABSENCECRITIC_EMBED_MODEL") or "text-embedding-3-small"
         )
         self.timeout = timeout
+        self.batch_size = batch_size
         self._urlopen = urlopen or urllib.request.urlopen
         if not self.api_key:
             raise MissingEmbedKey(
-                "OPENAI_API_KEY is not set. Use --retrieve keyword, or set the key."
+                "ABSENCECRITIC_EMBED_API_KEY is not set, and neither is OPENAI_API_KEY. "
+                "Use --retrieve keyword or --retrieve hash, or set an embeddings key."
             )
 
     def embed_many(self, texts: list[str]) -> list[list[float]]:
         if not texts:
             return []
+        if self.batch_size < 1:
+            raise EmbedError("The embeddings batch size must be at least 1.")
+        vectors: list[list[float]] = []
+        for start in range(0, len(texts), self.batch_size):
+            vectors.extend(self._post(texts[start : start + self.batch_size]))
+        return vectors
+
+    def _post(self, texts: list[str]) -> list[list[float]]:
         payload = json.dumps({"model": self.model, "input": texts}).encode("utf-8")
         request = urllib.request.Request(
             f"{self.base_url}/embeddings",
@@ -185,12 +212,29 @@ class EmbeddingStore:
         self, query: str, draft: str = "", k: int = 5
     ) -> list[tuple[StoreEntry, float]]:
         del draft  # The question is what gets embedded. The draft is for the critic.
-        if k <= 0 or not query.strip():
-            return []
+        return self.retrieve_many([query], k=k)[0]
+
+    def retrieve_many(
+        self, queries: list[str], k: int = 5
+    ) -> list[list[tuple[StoreEntry, float]]]:
+        """Rank every query. Their texts go out in one batched embeddings call."""
+        found: list[list[tuple[StoreEntry, float]]] = [[] for _ in queries]
+        if k <= 0:
+            return found
         self._ensure_vectors()
         if not self._entries:
-            return []
-        query_vector = self.embedder.embed_many([query])[0]
+            return found
+        pending = [(index, query) for index, query in enumerate(queries) if query.strip()]
+        if not pending:
+            return found
+        vectors = self.embedder.embed_many([query for _index, query in pending])
+        for (index, _query), vector in zip(pending, vectors):
+            found[index] = self._rank(vector, k)
+        return found
+
+    def _rank(
+        self, query_vector: list[float], k: int
+    ) -> list[tuple[StoreEntry, float]]:
         scored = []
         for entry, vector in zip(self._entries, self._vectors):
             score = cosine(query_vector, vector)
@@ -200,7 +244,9 @@ class EmbeddingStore:
         return scored[:k]
 
     def format_hits(self, hits: list[tuple[StoreEntry, float]]) -> str:
-        return self.inner.format_hits(hits)
+        # Keyword overlap is a ratio that can exceed 1. Cosine is on 0 to 1.
+        rendered = self.inner.format_hits(hits)
+        return rendered.replace("retrieval_score:", "cosine_similarity:")
 
     def _ensure_vectors(self) -> None:
         entries = [entry for entry in self.inner.entries if retrievable(entry)]

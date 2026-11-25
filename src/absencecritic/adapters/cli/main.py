@@ -15,7 +15,14 @@ from absencecritic.adapters.llm.openai_compat import LLMError, MissingAPIKey, Op
 from absencecritic.adapters.store.catalog import ingest_catalog
 from absencecritic.adapters.store.feedback import accept_feedback, queue_feedback
 from absencecritic.adapters.store.ingest import ingest_yaml
-from absencecritic.adapters.store.embedding import EmbedError, EmbeddingStore, MissingEmbedKey, OpenAIEmbedder
+from absencecritic.adapters.store.embedding import (
+    EMBED_UPLOAD_WARNING,
+    EmbedError,
+    EmbeddingStore,
+    HashEmbedder,
+    MissingEmbedKey,
+    OpenAIEmbedder,
+)
 from absencecritic.adapters.store.yaml_store import YamlStore
 from absencecritic.application.loop import CritiqueParseError, run, score
 from absencecritic.envfile import load_repo_env
@@ -32,7 +39,10 @@ def _llm(name: str):
 
 def _store(args):
     if args.retrieve == "embedding":
+        print(EMBED_UPLOAD_WARNING, file=sys.stderr)
         return EmbeddingStore(args.store, OpenAIEmbedder())
+    if args.retrieve == "hash":
+        return EmbeddingStore(args.store, HashEmbedder())
     return YamlStore(args.store)
 
 
@@ -170,9 +180,14 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--retrieve",
-        choices=("keyword", "embedding"),
+        choices=("keyword", "embedding", "hash"),
         default="keyword",
-        help="How the critic finds store notes (default: keyword)",
+        help=(
+            "How the critic finds store notes (default: keyword). "
+            "embedding sends the question and the full text of every store note "
+            "to the embeddings endpoint. hash stays on this machine and only "
+            "matches shared words."
+        ),
     )
     parser.add_argument("--debug", action="store_true", help="Show full provider tracebacks")
     args = parser.parse_args(argv)
@@ -213,7 +228,11 @@ def main(argv: list[str] | None = None) -> int:
         elif isinstance(error, MissingAPIKey):
             message = "Set OPENAI_API_KEY for the live provider or choose --provider fixture."
         elif isinstance(error, MissingEmbedKey):
-            message = "Set OPENAI_API_KEY for embedding retrieval or choose --retrieve keyword."
+            message = (
+                "Set ABSENCECRITIC_EMBED_API_KEY (or OPENAI_API_KEY) for embedding "
+                "retrieval, or choose --retrieve keyword or --retrieve hash. "
+                "Embedding retrieval sends every store note to the embeddings endpoint."
+            )
         elif isinstance(error, EmbedError):
             status = f" (HTTP {error.status})" if error.status is not None else ""
             message = f"The embeddings request failed{status}. Check the provider configuration."
