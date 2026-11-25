@@ -33,6 +33,8 @@ Pass/fail saturates: any caveat about missing data passes, so a one-line generic
 | `settling_data` | Says what data or comparison would settle the question. |
 | `no_invented_sources` | Cites nothing fabricated. LLM judge only; the heuristic leaves it `null`. |
 
+To judge with a different model family from the one that wrote the answers, set `ABSENCECRITIC_JUDGE_BASE_URL`, `ABSENCECRITIC_JUDGE_API_KEY`, and `ABSENCECRITIC_JUDGE_MODEL` (for example OpenRouter). Unset, the judge uses the answering provider. A judge URL without its own key is refused. The report names the judge in `judge_model`. `run.py --samples N` repeats each item and `score.py` then reports `sample_spread` per arm; `run.py --difficulty hard` runs only the hard items.
+
 `rubric_score` is the fraction of scored points, and `rubric_by_arm` in the report gives the mean and per-point rates for each arm. The heuristic grades caveat paragraphs with keyword rules (query-word overlap, numbers, comparison words), so treat it as a floor and a CI check. Compare arms with `--judge openai`, and prefer a judge model different from the one that wrote the answers.
 
 ## Coverage and independence

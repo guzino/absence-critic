@@ -53,10 +53,10 @@ def split_recorded(items: list[dict], recorded: set[str]) -> tuple[list[dict], l
     return runnable, skipped
 
 
-def write_answers(items: list[dict], *, provider, store, out) -> list[dict]:
-    """One draft per item, reused by every arm (same arms as eval/run_eval.py)."""
+def write_answers(items: list[dict], *, provider, store, out, samples: int = 1) -> list[dict]:
+    """One draft per item and sample, reused by every arm (same arms as eval/run_eval.py)."""
     rows = []
-    for item in items:
+    for sample, item in ((s, i) for s in range(samples) for i in items):
         query = item["query"]
         draft = provider.generate(query=query)
         arms = (
@@ -72,6 +72,7 @@ def write_answers(items: list[dict], *, provider, store, out) -> list[dict]:
             row = {
                 "id": item["id"],
                 "arm": arm,
+                "sample": sample,
                 "draft": result.draft,
                 "retrieved_ids": result.retrieved_ids,
                 "answer": result.final,
@@ -94,9 +95,17 @@ def main(argv: list[str] | None = None) -> int:
         required=True,
         help="Answers JSONL for eval/benchmark/score.py --answers",
     )
+    parser.add_argument("--samples", type=int, default=1, help="Repeat each item (live variance)")
+    parser.add_argument(
+        "--difficulty", choices=("hard", "standard"), help="Only run items of this difficulty"
+    )
     args = parser.parse_args(argv)
+    if args.samples < 1:
+        parser.error("--samples must be >= 1")
     load_repo_env()
     items = _load_items(args.items)
+    if args.difficulty:
+        items = [i for i in items if i.get("difficulty", "standard") == args.difficulty]
     skipped: list[str] = []
     if args.provider == "fixture":
         items, skipped = split_recorded(items, fixture_queries())
@@ -104,7 +113,9 @@ def main(argv: list[str] | None = None) -> int:
     store = YamlStore(ROOT / "data" / "non_survivors")
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open("w", encoding="utf-8") as handle:
-        rows = write_answers(items, provider=provider, store=store, out=handle)
+        rows = write_answers(
+            items, provider=provider, store=store, out=handle, samples=args.samples
+        )
     summary = {"wrote": len(rows), "path": str(args.out), "skipped_unrecorded": skipped}
     if args.provider == "fixture":
         summary["note"] = FIXTURE_NOTE
