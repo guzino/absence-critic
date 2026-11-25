@@ -1,0 +1,439 @@
+# Copyright 2026 Guzino (https://github.com/guzino)
+# SPDX-License-Identifier: Apache-2.0
+#
+# Recorded shield runs for the org-store eval (fictional Northwind data).
+# Regenerate with: python eval/org_store/run.py --provider openai --record eval/org_store/fixtures.yaml
+
+- query: Our two big launches last year used the Atlas launch playbook and hit their
+    targets. Should every Northwind team adopt the Atlas playbook?
+  draft: Not necessarily. The Atlas playbook worked for those two launches, but that
+    doesn't mean it's the right fit for every Northwind team. Different teams likely
+    have different products, markets, timelines, or constraints that could make Atlas
+    less effective—or even counterproductive. Before rolling it out broadly, it would
+    be worth examining what made Atlas successful in those cases and whether those
+    conditions apply elsewhere.
+  critique:
+    selection_filter: Only launches that reached GA got a wiki write-up.
+    visible_damage:
+    - Two Atlas-playbook launches that hit targets
+    empty_regions:
+    - Launches that were cancelled before GA
+    non_survivors:
+    - id: nw-atlas-launch-playbook
+      summary: Of 7 product launches run on the Atlas launch playbook in 2024-2025,
+        5 were cancelled before GA and never written up.
+      provenance: Northwind internal post-mortem (fictional test data)
+      confidence: 0.8
+    unknown_lethality: []
+    survivorship_risk: 0.7
+    confidence_adjustment: lower
+    caveats:
+    - The two successful launches are the only ones visible because they reached GA;
+      the five cancelled launches have no write-ups.
+    missing_categories:
+    - Cancelled Atlas launches
+    - Non-Atlas launch outcomes
+    suggested_queries:
+    - Atlas playbook cancelled launches post-mortems
+    - Northwind launches that did not reach GA
+  revision: 'Not necessarily. The Atlas playbook worked for those two launches, but
+    that doesn''t mean it''s the right fit for every Northwind team. Different teams
+    likely have different products, markets, timelines, or constraints that could
+    make Atlas less effective—or even counterproductive. Before rolling it out broadly,
+    it would be worth examining what made Atlas successful in those cases and whether
+    those conditions apply elsewhere.
+
+
+    Northwind internal post-mortems show that of 7 product launches run on the Atlas
+    launch playbook in 2024-2025, 5 were cancelled before GA and never written up.
+    The two successful launches are the only ones visible because they reached GA;
+    the five cancelled launches have no write-ups.'
+- query: Which daily habits from our top-quartile sales reps deck should I train new
+    Northwind reps on?
+  draft: "Based on the top-quartile sales reps deck, here are the daily habits to\
+    \ prioritize when training new Northwind reps:\n\n1. **Morning prospecting block**\
+    \ – 60–90 minutes of uninterrupted outreach before 10 a.m.  \n2. **CRM hygiene\
+    \ at end of day** – log every interaction and update stage/opportunity value within\
+    \ 15 minutes of finishing a call or meeting.  \n3. **Three “lighthouse” accounts**\
+    \ – identify and spend 20 focused minutes daily on the three highest-potential\
+    \ deals in the pipeline.  \n4. **Post-call recap in 3 bullets** – immediately\
+    \ after every sales call, note (a) next step, (b) objection raised, (c) buying\
+    \ signal observed.  \n5. **Weekly win-share** – every Friday, record one closed-won\
+    \ tactic or email snippet in the team channel to create a living playbook.  \n\
+    6. **30-minute coach loop** – schedule a brief sync with their manager or peer\
+    \ coach each day to review one deal and get real-time feedback.\n\nTrain these\
+    \ six habits first; they map directly to the behaviors that separate your top-quartile\
+    \ reps from the rest."
+  critique:
+    selection_filter: The habits deck profiled reps still employed at review time.
+    visible_damage:
+    - Morning prospecting block
+    - CRM hygiene at end of day
+    - Three lighthouse accounts
+    - Post-call recap in 3 bullets
+    - Weekly win-share
+    - 30-minute coach loop
+    empty_regions:
+    - Attrition pathways among reps who adopted the same cadence
+    - Reps who left Northwind within a year despite following the listed habits
+    non_survivors:
+    - id: nw-sales-rep-habits
+      summary: 11 of 14 reps who followed the same cadence left Northwind within a
+        year; their attrition is not in the deck.
+      provenance: Northwind internal post-mortem (fictional test data)
+      confidence: 0.8
+    unknown_lethality: []
+    survivorship_risk: 0.75
+    confidence_adjustment: lower
+    caveats:
+    - The deck only contains habits of reps still employed at review time
+    - Attrition data for the 11 of 14 reps who followed the cadence and left is absent
+      from the visible deck
+    missing_categories:
+    - Reasons for departure among the 11 of 14 reps
+    - Alternative habits or cadence patterns used by retained reps
+    suggested_queries:
+    - Northwind sales rep attrition reasons post-mortem
+    - habits of retained vs departed Northwind sales reps
+  revision: "Train new Northwind reps on these six habits from the deck, but note\
+    \ that the deck only profiles reps still employed at review time:\n\n1. **Morning\
+    \ prospecting block** – 60–90 minutes of uninterrupted outreach before 10 a.m.\
+    \  \n2. **CRM hygiene at end of day** – log every interaction and update stage/opportunity\
+    \ value within 15 minutes of finishing a call or meeting.  \n3. **Three “lighthouse”\
+    \ accounts** – identify and spend 20 focused minutes daily on the three highest-potential\
+    \ deals in the pipeline.  \n4. **Post-call recap in 3 bullets** – immediately\
+    \ after every sales call, note (a) next step, (b) objection raised, (c) buying\
+    \ signal observed.  \n5. **Weekly win-share** – every Friday, record one closed-won\
+    \ tactic or email snippet in the team channel to create a living playbook.  \n\
+    6. **30-minute coach loop** – schedule a brief sync with their manager or peer\
+    \ coach each day to review one deal and get real-time feedback.\n\nNorthwind internal\
+    \ post-mortems show that 11 of 14 reps who followed the same cadence left Northwind\
+    \ within a year; their attrition is not in the deck. The visible sample cannot\
+    \ show attrition pathways among reps who adopted the cadence or the habits of\
+    \ reps who left within a year."
+- query: Our cloud migration case studies went smoothly. Can we tell leadership that
+    Northwind migrations are low risk?
+  draft: I can't advise on how to characterize risk to leadership based on case studies
+    alone. Migration outcomes depend on many factors specific to each environment,
+    and generalizing from limited examples may not accurately reflect the actual risk
+    profile for Northwind's systems. I'd recommend presenting the case study results
+    factually alongside any known variables or uncertainties that could affect Northwind
+    specifically.
+  critique:
+    selection_filter: Only completed migrations became case studies.
+    visible_damage:
+    - Two smooth cloud migration case studies
+    empty_regions:
+    - Migrations that were rolled back or abandoned
+    - Post-migration operational incidents not captured in case studies
+    non_survivors:
+    - id: nw-cloud-migrations
+      summary: Three other Northwind migrations were rolled back after outages (incident
+        INC-2291) and never documented.
+      provenance: Northwind internal post-mortem (fictional test data)
+      confidence: 0.8
+    unknown_lethality: []
+    survivorship_risk: 0.75
+    confidence_adjustment: lower
+    caveats:
+    - Case studies only reflect migrations that reached completion; rollbacks and
+      outages are excluded from the visible sample.
+    missing_categories:
+    - Migrations cancelled before go-live
+    - Long-term stability issues after migration
+    - Migrations that succeeded technically but failed on cost or timeline
+    suggested_queries:
+    - Northwind cloud migration rollback incidents
+    - Northwind post-migration outage reports
+    - Northwind migration project cancellation reasons
+  revision: Northwind internal post-mortems show three other migrations were rolled
+    back after outages (incident INC-2291) and never documented. Case studies only
+    reflect migrations that reached completion; rollbacks and outages are excluded
+    from the visible sample. Present the two smooth case study results factually alongside
+    the known variables or uncertainties that could affect Northwind specifically.
+- query: HR's retention review shows referral hires stay longer. Should Northwind
+    prioritise referral hiring?
+  draft: "**Short answer:** Not automatically. Referrals often stay longer, but that\
+    \ alone doesn’t prove they’re the best hires for Northwind.  \n\n**What to check\
+    \ before shifting policy:**\n\n1. **Performance, not just tenure**  \n   Do referral\
+    \ hires also deliver higher productivity, quality, or revenue impact? If they\
+    \ stay longer but under-perform, the company still loses.\n\n2. **Diversity and\
+    \ skill gaps**  \n   Referrals tend to resemble the current workforce. If Northwind\
+    \ needs new skills or broader perspectives, over-relying on referrals could narrow\
+    \ the talent pool.\n\n3. **Cost per hire and speed**  \n   Referrals are usually\
+    \ cheaper and faster, but quantify the savings versus the potential loss of fresh\
+    \ ideas or overlooked high-potential candidates.\n\n4. **Manager and team feedback**\
+    \  \n   Ask hiring managers whether referral hires ramp up faster or create cliques\
+    \ that slow collaboration.\n\n5. **Offer volume and acceptance rates**  \n   If\
+    \ referrals already dominate the pipeline, “prioritising” them may simply mean\
+    \ doing more of the same rather than a genuine improvement.\n\n**Practical next\
+    \ step:** Run a controlled pilot—track referrals vs. non-referrals on performance\
+    \ ratings, promotion velocity, and 12-month retention—then compare the net value\
+    \ per hire. Base the final policy on that evidence, not on tenure numbers alone."
+  critique:
+    selection_filter: HR policy excludes hires who fail probation from the retention
+      dataset; advice samples only people still in role after many years.
+    visible_damage:
+    - Referral hires show longer retention (nw-referral-retention)
+    - Long current tenure treated as a portable quality signal for whom to hire (current-employee-tenure-filter)
+    empty_regions:
+    - Performance, productivity, or revenue impact of referral vs non-referral hires
+    - Diversity and skill-gap consequences of referral-heavy hiring
+    - Cost-per-hire savings quantified against lost option value of non-referrals
+    - Manager feedback on ramp-up speed or clique formation
+    - Offer volume and acceptance-rate differences between channels
+    non_survivors:
+    - id: nw-referral-retention
+      summary: 22% of referral hires failed probation and were excluded from the retention
+        review.
+      provenance: Northwind internal post-mortem (fictional test data)
+      confidence: 0.8
+    - id: current-employee-tenure-filter
+      summary: Official tenure tables describe people still employed, not a hire cohort
+        including leavers; early exits treated as information about match quality
+        that the stayer sample cannot show.
+      provenance: U.S. Bureau of Labor Statistics, Employee Tenure Summary; Boyan
+        Jovanovic, Job Matching and the Theory of Turnover, Journal of Political Economy,
+        1979
+      confidence: 0.75
+    unknown_lethality:
+    - Performance outcomes for the 22% of referral hires who failed probation
+    - Retention and performance of non-referral hires who also failed probation or
+      left early
+    - Net value per hire when early exits are included in the cohort
+    survivorship_risk: 0.65
+    confidence_adjustment: seek_more_data
+    caveats:
+    - Retention data conditioned on passing probation; 22% of referral hires excluded
+      (nw-referral-retention)
+    - Tenure tables describe stayers only; early exits carry match-quality information
+      not visible in the sample (current-employee-tenure-filter)
+    missing_categories:
+    - Performance and productivity metrics for all hires including those who exited
+      early
+    - Diversity impact of referral vs non-referral channels
+    - Cost-benefit analysis that includes failed-probation cases
+    suggested_queries:
+    - Northwind referral vs non-referral performance ratings and promotion velocity
+      including probation failures
+    - Northwind diversity outcomes by hiring source 2022-2025
+    - Northwind cost per hire and 12-month net value per hire by channel
+  revision: "**Short answer:** Not automatically. Referrals often stay longer, but\
+    \ the visible sample excludes the 22 % of referral hires who failed probation,\
+    \ so the retention advantage is measured only among survivors.\n\n**What to check\
+    \ before shifting policy:**\n\n1. **Performance, not just tenure**  \n   Do referral\
+    \ hires also deliver higher productivity, quality, or revenue impact? If they\
+    \ stay longer but under-perform, the company still loses.\n\n2. **Diversity and\
+    \ skill gaps**  \n   Referrals tend to resemble the current workforce. If Northwind\
+    \ needs new skills or broader perspectives, over-relying on referrals could narrow\
+    \ the talent pool.\n\n3. **Cost per hire and speed**  \n   Referrals are usually\
+    \ cheaper and faster, but quantify the savings versus the potential loss of fresh\
+    \ ideas or overlooked high-potential candidates.\n\n4. **Manager and team feedback**\
+    \  \n   Ask hiring managers whether referral hires ramp up faster or create cliques\
+    \ that slow collaboration.\n\n5. **Offer volume and acceptance rates**  \n   If\
+    \ referrals already dominate the pipeline, “prioritising” them may simply mean\
+    \ doing more of the same rather than a genuine improvement.\n\n**Practical next\
+    \ step:** Run a controlled pilot—track referrals vs. non-referrals on performance\
+    \ ratings, promotion velocity, and 12-month retention—then compare the net value\
+    \ per hire. Base the final policy on that evidence, not on tenure numbers alone.\n\
+    \nNorthwind internal post-mortems show that 22 % of referral hires failed probation\
+    \ and were excluded from the retention review. U.S. Bureau of Labor Statistics\
+    \ tenure tables and the job-matching literature describe only people still employed;\
+    \ early exits carry information about match quality that the stayer sample cannot\
+    \ show. Performance outcomes for the excluded 22 %, retention and performance\
+    \ of non-referral hires who also left early, and net value per hire when early\
+    \ exits are counted remain unknown."
+- query: Looking at the Northwind experiments dashboard, most of our A/B tests shipped
+    a win. How good is our experimentation success rate?
+  draft: Your experimentation success rate looks strong on the surface, but without
+    knowing the total number of tests run and the exact criteria used to declare a
+    “win,” it’s hard to say how good it really is. A high win rate could reflect genuinely
+    effective changes, or it could be inflated by factors like small sample sizes,
+    early stopping, or selective reporting. To assess it properly, you’d want to compare
+    your observed win rate against the expected false-positive rate (typically 5 %
+    for a standard significance threshold) and check whether your tests are adequately
+    powered.
+  critique:
+    selection_filter: The experiments dashboard lists shipped experiments only.
+    visible_damage:
+    - Most listed A/B tests shipped a win
+    empty_regions:
+    - inconclusive or negative tests that were never shipped or displayed
+    non_survivors:
+    - id: nw-experiments-dashboard
+      summary: 31 of 40 A/B tests run in 2025 were archived as inconclusive and are
+        hidden from the dashboard.
+      provenance: Northwind internal post-mortem (fictional test data)
+      confidence: 0.8
+    unknown_lethality: []
+    survivorship_risk: 0.75
+    confidence_adjustment: lower
+    caveats:
+    - The dashboard only shows shipped experiments, so the observed win rate is conditioned
+      on reaching the shipping stage.
+    missing_categories:
+    - tests that were stopped early for futility
+    - tests that were never launched due to pre-experiment checks
+    suggested_queries:
+    - Northwind total A/B tests launched vs shipped 2025
+    - Northwind experiments archived without shipping criteria
+  revision: 'Your experimentation success rate looks strong on the surface, but without
+    knowing the total number of tests run and the exact criteria used to declare a
+    “win,” it’s hard to say how good it really is. A high win rate could reflect genuinely
+    effective changes, or it could be inflated by factors like small sample sizes,
+    early stopping, or selective reporting. To assess it properly, you’d want to compare
+    your observed win rate against the expected false-positive rate (typically 5 %
+    for a standard significance threshold) and check whether your tests are adequately
+    powered.
+
+
+    Internal post-mortems show that 31 of 40 A/B tests run in 2025 were archived as
+    inconclusive and are hidden from the dashboard. The visible sample cannot show
+    tests that were stopped early for futility or never launched due to pre-experiment
+    checks.'
+- query: Based on our customer success stories page, what do Northwind enterprise
+    customers love most?
+  draft: I don't have access to your customer success stories page or any specific
+    information about Northwind enterprise customers. To answer this question accurately,
+    I'd need you to share the relevant content from that page or provide details about
+    what your customers have said.
+  critique:
+    selection_filter: Churned accounts are removed from the CRM reference view used
+      for the stories page.
+    visible_damage:
+    - Customer success stories page only shows retained accounts
+    empty_regions:
+    - Feedback from the 18 enterprise accounts that churned in FY25
+    non_survivors:
+    - id: nw-customer-stories
+      summary: 18 enterprise accounts churned in FY25 and were removed from the reference
+        view, so their complaints never reach the stories page.
+      provenance: Northwind internal post-mortem (fictional test data)
+      confidence: 0.8
+    unknown_lethality: []
+    survivorship_risk: 0.75
+    confidence_adjustment: seek_more_data
+    caveats:
+    - Stories page excludes all churned accounts by design
+    missing_categories:
+    - Churn reasons from lost enterprise customers
+    suggested_queries:
+    - Northwind churned enterprise accounts FY25 reasons
+    - Northwind lost customer feedback
+  revision: Northwind's customer success stories page only shows retained accounts.
+    The page excludes all churned accounts by design, so feedback from the 18 enterprise
+    accounts that churned in FY25 is missing. Internal post-mortems show those 18
+    accounts were removed from the reference view, and their complaints never reach
+    the stories page. To understand what enterprise customers love most, you would
+    also need the churn reasons from lost enterprise customers, which are not visible
+    on the stories page.
+- query: Since several hackathon projects became products, should Northwind run more
+    hackathons to find new products?
+  draft: No, running more hackathons solely because some past projects became products
+    isn’t a reliable strategy. Hackathons can surface ideas, but they’re not a proven
+    or repeatable way to discover viable products. Northwind should instead focus
+    on structured product discovery processes—customer research, market validation,
+    and iterative development—rather than relying on the occasional hackathon success.
+  critique:
+    selection_filter: Only hackathon projects that shipped are tracked; cancelled
+      or non-shipped projects leave no record.
+    visible_damage:
+    - Draft cites that some hackathon projects became products
+    - Draft recommends structured product discovery instead of hackathons
+    empty_regions:
+    - Rate at which hackathon projects fail to reach product status
+    - Comparison of hackathon-derived products vs. structured-discovery products on
+      metrics such as retention or revenue
+    - Resource cost and opportunity cost of hackathons versus structured processes
+    non_survivors:
+    - id: nw-hackathon-products
+      summary: 3 of 46 Northwind hackathon projects since 2021 became products; the
+        other 43 have no record beyond the demo.
+      provenance: Northwind internal post-mortem (fictional test data)
+      confidence: 0.8
+    - id: nw-atlas-launch-playbook
+      summary: Of 7 product launches run on the Atlas launch playbook in 2024-2025,
+        5 were cancelled before GA and never written up.
+      provenance: Northwind internal post-mortem (fictional test data)
+      confidence: 0.8
+    unknown_lethality:
+    - Long-term product performance of the 3 successful hackathon projects
+    - Whether structured discovery processes at Northwind have higher or lower success
+      rates than hackathons
+    survivorship_risk: 0.65
+    confidence_adjustment: seek_more_data
+    caveats:
+    - The 3-of-46 figure is the only quantitative non-survivor evidence; it does not
+      address product quality or ROI
+    - No data on how many structured-discovery initiatives were cancelled before launch
+    missing_categories:
+    - Cancelled hackathon projects that never reached demo stage
+    - Comparative success metrics between hackathon and non-hackathon products
+    suggested_queries:
+    - Northwind hackathon project cancellation reasons and counts
+    - Northwind structured product discovery pipeline win rate
+    - Northwind product revenue attribution by discovery method
+  revision: "Northwind’s internal post-mortems show that only 3 of 46 hackathon projects\
+    \ since 2021 became products, while the other 43 left no further record. The same\
+    \ post-mortems also record that 5 of 7 Atlas-playbook launches in 2024-2025 were\
+    \ cancelled before general availability.  \n\nBecause the visible sample cannot\
+    \ show how many hackathon ideas were cancelled before they reached a demo, or\
+    \ how the three shipped products compare on retention or revenue with products\
+    \ that came from structured discovery, the current evidence is too thin to decide\
+    \ whether more hackathons would be better or worse than the existing pipeline.\
+    \ Northwind would need the missing cancellation counts, win-rate figures, and\
+    \ revenue attribution by discovery method before treating hackathons as a repeatable\
+    \ product engine."
+- query: Our survey of high-performing remote teams says async standups work. Should
+    all Northwind teams switch?
+  draft: Not necessarily. Async standups can help distributed teams, but the survey
+    only reflects teams that already perform well and chose that format. Northwind
+    teams may have different workflows, time zones, or collaboration needs, so a blanket
+    switch risks disrupting teams that are already effective with synchronous check-ins.
+    Consider piloting async standups with a few volunteer teams, measuring outcomes
+    like velocity, blocker resolution time, and employee satisfaction, then decide
+    based on those results rather than adopting the practice company-wide.
+  critique:
+    selection_filter: Survey sampled only teams that still existed at survey time
+      and were already high-performing remote teams.
+    visible_damage:
+    - High-performing remote teams survey praising async standups
+    empty_regions:
+    - Teams that disbanded before the survey could be run
+    - Teams that tried async standups and reverted or failed
+    - Teams that never adopted async standups and continued successfully
+    non_survivors:
+    - id: nw-remote-team-survey
+      summary: 6 Northwind teams that disbanded in 2025 were never surveyed
+      provenance: Northwind internal post-mortem (fictional test data)
+      confidence: 0.8
+    unknown_lethality:
+    - Northwind teams with synchronous workflows that might be disrupted by forced
+      async adoption
+    - Teams whose collaboration needs differ from the surveyed high-performers
+    survivorship_risk: 0.65
+    confidence_adjustment: seek_more_data
+    caveats:
+    - The survey reflects only surviving high-performing teams; disbanded teams are
+      absent from the data
+    missing_categories:
+    - Failed async adoption attempts
+    - Teams that succeeded without async standups
+    - Northwind-specific workflow constraints
+    suggested_queries:
+    - Northwind teams that tried async standups and abandoned them
+    - Remote teams disbanded after adopting async practices
+    - Synchronous-first remote teams with sustained performance
+  revision: 'Not necessarily. Async standups can help distributed teams, but the survey
+    only reflects teams that already perform well and chose that format. Northwind
+    teams may have different workflows, time zones, or collaboration needs, so a blanket
+    switch risks disrupting teams that are already effective with synchronous check-ins.
+    Consider piloting async standups with a few volunteer teams, measuring outcomes
+    like velocity, blocker resolution time, and employee satisfaction, then decide
+    based on those results rather than adopting the practice company-wide.
+
+
+    Northwind internal post-mortems show six teams that disbanded in 2025 were never
+    surveyed. The visible sample cannot show teams that tried async standups and reverted
+    or failed, teams that never adopted async standups and continued successfully,
+    or Northwind-specific workflow constraints.'

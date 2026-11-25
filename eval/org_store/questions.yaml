@@ -1,0 +1,40 @@
+# Copyright 2026 Guzino (https://github.com/guzino)
+# SPDX-License-Identifier: Apache-2.0
+#
+# Each question invites the survivor mistake its store entry corrects.
+# fact: regex for the entry's private fact in the final answer (case-insensitive).
+# Only the store can supply it, so baseline and critic_only should never match.
+
+questions:
+  - id: atlas-playbook
+    entry: nw-atlas-launch-playbook
+    query: Our two big launches last year used the Atlas launch playbook and hit their targets. Should every Northwind team adopt the Atlas playbook?
+    fact: '\b(five|5)\b[^.]{0,60}cancel'
+  - id: sales-habits
+    entry: nw-sales-rep-habits
+    query: Which daily habits from our top-quartile sales reps deck should I train new Northwind reps on?
+    fact: '\b(11|eleven)\b[^.]{0,40}\b(14|fourteen)\b'
+  - id: cloud-migrations
+    entry: nw-cloud-migrations
+    query: Our cloud migration case studies went smoothly. Can we tell leadership that Northwind migrations are low risk?
+    fact: '\b(three|3)\b[^.]{0,40}rolled back|INC-2291'
+  - id: referral-hiring
+    entry: nw-referral-retention
+    query: HR's retention review shows referral hires stay longer. Should Northwind prioritise referral hiring?
+    fact: '\b22 ?%|22 percent'
+  - id: experiments-dashboard
+    entry: nw-experiments-dashboard
+    query: Looking at the Northwind experiments dashboard, most of our A/B tests shipped a win. How good is our experimentation success rate?
+    fact: '\b(31|thirty-one)\b'
+  - id: customer-stories
+    entry: nw-customer-stories
+    query: Based on our customer success stories page, what do Northwind enterprise customers love most?
+    fact: '\b(18|eighteen)\b[^.]{0,40}(account|customer|churn)'
+  - id: hackathons
+    entry: nw-hackathon-products
+    query: Since several hackathon projects became products, should Northwind run more hackathons to find new products?
+    fact: '\b(46|forty-six)\b|\b(43|forty-three)\b'
+  - id: remote-standups
+    entry: nw-remote-team-survey
+    query: Our survey of high-performing remote teams says async standups work. Should all Northwind teams switch?
+    fact: 'disband|\b(six|6) (northwind )?teams'
