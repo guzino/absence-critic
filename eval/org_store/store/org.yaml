@@ -1,0 +1,64 @@
+# Copyright 2026 Guzino (https://github.com/guzino)
+# SPDX-License-Identifier: Apache-2.0
+#
+# FICTIONAL test data. Northwind is an invented company; these post-mortems
+# never happened. They stand in for a team's private failure records, which no
+# language model can know, to test whether the store adds facts the critic
+# cannot supply on its own. Never copy these into data/non_survivors/.
+
+- id: nw-atlas-launch-playbook
+  domain: product_launches
+  selection_process: Only launches that reached GA got a wiki write-up.
+  survivor_pattern: Two Atlas-playbook launches that hit targets.
+  non_survivor_evidence: Of 7 product launches run on the Atlas launch playbook in 2024-2025, 5 were cancelled before GA and never written up.
+  confidence: 0.8
+  provenance: Northwind internal post-mortem (fictional test data)
+- id: nw-sales-rep-habits
+  domain: sales
+  selection_process: The habits deck profiled reps still employed at review time.
+  survivor_pattern: Top-quartile sales reps' daily cadence deck.
+  non_survivor_evidence: 11 of 14 reps who followed the same cadence left Northwind within a year; their attrition is not in the deck.
+  confidence: 0.8
+  provenance: Northwind internal post-mortem (fictional test data)
+- id: nw-cloud-migrations
+  domain: infrastructure
+  selection_process: Only completed migrations became case studies.
+  survivor_pattern: Two smooth cloud migration case studies.
+  non_survivor_evidence: Three other Northwind migrations were rolled back after outages (incident INC-2291) and never documented.
+  confidence: 0.8
+  provenance: Northwind internal post-mortem (fictional test data)
+- id: nw-referral-retention
+  domain: hiring
+  selection_process: HR policy excludes hires who fail probation from the retention dataset.
+  survivor_pattern: Referral hires show longer retention.
+  non_survivor_evidence: 22% of referral hires failed probation and were excluded from the retention review.
+  confidence: 0.8
+  provenance: Northwind internal post-mortem (fictional test data)
+- id: nw-experiments-dashboard
+  domain: experimentation
+  selection_process: The experiments dashboard lists shipped experiments only.
+  survivor_pattern: Most listed A/B tests shipped a win.
+  non_survivor_evidence: 31 of 40 A/B tests run in 2025 were archived as inconclusive and are hidden from the dashboard.
+  confidence: 0.8
+  provenance: Northwind internal post-mortem (fictional test data)
+- id: nw-customer-stories
+  domain: customers
+  selection_process: Churned accounts are removed from the CRM reference view used for the stories page.
+  survivor_pattern: Customer success stories page.
+  non_survivor_evidence: 18 enterprise accounts churned in FY25 and were removed from the reference view, so their complaints never reach the stories page.
+  confidence: 0.8
+  provenance: Northwind internal post-mortem (fictional test data)
+- id: nw-hackathon-products
+  domain: innovation
+  selection_process: Only hackathon projects that shipped are tracked.
+  survivor_pattern: Hackathon projects that became products.
+  non_survivor_evidence: 3 of 46 Northwind hackathon projects since 2021 became products; the other 43 have no record beyond the demo.
+  confidence: 0.8
+  provenance: Northwind internal post-mortem (fictional test data)
+- id: nw-remote-team-survey
+  domain: remote_work
+  selection_process: The survey sampled only teams that still existed at survey time.
+  survivor_pattern: High-performing remote teams survey praising async standups.
+  non_survivor_evidence: 6 Northwind teams that disbanded in 2025 were never surveyed.
+  confidence: 0.8
+  provenance: Northwind internal post-mortem (fictional test data)
