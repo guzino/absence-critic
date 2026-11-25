@@ -17,6 +17,11 @@ SPDX-License-Identifier: Apache-2.0
 
 - Second answering model `openai/gpt-4o-mini` (OpenRouter), same independent judge and 3-sample benchmark: critic arms still 0 control false alarms; shield pass 0.86 on hard biased items; critic_only rubric 0.52 vs generic 0.68 (weak evidence writing); public store lift larger than on Grok; org-store shield 7/8 private facts.
 - Main eval on 4o-mini: critic_only regex mean 0.44, shield 0.67, generic control false-alarm rate 0.67.
+- Aggregate score JSON and 4o-mini answers live under `eval/benchmark/artifacts/` (no per-answer cases in `*.score.json`).
+
+### Fixed
+
+- Main-eval biased pass no longer rejects answers that name missing data when `confidence_adjustment` is `unchanged`.
 
 ## 0.1.4 - 2026-11-25
 

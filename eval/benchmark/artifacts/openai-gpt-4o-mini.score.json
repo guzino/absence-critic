@@ -1,0 +1,246 @@
+{
+  "passed": 242,
+  "total": 456,
+  "judge_kind": "benchmark-rubric-llm",
+  "judge_model": "openai/gpt-4.1-mini @ openrouter.ai",
+  "agreement": 0.8048245614035088,
+  "sample_spread": {
+    "baseline": {
+      "judge_pass": {
+        "per_sample": [
+          0.6052631578947368,
+          0.5526315789473685,
+          0.42105263157894735
+        ],
+        "spread": 0.1842105263157895
+      },
+      "rubric_mean": {
+        "per_sample": [
+          0.40384615384615385,
+          0.33653846153846156,
+          0.3076923076923077
+        ],
+        "spread": 0.09615384615384615
+      }
+    },
+    "generic": {
+      "judge_pass": {
+        "per_sample": [
+          0.6842105263157895,
+          0.6842105263157895,
+          0.6842105263157895
+        ],
+        "spread": 0.0
+      },
+      "rubric_mean": {
+        "per_sample": [
+          0.6730769230769231,
+          0.6826923076923077,
+          0.6730769230769231
+        ],
+        "spread": 0.009615384615384581
+      }
+    },
+    "critic_only": {
+      "judge_pass": {
+        "per_sample": [
+          0.7368421052631579,
+          0.7105263157894737,
+          0.6842105263157895
+        ],
+        "spread": 0.05263157894736836
+      },
+      "rubric_mean": {
+        "per_sample": [
+          0.5576923076923077,
+          0.49038461538461536,
+          0.5096153846153846
+        ],
+        "spread": 0.06730769230769235
+      }
+    },
+    "shield": {
+      "judge_pass": {
+        "per_sample": [
+          0.7631578947368421,
+          0.7894736842105263,
+          0.7631578947368421
+        ],
+        "spread": 0.02631578947368418
+      },
+      "rubric_mean": {
+        "per_sample": [
+          0.5961538461538461,
+          0.6153846153846154,
+          0.6057692307692307
+        ],
+        "spread": 0.019230769230769273
+      }
+    }
+  },
+  "control_false_alarm_rate": {
+    "baseline": 0.0,
+    "generic": 0.6666666666666666,
+    "critic_only": 0.0,
+    "shield": 0.0
+  },
+  "rubric_by_arm": {
+    "baseline": {
+      "n": 78,
+      "mean": 0.34935897435897434,
+      "dimensions": {
+        "specific_filter": 0.19230769230769232,
+        "concrete_evidence": 0.02564102564102564,
+        "settling_data": 0.1794871794871795,
+        "no_invented_sources": 1.0
+      }
+    },
+    "generic": {
+      "n": 78,
+      "mean": 0.6762820512820513,
+      "dimensions": {
+        "specific_filter": 0.9487179487179487,
+        "concrete_evidence": 0.0,
+        "settling_data": 0.7564102564102564,
+        "no_invented_sources": 1.0
+      }
+    },
+    "critic_only": {
+      "n": 78,
+      "mean": 0.5192307692307693,
+      "dimensions": {
+        "specific_filter": 0.5128205128205128,
+        "concrete_evidence": 0.038461538461538464,
+        "settling_data": 0.5256410256410257,
+        "no_invented_sources": 1.0
+      }
+    },
+    "shield": {
+      "n": 78,
+      "mean": 0.6057692307692307,
+      "dimensions": {
+        "specific_filter": 0.6153846153846154,
+        "concrete_evidence": 0.15384615384615385,
+        "settling_data": 0.6538461538461539,
+        "no_invented_sources": 1.0
+      }
+    }
+  },
+  "by_difficulty": {
+    "hard": {
+      "judge_pass_by_arm": {
+        "baseline": 0.5833333333333334,
+        "generic": 0.6666666666666666,
+        "critic_only": 0.6666666666666666,
+        "shield": 0.8611111111111112
+      },
+      "control_false_alarm_rate": {
+        "baseline": 0.0,
+        "generic": 0.5,
+        "critic_only": 0.0,
+        "shield": 0.0
+      },
+      "rubric_by_arm": {
+        "baseline": {
+          "n": 24,
+          "mean": 0.34375,
+          "dimensions": {
+            "specific_filter": 0.16666666666666666,
+            "concrete_evidence": 0.0,
+            "settling_data": 0.20833333333333334,
+            "no_invented_sources": 1.0
+          }
+        },
+        "generic": {
+          "n": 24,
+          "mean": 0.65625,
+          "dimensions": {
+            "specific_filter": 0.9583333333333334,
+            "concrete_evidence": 0.0,
+            "settling_data": 0.6666666666666666,
+            "no_invented_sources": 1.0
+          }
+        },
+        "critic_only": {
+          "n": 24,
+          "mean": 0.4166666666666667,
+          "dimensions": {
+            "specific_filter": 0.2916666666666667,
+            "concrete_evidence": 0.0,
+            "settling_data": 0.375,
+            "no_invented_sources": 1.0
+          }
+        },
+        "shield": {
+          "n": 24,
+          "mean": 0.6666666666666666,
+          "dimensions": {
+            "specific_filter": 0.625,
+            "concrete_evidence": 0.2916666666666667,
+            "settling_data": 0.75,
+            "no_invented_sources": 1.0
+          }
+        }
+      }
+    },
+    "standard": {
+      "judge_pass_by_arm": {
+        "baseline": 0.5,
+        "generic": 0.6923076923076923,
+        "critic_only": 0.7307692307692307,
+        "shield": 0.7307692307692307
+      },
+      "control_false_alarm_rate": {
+        "baseline": 0.0,
+        "generic": 0.75,
+        "critic_only": 0.0,
+        "shield": 0.0
+      },
+      "rubric_by_arm": {
+        "baseline": {
+          "n": 54,
+          "mean": 0.35185185185185186,
+          "dimensions": {
+            "specific_filter": 0.2037037037037037,
+            "concrete_evidence": 0.037037037037037035,
+            "settling_data": 0.16666666666666666,
+            "no_invented_sources": 1.0
+          }
+        },
+        "generic": {
+          "n": 54,
+          "mean": 0.6851851851851852,
+          "dimensions": {
+            "specific_filter": 0.9444444444444444,
+            "concrete_evidence": 0.0,
+            "settling_data": 0.7962962962962963,
+            "no_invented_sources": 1.0
+          }
+        },
+        "critic_only": {
+          "n": 54,
+          "mean": 0.5648148148148148,
+          "dimensions": {
+            "specific_filter": 0.6111111111111112,
+            "concrete_evidence": 0.05555555555555555,
+            "settling_data": 0.5925925925925926,
+            "no_invented_sources": 1.0
+          }
+        },
+        "shield": {
+          "n": 54,
+          "mean": 0.5787037037037037,
+          "dimensions": {
+            "specific_filter": 0.6111111111111112,
+            "concrete_evidence": 0.09259259259259259,
+            "settling_data": 0.6111111111111112,
+            "no_invented_sources": 1.0
+          }
+        }
+      }
+    }
+  },
+  "answering_model": "openai/gpt-4o-mini",
+  "judge_model_note": "Same OpenAI family as answering model; cross-family judge still open.",
+  "n_cases": 456
+}

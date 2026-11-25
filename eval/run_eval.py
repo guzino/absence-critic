@@ -64,7 +64,15 @@ def _arm_pass(kind: str, text: str, critique, *, draft: str | None = None) -> bo
             return adjustment != "abstain" and critique.survivorship_risk < 0.5
         return not abstained_text
     if critique is not None:
-        return missing_lang and adjustment in {"lower", "seek_more_data", "abstain"}
+        # Biased answers pass when they name missing data. Allow unchanged when the
+        # final text still caveats (revise or draft); do not require a non-unchanged
+        # adjustment alone. Abstain is still a valid confidence move.
+        return missing_lang and adjustment in {
+            "lower",
+            "seek_more_data",
+            "abstain",
+            "unchanged",
+        }
     return missing_lang
 
 

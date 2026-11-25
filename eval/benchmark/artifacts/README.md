@@ -5,15 +5,19 @@ SPDX-License-Identifier: Apache-2.0
 
 # Benchmark run artifacts
 
-Independent-judge live runs (answers plus scored JSON) are **not** committed to this repository. They may contain model output you do not want in git history, and they go stale when prompts or items change.
+Committed here:
 
-To reproduce and archive a run:
+| File | Contents |
+|------|----------|
+| `grok-4-fast.score.json` | Aggregate independent-judge report for `grok-4-fast-non-reasoning` answers ([#106](https://github.com/guzino/absence-critic/issues/106)). No per-answer cases. |
+| `openai-gpt-4o-mini.answers.jsonl` | 456 arm answers (38 items × 4 arms × 3 samples) from `openai/gpt-4o-mini` ([#109](https://github.com/guzino/absence-critic/issues/109)). |
+| `openai-gpt-4o-mini.score.json` | Aggregate independent-judge report for those answers (same `gpt-4.1-mini` judge). Includes `sample_spread`, `rubric_by_arm` dimensions (including settling_data), and `by_difficulty`. No per-answer cases. |
+
+Do not commit `.env` or files that embed API keys. Per-answer `cases` arrays are omitted from `*.score.json` to keep history small; rebuild them with:
 
 ```bash
-python eval/benchmark/run.py --provider openai --samples 3 --out /path/to/bench.jsonl
-python eval/benchmark/score.py --judge openai --answers /path/to/bench.jsonl
+python eval/benchmark/run.py --provider openai --samples 3 --out eval/benchmark/artifacts/my-run.answers.jsonl
+python eval/benchmark/score.py --judge openai --answers eval/benchmark/artifacts/my-run.answers.jsonl
 ```
 
-Set `ABSENCECRITIC_JUDGE_BASE_URL`, `ABSENCECRITIC_JUDGE_API_KEY`, and `ABSENCECRITIC_JUDGE_MODEL` in `.env` so the judge can differ from the answering model (see `.env.example`).
-
-Publish summaries (pass rates, rubric means, false alarms) in issues or release notes; keep raw JSONL locally or attach them to a GitHub release if you need a fixed snapshot.
+Set `ABSENCECRITIC_JUDGE_*` so the judge can differ from the answering model (see `.env.example`). The 4o-mini published score used an OpenAI-family judge; a cross-family judge on an open-weight answering model is still open on [#109](https://github.com/guzino/absence-critic/issues/109).
