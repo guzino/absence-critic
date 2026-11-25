@@ -35,6 +35,11 @@ _META = re.compile(r"\b(quote|define|insight)\b", re.I)
 _METHOD = re.compile(r"\b(wald|survivorship|survivorship-bias)\b", re.I)
 
 
+def query_names_selection(query: str) -> bool:
+    """True when the question itself names a filtered record, such as "the literature"."""
+    return bool(_SELECTION.search(query))
+
+
 def suggested_retrieve_k(query: str, *, high: int = 5) -> int:
     """Return 0 for arithmetic/definitional controls, high for survivor-advice cues, else 1.
 

@@ -9,6 +9,7 @@ from typing import Optional
 
 from absencecritic.application.jsonutil import parse_json_object
 from absencecritic.application.ports import CriticPort, GeneratorPort, StorePort
+from absencecritic.application.clarify import apply_filtered_clarification
 from absencecritic.application.retrieve import suggested_retrieve_k
 from absencecritic.domain.models import Critique, PipelineResult
 
@@ -47,6 +48,7 @@ def _critique_draft(
         )
         try:
             critique = Critique.model_validate(parse_json_object(raw_critique))
+            critique = apply_filtered_clarification(query, draft, critique)
             return retrieved_ids, critique
         except ValueError as exc:
             last_exc = exc
