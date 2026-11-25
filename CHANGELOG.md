@@ -5,6 +5,24 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 0.1.3 - 2026-11-25
+
+Eval and documentation release. No changes to the package API, prompts, or store schema.
+
+### Eval
+
+- `eval/org_store/`: a repeatable private-store eval. Fictional internal post-mortems are layered on the seed store, and each arm is checked for the private fact. `--org-store`, `--questions`, `--no-seed`, and `--retrieval-only` (no API key) run it on a team's own records.
+- The benchmark judge grades caveats on biased items (specific filter, concrete evidence, settling data, no invented sources) and the report gives `rubric_by_arm`. "Never published" and similar phrases count as missing-data language.
+
+### Docs
+
+- README leads with the measured findings.
+- `eval/org_store/README.md`: a guide for trialling the store on your team's post-mortems, including what a live run sends to the provider.
+
+### Findings
+
+On grok-4-fast-non-reasoning, the org-store eval gave the private fact in 8 of 8 shield answers and 0 of 8 without the store. On the graded rubric (same model as judge), the generic reminder scored 0.58 and the critic 0.78: the reminder never gave evidence about missing cases.
+
 ## 0.1.2 - 2026-11-25
 
 Fixes found by live runs on a real model. No API or store schema changes.
