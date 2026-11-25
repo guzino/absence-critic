@@ -11,6 +11,10 @@ SPDX-License-Identifier: Apache-2.0
 
 - A clarifying draft still gets one caveat when the question names a filtered record (the literature, published studies, famous cases, what survived). How-to and fact questions that only share a retrieval word such as "score", "published", or "based on" stay quiet.
 
+### Added
+
+- `--retrieve embedding` ranks store notes by cosine similarity. It sends the question and the full text of every store note to the embeddings endpoint. `ABSENCECRITIC_EMBED_API_KEY`, `ABSENCECRITIC_EMBED_BASE_URL`, and `ABSENCECRITIC_EMBED_MODEL` choose that endpoint; otherwise the chat key and URL are used. `--retrieve hash` stays on the machine and only matches shared words. The 0.72 cutoff is unmeasured, and the paraphrase tests use a scripted embedder.
+
 ## 0.1.5 - 2026-11-25
 
 Eval, hardening, and published multi-model findings. Package API and prompts are unchanged from 0.1.4 except the critic-call retry.

@@ -1,0 +1,39 @@
+# Copyright 2026 Guzino (https://github.com/guzino)
+# SPDX-License-Identifier: Apache-2.0
+#
+# Same eight Northwind questions, reworded so they share no content words with
+# the matching store entry. Keyword retrieval should miss them. An embedding
+# retriever that understands the paraphrase should still return that entry.
+# off_topic rows must stay empty for both retrievers.
+
+paraphrases:
+  - id: atlas-playbook
+    entry: nw-atlas-launch-playbook
+    query: Should every squad copy that famous rollout recipe?
+  - id: sales-habits
+    entry: nw-sales-rep-habits
+    query: Which routines from the star sellers pamphlet should newcomers practice?
+  - id: cloud-migrations
+    entry: nw-cloud-migrations
+    query: Can we promise the board that moving servers is safe?
+  - id: referral-hiring
+    entry: nw-referral-retention
+    query: Should the company favour introductions from current staff?
+  - id: experiments-dashboard
+    entry: nw-experiments-dashboard
+    query: How reliable is the trial scoreboard that only shows victories?
+  - id: customer-stories
+    entry: nw-customer-stories
+    query: What do big buyers praise on the public highlights board?
+  - id: hackathons
+    entry: nw-hackathon-products
+    query: Should the firm host more weekend build events to discover offerings?
+  - id: remote-standups
+    entry: nw-remote-team-survey
+    query: Should every group adopt the check-in style praised by thriving distributed crews?
+
+off_topic:
+  - id: arithmetic
+    query: What is 2+2?
+  - id: egg
+    query: How do I boil an egg?

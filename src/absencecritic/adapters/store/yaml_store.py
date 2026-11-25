@@ -118,6 +118,18 @@ def _singular(token: str) -> str:
     return token
 
 
+def retrievable(entry: StoreEntry) -> bool:
+    """Pending notes and unaccepted feedback stay out of retrieval."""
+    if entry.status is StoreStatus.pending:
+        return False
+    if (
+        entry.collection is StoreCollection.feedback
+        and entry.status is not StoreStatus.accepted
+    ):
+        return False
+    return True
+
+
 def tokenize(text: str) -> set[str]:
     return {_singular(t) for t in _words(text) if t not in _STOP and len(t) > 1}
 
@@ -238,12 +250,7 @@ class YamlStore:
         scored: list[tuple[int, float]] = []
         for i, bag in enumerate(self._bags):
             entry = self.entries[i]
-            if entry.status is StoreStatus.pending:
-                continue
-            if (
-                entry.collection is StoreCollection.feedback
-                and entry.status is not StoreStatus.accepted
-            ):
+            if not retrievable(entry):
                 continue
             overlap = content & bag
             id_tokens = {
