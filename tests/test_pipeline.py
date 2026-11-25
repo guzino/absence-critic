@@ -152,7 +152,7 @@ class _ScriptedLLM:
 
 def test_low_risk_critique_keeps_the_draft_without_revise():
     llm = _ScriptedLLM(0.25, "seek_more_data")
-    result = run("How do I tie a bowline knot?", provider=llm, store=YamlStore(default_store_dir()))
+    result = run("How do I fold a paper crane?", provider=llm, store=YamlStore(default_store_dir()))
     assert llm.revised == 0
     assert result.final == "Draft answer."
     assert result.critique.survivorship_risk == 0.25
@@ -161,6 +161,6 @@ def test_low_risk_critique_keeps_the_draft_without_revise():
 
 def test_risky_critique_still_revises():
     llm = _ScriptedLLM(0.3, "lower")
-    result = run("How do I tie a bowline knot?", provider=llm, store=YamlStore(default_store_dir()))
+    result = run("How do I fold a paper crane?", provider=llm, store=YamlStore(default_store_dir()))
     assert llm.revised == 1
     assert result.final.endswith("missing cases.")
