@@ -33,6 +33,7 @@ if str(EVAL_DIR) not in sys.path:
     sys.path.insert(0, str(EVAL_DIR))
 from answer_checks import adds_unneeded_caveat, leaks_pipeline  # noqa: E402
 from eval_arms import FIXTURE_NOTE, generic_arm  # noqa: E402
+from metering import MeteredProvider, add_cost, cost_summary  # noqa: E402
 
 ARMS = ("baseline", "generic", "critic_only", "shield")
 
@@ -138,7 +139,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--samples must be >= 1")
     load_repo_env()
 
-    provider = (
+    provider = MeteredProvider(
         FixtureLLM(ROOT / "eval" / "fixtures" / "responses.yaml")
         if args.provider == "fixture"
         else OpenAICompat()
@@ -151,12 +152,16 @@ def main(argv: list[str] | None = None) -> int:
             rows = []
             for item in load_queries(args.queries):
                 q = item["query"]
+                provider.take()
                 try:
                     draft = provider.generate(query=q)
+                    draft_cost = provider.take()
                     baseline = run(
                         q, provider=provider, store=store, shield=False, draft=draft
                     )
+                    cost = {"baseline": add_cost(draft_cost, provider.take())}
                     generic = generic_arm(q, draft, generator=provider)
+                    cost["generic"] = add_cost(draft_cost, provider.take())
                     critic_only = run(
                         q,
                         provider=provider,
@@ -165,9 +170,11 @@ def main(argv: list[str] | None = None) -> int:
                         retrieve_k=0,
                         draft=draft,
                     )
+                    cost["critic_only"] = add_cost(draft_cost, provider.take())
                     shielded = run(
                         q, provider=provider, store=store, shield=True, draft=draft
                     )
+                    cost["shield"] = add_cost(draft_cost, provider.take())
                     row = score_case(
                         item,
                         baseline=baseline,
@@ -175,6 +182,7 @@ def main(argv: list[str] | None = None) -> int:
                         critic_only=critic_only,
                         shield=shielded,
                     )
+                    row["cost"] = cost
                 except Exception as exc:
                     if isinstance(exc, (KeyboardInterrupt, SystemExit)):
                         raise
@@ -207,6 +215,7 @@ def main(argv: list[str] | None = None) -> int:
         "total": len(rows),
         "samples": args.samples,
         "arms": _arm_summary(samples),
+        "cost_by_arm": cost_summary([row for rows in samples for row in rows], ARMS),
         "arm_deltas_meaningful": args.provider != "fixture",
         "cases": rows,
     }

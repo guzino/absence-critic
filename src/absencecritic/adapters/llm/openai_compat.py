@@ -97,6 +97,8 @@ class OpenAICompat:
         )
         self._urlopen = urlopen or urllib.request.urlopen
         self._sleep = sleeper or time.sleep
+        # Running totals from the provider's "usage" field; 0 when it omits one.
+        self.usage = {"calls": 0, "prompt_tokens": 0, "completion_tokens": 0}
         if not self.api_key:
             raise MissingAPIKey(
                 "OPENAI_API_KEY is not set. Tests and eval default to --provider fixture."
@@ -120,6 +122,16 @@ class OpenAICompat:
             temperature=0.4,
             json_object=False,
         )
+
+    def _count_usage(self, body: dict) -> None:
+        usage = body.get("usage") if isinstance(body, dict) else None
+        self.usage["calls"] += 1
+        if not isinstance(usage, dict):
+            return
+        for key in ("prompt_tokens", "completion_tokens"):
+            value = usage.get(key)
+            if isinstance(value, int):
+                self.usage[key] += value
 
     def _chat(
         self, system: str, user: str, *, temperature: float, json_object: bool
@@ -168,6 +180,7 @@ class OpenAICompat:
                         "OpenAI-compatible response content is not a string",
                         body=raw,
                     )
+                self._count_usage(body)
                 return content
             except LLMError:
                 raise
