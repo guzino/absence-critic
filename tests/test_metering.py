@@ -81,11 +81,9 @@ def test_fixture_eval_reports_calls_per_arm():
         encoding="utf-8",
         check=False,
     ).stdout
-    cost = json.loads(out)["cost_by_arm"]["all"]
-    assert {arm: cost[arm]["calls"] for arm in cost} == {
-        "baseline": 1,
-        "generic": 2,
-        "critic_only": 3,
-        "shield": 3,
-    }
-    assert cost["shield"]["prompt_tokens"] is None
+    cost = json.loads(out)["cost_by_arm"]
+    calls = {scope: {arm: cost[scope][arm]["calls"] for arm in cost[scope]} for scope in cost}
+    assert calls["biased"] == {"baseline": 1, "generic": 2, "critic_only": 3, "shield": 3}
+    # Low-risk critiques keep the draft, so controls skip the revise call.
+    assert calls["control"] == {"baseline": 1, "generic": 2, "critic_only": 2, "shield": 2}
+    assert cost["all"]["shield"]["prompt_tokens"] is None
