@@ -5,11 +5,11 @@ SPDX-License-Identifier: Apache-2.0
 
 # Generative design working plan
 
-**Status (2026-11-25):** next experiment. No code, no store entries, no live run, no finding. The spec is [`docs/DESIGN.md`](../docs/DESIGN.md). This file is the build order. Do not treat either file as a result.
+**Status (2026-11-25):** next experiment. No code, no store entries, no live run, no finding. The spec is [`docs/05-generative-absencecritic.md`](../docs/05-generative-absencecritic.md). This file is the build order. Do not treat either file as a result.
 
 The question: the shield already asks what evidence is missing from an answer. Generative mode asks what the design space is missing from a brief, then steers new designs into those gaps. Product and industrial design, and software or UX patterns, are the only two domains. Drug and molecule design stay out.
 
-Policy: [`AGENTS.md`](../AGENTS.md). One concern per GitHub PR. CI stays fixture-only. Do not open the filing list in `docs/DESIGN.md` section 7 as issues until a slice is actually ready to build. Origin documents 00-04 stay frozen.
+Policy: [`AGENTS.md`](../AGENTS.md). One concern per GitHub PR. CI stays fixture-only. Do not open the filing list in `docs/05-generative-absencecritic.md` section 7 as issues until a slice is actually ready to build. Origin documents 00-04 stay frozen.
 
 ## Wald pass
 

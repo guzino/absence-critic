@@ -37,7 +37,7 @@ Document 03 integration modes map onto phases; they are not extra products:
 | 1 | Persistent Failure Memory | [`phase-1.md`](phase-1.md) | Slices A-F on `main`. Honest subset of Document 04 (no crawler, no ACL server). |
 | 2 | Specialized Critic Model | [`phase-2.md`](phase-2.md) | Slices A-F on `main`. Slice G (default specialized critic) is gated on held-out numbers. Prompted critic stays default. |
 | 3 | Deeper Integration | [`phase-3.md`](phase-3.md) | Tracks A-F engineering on `main`. Document 04 success criteria are not claimed on fixture 15/15. |
-| Next | Generative design | [`generative.md`](generative.md) | Next experiment. Spec in [`docs/DESIGN.md`](../docs/DESIGN.md). No code and no finding yet. Same invariant: the writer never reads the store. |
+| Next | Generative design | [`generative.md`](generative.md) | Next experiment. Spec in [`docs/05-generative-absencecritic.md`](../docs/05-generative-absencecritic.md). No code and no finding yet. Same invariant: the writer never reads the store. |
 
 ## Cross-phase armor
 
