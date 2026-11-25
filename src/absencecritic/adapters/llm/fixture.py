@@ -15,6 +15,10 @@ def query_hash(query: str) -> str:
     return hashlib.sha256(query.strip().encode("utf-8")).hexdigest()[:16]
 
 
+class FixtureQueryNotFound(KeyError):
+    """The offline corpus has no recorded response for this query."""
+
+
 class FixtureLLM:
     """Offline LLM implementing GeneratorPort and CriticPort."""
 
@@ -41,7 +45,7 @@ class FixtureLLM:
         q = query.strip()
         item = self._by_query.get(q) or self._by_hash.get(query_hash(q))
         if item is None:
-            raise KeyError(
+            raise FixtureQueryNotFound(
                 f"No fixture for query {q!r} (hash {query_hash(q)}). "
                 "Use --provider openai with OPENAI_API_KEY, or add a fixture."
             )

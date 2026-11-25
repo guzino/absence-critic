@@ -9,14 +9,14 @@ import os
 import sys
 from pathlib import Path
 
-from absencecritic.adapters.llm.fixture import FixtureLLM
+from absencecritic.adapters.llm.fixture import FixtureLLM, FixtureQueryNotFound
 from absencecritic.adapters.llm.local import LocalCritic
-from absencecritic.adapters.llm.openai_compat import OpenAICompat
+from absencecritic.adapters.llm.openai_compat import LLMError, MissingAPIKey, OpenAICompat
 from absencecritic.adapters.store.catalog import ingest_catalog
 from absencecritic.adapters.store.feedback import accept_feedback, queue_feedback
 from absencecritic.adapters.store.ingest import ingest_yaml
 from absencecritic.adapters.store.yaml_store import YamlStore
-from absencecritic.application.loop import run, score
+from absencecritic.application.loop import CritiqueParseError, run, score
 from absencecritic.envfile import load_repo_env
 from absencecritic.paths import default_fixture_path, default_store_dir
 
@@ -161,6 +161,7 @@ def main(argv: list[str] | None = None) -> int:
         default=default_store_dir(),
         help="Directory of Non-Survivor Store YAML/JSONL files",
     )
+    parser.add_argument("--debug", action="store_true", help="Show full provider tracebacks")
     args = parser.parse_args(argv)
     if args.judge and args.no_shield:
         parser.error("--judge cannot be combined with --no-shield")
@@ -169,24 +170,43 @@ def main(argv: list[str] | None = None) -> int:
     if args.draft_file is not None and not args.judge:
         parser.error("--draft-file requires --judge")
 
-    store = YamlStore(args.store)
-    generator = _llm(args.provider)
-    critic = _critic(args.critic, generator)
-    if args.judge:
-        result = score(
-            args.query,
-            args.draft_file.read_text(encoding="utf-8"),
-            critic=critic,
-            store=store,
-        )
-    else:
-        result = run(
-            args.query,
-            generator=generator,
-            critic=critic,
-            store=store,
-            shield=not args.no_shield,
-        )
+    try:
+        store = YamlStore(args.store)
+        generator = _llm(args.provider)
+        critic = _critic(args.critic, generator)
+        if args.judge:
+            result = score(
+                args.query,
+                args.draft_file.read_text(encoding="utf-8"),
+                critic=critic,
+                store=store,
+            )
+        else:
+            result = run(
+                args.query,
+                generator=generator,
+                critic=critic,
+                store=store,
+                shield=not args.no_shield,
+            )
+    except (FixtureQueryNotFound, MissingAPIKey, LLMError, CritiqueParseError) as error:
+        if args.debug:
+            raise
+        if isinstance(error, FixtureQueryNotFound):
+            message = (
+                'Fixture mode only supports recorded demo questions. Try "What is 2+2?", '
+                "or use --provider openai with OPENAI_API_KEY for your own question."
+            )
+        elif isinstance(error, MissingAPIKey):
+            message = "Set OPENAI_API_KEY for the live provider or choose --provider fixture."
+        elif isinstance(error, LLMError):
+            status = f" (HTTP {error.status})" if error.status is not None else ""
+            message = f"The live provider request failed{status}. Check the provider configuration."
+        else:
+            message = "The critic returned an invalid reply. Try again or choose --critic local."
+        print(f"Error: {message}", file=sys.stderr)
+        return 1
+
     if args.as_json:
         payload = {
             "query": result.query,

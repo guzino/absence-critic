@@ -22,6 +22,10 @@ _RETRY_STATUS = frozenset({429, 500, 502, 503, 504})
 _NO_RETRY_STATUS = frozenset({400, 401, 403})
 
 
+class MissingAPIKey(RuntimeError):
+    """The live provider was selected without a configured API key."""
+
+
 class LLMError(RuntimeError):
     """Adapter-level live-provider failure. Ports and WaldLoop stay unchanged."""
 
@@ -94,7 +98,7 @@ class OpenAICompat:
         self._urlopen = urlopen or urllib.request.urlopen
         self._sleep = sleeper or time.sleep
         if not self.api_key:
-            raise RuntimeError(
+            raise MissingAPIKey(
                 "OPENAI_API_KEY is not set. Tests and eval default to --provider fixture."
             )
 

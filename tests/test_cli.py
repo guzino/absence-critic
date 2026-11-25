@@ -2,8 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+from importlib import import_module
 from pathlib import Path
 
+import pytest
+
+from absencecritic.adapters.llm.fixture import FixtureQueryNotFound
 from absencecritic.cli import main
 
 
@@ -129,3 +133,32 @@ def test_cli_no_shield(capsys):
     payload = json.loads(capsys.readouterr().out)
     assert payload["shielded"] is False
     assert payload["critique"] is None
+
+
+def test_cli_unknown_fixture_query_is_a_short_error(capsys):
+    code = main(["--provider", "fixture", "An unrecorded regression-test question"])
+    out, err = capsys.readouterr()
+    assert code == 1
+    assert not out
+    assert "recorded demo questions" in err
+    assert "What is 2+2?" in err
+    assert "--provider openai" in err
+    assert "Traceback" not in err
+    assert "An unrecorded regression-test question" not in err
+
+
+def test_cli_debug_preserves_unknown_fixture_exception():
+    with pytest.raises(FixtureQueryNotFound):
+        main(["--provider", "fixture", "--debug", "An unrecorded regression-test question"])
+
+
+def test_cli_live_provider_without_key_is_a_short_error(monkeypatch, capsys):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    cli_module = import_module("absencecritic.adapters.cli.main")
+    monkeypatch.setattr(cli_module, "load_repo_env", lambda: None)
+
+    assert main(["--provider", "openai", "What is 2+2?"]) == 1
+    out, err = capsys.readouterr()
+    assert not out
+    assert "Set OPENAI_API_KEY" in err
+    assert "Traceback" not in err
