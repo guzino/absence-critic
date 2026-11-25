@@ -13,6 +13,11 @@ SPDX-License-Identifier: Apache-2.0
 - `mentions_missing_data()` in `eval/answer_checks.py` centralises main-eval missing-data wording; wider phrases fix live pass gaps ([#107](https://github.com/guzino/absence-critic/issues/107)).
 - Live judged answer JSONL files are not shipped in git; see `eval/benchmark/artifacts/README.md` for how to save and cite a run.
 
+### Findings (published [#109](https://github.com/guzino/absence-critic/issues/109#issuecomment-7161446355))
+
+- Second answering model `openai/gpt-4o-mini` (OpenRouter), same independent judge and 3-sample benchmark: critic arms still 0 control false alarms; shield pass 0.86 on hard biased items; critic_only rubric 0.52 vs generic 0.68 (weak evidence writing); public store lift larger than on Grok; org-store shield 7/8 private facts.
+- Main eval on 4o-mini: critic_only regex mean 0.44, shield 0.67, generic control false-alarm rate 0.67.
+
 ## 0.1.4 - 2026-11-25
 
 ### Changed
