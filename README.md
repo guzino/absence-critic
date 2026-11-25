@@ -43,6 +43,16 @@ Agent conventions (tool-agnostic): [`AGENTS.md`](AGENTS.md). Claude Code: [`CLAU
 ### Install
 
 ```bash
+python -m pip install absencecritic
+```
+
+The package bundles the seed Non-Survivor Store and the demo fixtures, so the CLI runs right after install with `--provider fixture`. Point `ABSENCECRITIC_STORE` at a writable directory before using `ingest` or `feedback`, so new entries do not land inside the installed package.
+
+0.1.x is an alpha. See [`CHANGELOG.md`](CHANGELOG.md) for what it does and its known limits.
+
+For development, from a checkout:
+
+```bash
 python -m pip install -e ".[dev]"
 ```
 
@@ -81,7 +91,7 @@ absencecritic --provider fixture --critic local "What works for launching a star
 absencecritic --judge --draft-file draft.txt --json "What works for launching a startup?"
 ```
 
-Live OpenAI-compatible calls (OpenAI, OpenRouter, or a local server):
+Live OpenAI-compatible calls (OpenAI, OpenRouter, xAI, or a local server):
 
 ```bash
 # OpenAI (Windows PowerShell)
@@ -93,6 +103,7 @@ absencecritic --provider openai "What works for launching a startup?"
 # OpenRouter
 $env:OPENAI_API_KEY = "..."
 $env:OPENAI_BASE_URL = "https://openrouter.ai/api/v1"
+<<<<<<< HEAD
 $env:ABSENCECRITIC_MODEL = "openai/gpt-4o-mini"      # choose an available model slug
 absencecritic --provider openai "What works for launching a startup?"
 
@@ -100,6 +111,21 @@ absencecritic --provider openai "What works for launching a startup?"
 $env:OPENAI_API_KEY = "local"
 $env:OPENAI_BASE_URL = "http://127.0.0.1:8080/v1"
 $env:ABSENCECRITIC_MODEL = "local-model"
+=======
+$env:ABSENCECRITIC_MODEL = "openai/gpt-4o-mini"
+absencecritic --provider openai "What works for launching a startup?"
+
+# xAI (model names change; see https://docs.x.ai for current ones)
+$env:OPENAI_API_KEY = "..."                          # your xAI API key
+$env:OPENAI_BASE_URL = "https://api.x.ai/v1"
+$env:ABSENCECRITIC_MODEL = "your-grok-model"
+absencecritic --provider openai "What works for launching a startup?"
+
+# Local OpenAI-compatible server (llama.cpp, vLLM, ...)
+$env:OPENAI_API_KEY = "local"
+$env:OPENAI_BASE_URL = "http://127.0.0.1:8080/v1"
+$env:ABSENCECRITIC_MODEL = "your-local-model"
+>>>>>>> origin/main
 absencecritic --provider openai "What works for launching a startup?"
 ```
 
@@ -136,11 +162,27 @@ print(judged.critique)
 
 ```bash
 python eval/run_eval.py --provider fixture
-python eval/benchmark/score.py
+python eval/benchmark/run.py --provider fixture --out eval/benchmark/answers.jsonl
+python eval/benchmark/score.py --answers eval/benchmark/answers.jsonl
 python -m pytest
 ```
 
+<<<<<<< HEAD
 [`eval/queries.yaml`](eval/queries.yaml) has ~12 survivor-biased questions and 3 controls. [`eval/fixtures/responses.yaml`](eval/fixtures/responses.yaml) holds recorded draft/critique/revision triples. Phase 2 gold critic JSONL is [`eval/gold/critiques.jsonl`](eval/gold/critiques.jsonl), split by committed ids in [`eval/gold/splits.yaml`](eval/gold/splits.yaml) into `train.jsonl` and `heldout.jsonl` (`python eval/export_gold.py` after fixture edits). Optional human edits go in [`eval/gold/overlay.yaml`](eval/gold/overlay.yaml) and win on the train/held-out export only; they do not rewrite fixtures. Live critic dumps go to gitignored `eval/gold/incoming/` via `python eval/log_incoming.py --query "..." --provider openai` and stay out of train until a human PR. Fixture 15/15 is product regression, not a training score. To refresh fixtures from a live model, run each query through the CLI with `--provider openai --json` and copy its output into the matching entry in that file. `python eval/export_gold.py --check` verifies committed gold exports without writing; `python eval/export_gold.py --out path/to/critiques.jsonl` writes exports to a chosen directory.
+=======
+Both eval runners generate one draft per question and run four arms on that same draft, so differences come from the arm and not from a different draft:
+
+| Arm | Critic call | Store | What it isolates |
+|-----|-------------|-------|------------------|
+| `baseline` | no | no | The unrevised draft. |
+| `generic` | no | no | A plain "watch for survivorship bias" revision: the reviser gets one fixed caution for every question ([`eval/eval_arms.py`](eval/eval_arms.py)). The cheapest alternative to AbsenceCritic. |
+| `critic_only` | yes | no | The Wald critic with `retrieve_k=0`, so the loop never calls the store. Shows what the critic adds beyond the generic caution. |
+| `shield` | yes | yes | The full loop. The gap to `critic_only` is what the Non-Survivor Store adds. |
+
+The two middle arms are separate on purpose: `generic` answers "is a Wald critic better than a reminder?", and `critic_only` answers "does the store change the critique?". Neither question can be answered from fixtures. `FixtureLLM.revise` returns one recorded revision whatever critique it receives, so `generic`, `critic_only`, and `shield` all score 15/15 there, and fixture output says `arm_deltas_meaningful: false`. Only a live run (`--provider openai --samples 3`) shows whether the critic or the store actually changes answers.
+
+[`eval/queries.yaml`](eval/queries.yaml) has ~12 survivor-biased questions and 3 controls. [`eval/fixtures/responses.yaml`](eval/fixtures/responses.yaml) holds recorded draft/critique/revision triples. Phase 2 gold critic JSONL is [`eval/gold/critiques.jsonl`](eval/gold/critiques.jsonl), split by committed ids in [`eval/gold/splits.yaml`](eval/gold/splits.yaml) into `train.jsonl` and `heldout.jsonl` (`python eval/export_gold.py` after fixture edits). Optional human edits go in [`eval/gold/overlay.yaml`](eval/gold/overlay.yaml) and win on the train/held-out export only; they do not rewrite fixtures. Live critic dumps go to gitignored `eval/gold/incoming/` via `python eval/log_incoming.py --query "..." --provider openai` and stay out of train until a human PR. Fixture 15/15 is product regression, not a training score. To refresh fixtures from a live model: `python eval/record_fixtures.py --provider openai --out eval/fixtures/responses.yaml`. Then `python eval/export_gold.py` (or `--check` without writing).
+>>>>>>> origin/main
 
 Critic fine-tune stays off CI: [`scripts/critic_train.md`](scripts/critic_train.md) (`python scripts/train_critic.py --dry-run`). Serve the result through `--critic local`. Do not train the generator on critique JSON. Primary-model DPO on pair export is [`scripts/primary_preference.md`](scripts/primary_preference.md) (`python scripts/train_primary.py --pairs ... --dry-run`). The default generator stays `--provider`; if controls start abstaining, the experiment failed.
 
@@ -154,7 +196,7 @@ If you use AbsenceCritic, please cite it as follows.
 
 **Text**
 
-[Guzino](https://github.com/guzino). *AbsenceCritic: A Survivorship-Bias Shield for Language Models*. 2026. https://github.com/guzino
+[Guzino](https://github.com/guzino). *AbsenceCritic: A Survivorship-Bias Shield for Language Models*. Version 0.1.1, 2026. https://github.com/guzino/absence-critic
 
 **BibTeX**
 
@@ -163,7 +205,8 @@ If you use AbsenceCritic, please cite it as follows.
   author  = {Guzino},
   title   = {AbsenceCritic: A Survivorship-Bias Shield for Language Models},
   year    = {2026},
-  url     = {https://github.com/guzino},
+  url     = {https://github.com/guzino/absence-critic},
+  version = {0.1.1},
   license = {Apache-2.0},
   note    = {Original design and conceptual origin by Guzino (https://github.com/guzino)}
 }

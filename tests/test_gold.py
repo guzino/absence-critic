@@ -136,6 +136,58 @@ def test_overlay_wins_on_train_export_not_fixture_jsonl(tmp_path: Path):
     assert train_row["overlay_reason"] == "control over-flagged"
 
 
+def test_export_gold_help_does_not_write(tmp_path: Path, monkeypatch):
+    mod = _export_mod()
+    monkeypatch.chdir(tmp_path)
+    before = {path.name: path.read_text(encoding="utf-8") for path in GOLD.glob("*.jsonl")}
+    with pytest.raises(SystemExit) as exited:
+        mod.main(["--help"])
+    assert exited.value.code == 0
+    after = {path.name: path.read_text(encoding="utf-8") for path in GOLD.glob("*.jsonl")}
+    assert after == before
+
+
+def test_export_gold_check_passes_on_committed_files():
+    mod = _export_mod()
+    assert mod.main(["--check"]) == 0
+
+
+def test_export_gold_overlay_flag_checks_without_writing(tmp_path: Path, capsys):
+    mod = _export_mod()
+    overlay = tmp_path / "draft-overlay.yaml"
+    overlay.write_text(
+        yaml.safe_dump(
+            {
+                "overlays": [
+                    {
+                        "id": "two-plus-two",
+                        "editor": "tester",
+                        "date": "2026-11-24",
+                        "reason": "trying a draft overlay",
+                        "critique": _control_critique(),
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    before = {path.name: path.read_text(encoding="utf-8") for path in GOLD.glob("*.jsonl")}
+    assert mod.main(["--check", "--overlay", str(overlay)]) == 1
+    assert "train.jsonl" in capsys.readouterr().out
+    after = {path.name: path.read_text(encoding="utf-8") for path in GOLD.glob("*.jsonl")}
+    assert after == before
+
+    dest = tmp_path / "out" / "critiques.jsonl"
+    assert mod.main(["--out", str(dest), "--overlay", str(overlay)]) == 0
+    train = (dest.parent / "train.jsonl").read_text(encoding="utf-8")
+    assert "trying a draft overlay" in train
+
+
+def test_export_gold_overlay_flag_rejects_missing_file(tmp_path: Path):
+    with pytest.raises(SystemExit):
+        _export_mod().main(["--check", "--overlay", str(tmp_path / "nope.yaml")])
+
+
 def test_overlapping_splits_fail(tmp_path: Path):
     mod = _export_mod()
     bad = tmp_path / "splits.yaml"

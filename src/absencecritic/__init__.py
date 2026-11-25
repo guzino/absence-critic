@@ -7,4 +7,4 @@ from absencecritic.application.loop import run, score
 from absencecritic.domain.models import Critique, PipelineResult, StoreEntry
 
 __all__ = ["Critique", "PipelineResult", "StoreEntry", "run", "score"]
-__version__ = "0.1.0"
+__version__ = "0.1.1"

@@ -7,7 +7,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "absencecritic"
-version = "0.1.0"
+version = "0.1.1"
 description = "Survivorship-bias shield (Wald Module) for language models"
 readme = "README.md"
 license = "Apache-2.0"
@@ -15,6 +15,18 @@ authors = [
   { name = "Guzino" },
 ]
 requires-python = ">=3.10"
+keywords = ["survivorship bias", "llm", "critic", "missing data", "abraham wald"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
   "pydantic>=2.0",
   "pyyaml>=6.0",
@@ -30,12 +42,17 @@ absencecritic = "absencecritic.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/guzino/absence-critic"
+Repository = "https://github.com/guzino/absence-critic"
+Issues = "https://github.com/guzino/absence-critic/issues"
+Changelog = "https://github.com/guzino/absence-critic/blob/main/CHANGELOG.md"
 Author = "https://github.com/guzino"
 
 [tool.hatch.build.targets.wheel.force-include]
 "src/absencecritic/prompts/draft.md" = "absencecritic/prompts/draft.md"
 "src/absencecritic/prompts/critic.md" = "absencecritic/prompts/critic.md"
 "src/absencecritic/prompts/revise.md" = "absencecritic/prompts/revise.md"
+"data/non_survivors/entries.yaml" = "absencecritic/_data/non_survivors/entries.yaml"
+"eval/fixtures/responses.yaml" = "absencecritic/_data/fixtures/responses.yaml"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

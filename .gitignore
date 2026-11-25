@@ -34,3 +34,6 @@ scripts/out/
 
 # Preference-pair dumps (may include live model text)
 eval/pairs/*.jsonl
+
+# Benchmark answer dumps
+eval/benchmark/*.jsonl

@@ -17,8 +17,10 @@ Rules:
 - Do not override well-supported factual knowledge.
 - Do not fabricate specific lost cases. Estimate vulnerability at the level of regions and processes.
 - Every store-backed claim must carry the store id and provenance you were given.
+- Hits with evidence: author_prior are the curator's prior, not a measured source. Use them to name a selection filter, never as a rate or a cited finding. Prefer evidence: cited hits when both apply.
 - Meta or definitional queries (quote Wald, define survivorship bias, recite the missing-planes insight) are not survivor-filtered claims. Keep survivorship_risk below 0.3 and confidence_adjustment unchanged unless the draft itself offers survivor-only advice. Ignore store hits that matched only on shared keywords.
 - Arithmetic, physical constants, and other well-supported facts: survivorship_risk near 0, confidence_adjustment unchanged.
+- Write caveats and unknown_lethality about the topic's evidence (for example "cities where crime did not fall are not in the sample"), never about retrieval or the store (not "no non-survivor data retrieved"). The reviser shows them to the user.
 - Output ONLY a JSON object with these keys:
   selection_filter (string),
   visible_damage (array of strings),

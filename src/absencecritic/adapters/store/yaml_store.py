@@ -10,7 +10,13 @@ from pathlib import Path
 
 import yaml
 
-from absencecritic.domain.models import StoreCollection, StoreEntry, StoreStatus
+from absencecritic.domain.models import (
+    MAX_AUTHOR_PRIOR_CONFIDENCE,
+    StoreCollection,
+    StoreEntry,
+    StoreEvidence,
+    StoreStatus,
+)
 
 INGEST_FILENAME = "ingested.yaml"
 FEEDBACK_DIRNAME = "feedback"
@@ -25,37 +31,26 @@ _INGEST_HEADER = """\
 """
 
 _TOKEN = re.compile(r"[a-z0-9]+")
-_STOP = {
-    "a",
-    "an",
-    "and",
-    "are",
-    "as",
-    "at",
-    "be",
-    "by",
-    "for",
-    "from",
-    "how",
-    "in",
-    "is",
-    "it",
-    "of",
-    "on",
-    "or",
-    "that",
-    "the",
-    "this",
-    "to",
-    "what",
-    "when",
-    "where",
-    "which",
-    "who",
-    "whom",
-    "whose",
-    "with",
-}
+# Function words and filler that match almost any entry; overlap on them is noise.
+_STOP = frozenset(
+    """
+    a about above after again against all also although always am an and any are
+    around as at base based be because been before being below between both but by can could
+    find found work works worked working
+    did do does doing done down during each either else even ever every few for
+    from further get gets getting give given go goes going got had has have having
+    he her here hers herself him himself his how however i if in into is it its
+    itself just let like look looks made make makes many may me might more most
+    much must my myself need needs never no nor not now of off often on once one
+    only onto or other others our ours ourselves out over own per quite rather
+    really said same say says see seem seems several shall she should since so
+    some something still such than that the their theirs them themselves then
+    there these they thing things this those though through thus to too toward
+    under until up upon us use used using very via was way we well were what
+    whatever when where whether which while who whom whose why will with within
+    without would yet you your yours yourself
+    """.split()
+)
 
 
 def _write_entries(
@@ -108,10 +103,23 @@ _ADVICE_CUES = frozenset(
 )
 _MIN_OVERLAP = 2
 _SCORE_RATIO = 0.5
+_MIN_SCORE = 0.05
+
+
+def _words(text: str) -> set[str]:
+    return set(_TOKEN.findall(text.lower()))
+
+
+def _singular(token: str) -> str:
+    if len(token) > 4 and token.endswith("ies"):
+        return token[:-3] + "y"
+    if len(token) > 3 and token.endswith("s") and not token.endswith(("ss", "us", "is")):
+        return token[:-1]
+    return token
 
 
 def tokenize(text: str) -> set[str]:
-    return {t for t in _TOKEN.findall(text.lower()) if t not in _STOP and len(t) > 1}
+    return {_singular(t) for t in _words(text) if t not in _STOP and len(t) > 1}
 
 
 def _related(left: str, right: str) -> bool:
@@ -131,16 +139,23 @@ def _domain_hit(domain: str, content: set[str]) -> bool:
 
 def _query_content(query: str, draft: str) -> set[str]:
     q = tokenize(query)
-    meta = bool(q & {"wald", "abraham", "quote"}) and not (q & _ADVICE_CUES)
+    meta = bool(q & {"wald", "abraham", "quote"}) and not (_words(query) & _ADVICE_CUES)
     if meta:
         return q - _METHOD_TOKENS
     combined = tokenize(f"{query} {draft}")
     content = combined - _METHOD_TOKENS
     if content:
         return content
-    if tokenize(draft) & _ADVICE_CUES:
+    if _words(draft) & _ADVICE_CUES:
         return combined
     return set()
+
+
+def _anchored(query_tokens: set[str], bag: set[str], domain: str, id_tokens: set[str]) -> bool:
+    """The question itself, not only the draft, must touch the entry."""
+    if query_tokens & id_tokens or _domain_hit(domain, query_tokens):
+        return True
+    return any(_related(qt, bt) for qt in query_tokens for bt in bag)
 
 
 def load_entries(path: Path) -> list[StoreEntry]:
@@ -219,6 +234,7 @@ class YamlStore:
         content = _query_content(query, draft)
         if not content:
             return []
+        query_tokens = tokenize(query) - _METHOD_TOKENS
         scored: list[tuple[int, float]] = []
         for i, bag in enumerate(self._bags):
             entry = self.entries[i]
@@ -239,6 +255,8 @@ class YamlStore:
                 continue
             if len(overlap) < _MIN_OVERLAP and not domain_hit and not id_hit:
                 continue
+            if not _anchored(query_tokens, bag, entry.domain, id_tokens):
+                continue
             score = len(overlap) / len(content)
             if domain_hit:
                 score += 0.15
@@ -248,7 +266,7 @@ class YamlStore:
         scored.sort(key=lambda item: item[1], reverse=True)
         if not scored:
             return []
-        floor = scored[0][1] * _SCORE_RATIO
+        floor = max(scored[0][1] * _SCORE_RATIO, _MIN_SCORE)
         kept = [(i, score) for i, score in scored if score >= floor]
         return [(self.entries[i], score) for i, score in kept[:k]]
 
@@ -259,6 +277,13 @@ class YamlStore:
         )
         if not validated.provenance.strip():
             raise ValueError("provenance is required")
+        if (
+            validated.evidence is StoreEvidence.author_prior
+            and validated.confidence > MAX_AUTHOR_PRIOR_CONFIDENCE
+        ):
+            raise ValueError(
+                f"author_prior confidence must be <= {MAX_AUTHOR_PRIOR_CONFIDENCE}"
+            )
         if any(existing.id == validated.id for existing in self.entries):
             raise ValueError(f"duplicate store id: {validated.id}")
         if not validated.ingested_at:
@@ -288,6 +313,7 @@ class YamlStore:
                         f"survivor_pattern: {entry.survivor_pattern}",
                         f"non_survivor_evidence: {entry.non_survivor_evidence}",
                         f"confidence: {entry.confidence}",
+                        f"evidence: {entry.evidence.value}",
                         f"provenance: {entry.provenance}",
                     ]
                 )

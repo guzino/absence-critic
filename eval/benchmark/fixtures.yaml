@@ -1,0 +1,124 @@
+# Copyright 2026 Guzino (https://github.com/guzino)
+# SPDX-License-Identifier: Apache-2.0
+#
+# Recorded Wald triples for eval/benchmark/items.yaml only.
+# Keep these queries out of eval/fixtures/responses.yaml.
+
+- query: Should a team fill an opening using only people still employed after a decade in the same job?
+  draft: >-
+    Yes. Shortlist the decade stayers. Long tenure is the quality signal; they
+    are the ones who work.
+  critique:
+    selection_filter: >-
+      The shortlist is people still employed after ten years. Leavers never
+      appear.
+    visible_damage:
+      - Tenure treated as a portable hiring recipe
+    empty_regions:
+      - People who left or were let go earlier
+    non_survivors:
+      - id: current-employee-tenure-filter
+        summary: Tenure tables describe stayers, not a hire cohort including exits.
+        provenance: U.S. BLS Employee Tenure Summary; Jovanovic 1979
+        confidence: 0.75
+    unknown_lethality: []
+    survivorship_risk: 0.8
+    confidence_adjustment: lower
+    caveats:
+      - Stayer samples cannot show early-exit match information.
+    missing_categories:
+      - Unpublished exits
+    suggested_queries:
+      - hire cohort retention including leavers
+  revision: >-
+    Long current tenure is visible in a decade-stayer shortlist. That sample
+    is missing people who left. Unpublished exits are the non-survivors, so
+    tenure is not a portable hiring recipe by itself.
+
+- query: Which policing tactics work, based only on cities that published a crime drop?
+  draft: >-
+    Copy the tactics from cities that published a crime drop. Those numbers
+    prove what works.
+  critique:
+    selection_filter: Only cities that published a drop enter the advice set.
+    visible_damage:
+      - Published drops treated as a tactic ranking
+    empty_regions:
+      - Cities that tried the same tactics and did not publish
+    non_survivors:
+      - id: franco-2014-file-drawer
+        summary: Null or unpublished outcomes are less likely to be written up.
+        provenance: Franco, Malhotra, Simonovits, Science, 2014
+        confidence: 0.85
+    unknown_lethality: []
+    survivorship_risk: 0.78
+    confidence_adjustment: lower
+    caveats:
+      - Published crime drops are a selected sample.
+    missing_categories:
+      - Unpublished non-drops
+    suggested_queries:
+      - cities that tried the tactic without a published drop
+  revision: >-
+    Cities that published a crime drop are the visible sample. Tactics scored
+    only on that filter miss unpublished cases, so the file drawer is missing
+    data rather than proof of what works.
+
+- query: Which cancelled research programs should I restart because the famous labs that stayed funded succeeded?
+  draft: >-
+    Restart the cancelled programs that look like the famous labs that stayed
+    funded. Success is the signal.
+  critique:
+    selection_filter: Famous funded labs are the returning sample.
+    visible_damage:
+      - Funded-lab success treated as a restart recipe
+    empty_regions:
+      - Cancelled programs that never recovered funding
+    non_survivors:
+      - id: abandoned-experiments
+        summary: Abandoned lines rarely produce a write-up of why they stopped.
+        provenance: Author prior plus file-drawer literature
+        confidence: 0.55
+    unknown_lethality: []
+    survivorship_risk: 0.76
+    confidence_adjustment: lower
+    caveats:
+      - Funded success is not a base rate for cancelled work.
+    missing_categories:
+      - Silent cancellations
+    suggested_queries:
+      - cancelled program outcomes including unpublished stops
+  revision: >-
+    Famous labs that stayed funded are a selected sample. Restarting cancelled
+    programs from that filter ignores unpublished abandoned experiments, so
+    missing data, not fame, is the constraint.
+
+- query: What is the chemical formula for water?
+  draft: The chemical formula for water is H2O.
+  critique:
+    selection_filter: None. This is a well-supported chemical fact.
+    visible_damage: []
+    empty_regions: []
+    non_survivors: []
+    unknown_lethality: []
+    survivorship_risk: 0.02
+    confidence_adjustment: unchanged
+    caveats: []
+    missing_categories: []
+    suggested_queries: []
+  revision: The chemical formula for water is H2O.
+
+- query: How many degrees are in the interior angles of a Euclidean triangle?
+  draft: The interior angles of a Euclidean triangle sum to 180 degrees.
+  critique:
+    selection_filter: None. This is Euclidean geometry.
+    visible_damage: []
+    empty_regions: []
+    non_survivors: []
+    unknown_lethality: []
+    survivorship_risk: 0.02
+    confidence_adjustment: unchanged
+    caveats: []
+    missing_categories: []
+    suggested_queries: []
+  revision: The interior angles of a Euclidean triangle sum to 180 degrees.

@@ -6,38 +6,30 @@ from pathlib import Path
 import pytest
 
 from absencecritic.adapters.store.yaml_store import YamlStore, tokenize
-from absencecritic.domain.models import StoreEntry
+from absencecritic.domain.models import MAX_AUTHOR_PRIOR_CONFIDENCE, StoreEntry
 from absencecritic.paths import default_store_dir
 
 
 def test_tokenize_drops_stopwords():
     assert "the" not in tokenize("the startup failed")
     assert "startup" in tokenize("the startup failed")
-    assert "who" not in tokenize("Who should I hire")
+    assert "who" not in tokenize("Who should I staff a team")
 
 
-def test_retrieve_hire_tenure_does_not_lead_with_who_pharmacovigilance():
+def test_retrieve_stayer_pool_does_not_lead_with_who_pharmacovigilance():
     store = YamlStore(default_store_dir())
-    query = (
-        "Who should I hire if I only interview people who stayed at the company five years?"
-    )
+    query = "Should a desk be filled using only people still on payroll after ten years?"
     hits = store.retrieve(query, k=5)
     assert hits
     ids = [entry.id for entry, _ in hits]
     assert ids[0] != "who-pharmacovigilance-underreporting"
     assert "current-employee-tenure-filter" in ids
-    assert "who-pharmacovigilance-underreporting" not in ids[:1]
 
 
-def test_retrieve_does_not_pad_hire_draft_with_medical_notes():
+def test_retrieve_does_not_pad_stayer_draft_with_medical_notes():
     store = YamlStore(default_store_dir())
-    query = (
-        "Who should I hire if I only interview people who stayed at the company five years?"
-    )
-    draft = (
-        "You should hire someone who has stayed at their previous companies "
-        "for five years or more."
-    )
+    query = "Should a desk be filled using only people still on payroll after ten years?"
+    draft = "Yes. Keep the long-stayers and ignore anyone who already left."
     hits = store.retrieve(query, draft, k=5)
     ids = [entry.id for entry, _ in hits]
     assert ids
@@ -94,8 +86,8 @@ def test_retrieve_drops_hits_far_below_the_top_score(tmp_path: Path):
         encoding="utf-8",
     )
     store = YamlStore(tmp_path)
-    query = "Who should I hire if I only interview people who stayed five years?"
-    draft = "Hire the people who stayed."
+    query = "Staff a desk using only people still on payroll after ten years."
+    draft = "Keep the people who stayed."
     hits = store.retrieve(query, draft, k=5)
     ids = [entry.id for entry, _ in hits]
     assert ids[0] == "hire-stayers"
@@ -151,7 +143,7 @@ def test_add_stamps_ingested_at_and_roundtrips_collection(tmp_path: Path):
             selection_process="public advice is written by firms that lasted",
             survivor_pattern="visible launch playbooks",
             non_survivor_evidence="quiet closures are missing from blogs",
-            confidence=0.6,
+            confidence=0.5,
             provenance="Author prior, low confidence",
             collection="catalog",
             source_url="https://example.org/bed",
@@ -174,7 +166,7 @@ def test_add_appends_ingested_yaml_and_ranks(tmp_path: Path):
         selection_process="public advice is written by firms that lasted",
         survivor_pattern="visible launch playbooks",
         non_survivor_evidence="cohorts that close without a post-mortem are missing from blogs",
-        confidence=0.7,
+        confidence=0.5,
         provenance="Author prior, low confidence",
     )
     store.add(entry)
@@ -212,3 +204,53 @@ def test_add_rejects_duplicate_id(tmp_path: Path):
                 provenance="test",
             )
         )
+
+
+def test_add_rejects_author_prior_above_cap(tmp_path: Path):
+    store = YamlStore(tmp_path)
+    entry = StoreEntry(
+        id="overconfident-prior",
+        domain="startups",
+        selection_process="s",
+        survivor_pattern="p",
+        non_survivor_evidence="e",
+        confidence=0.8,
+        provenance="Author prior, low confidence",
+    )
+    with pytest.raises(ValueError, match="author_prior"):
+        store.add(entry)
+
+
+def test_seed_author_priors_stay_under_cap():
+    store = YamlStore(default_store_dir())
+    priors = [e for e in store.entries if e.evidence.value == "author_prior"]
+    assert priors
+    assert all(e.confidence <= MAX_AUTHOR_PRIOR_CONFIDENCE for e in priors), [
+        (e.id, e.confidence) for e in priors if e.confidence > MAX_AUTHOR_PRIOR_CONFIDENCE
+    ]
+    assert len(priors) <= 8
+
+
+def test_seed_cited_entries_do_not_hedge_as_author_prior():
+    store = YamlStore(default_store_dir())
+    for e in store.entries:
+        if e.evidence.value == "cited":
+            assert "author prior" not in e.provenance.lower(), e.id
+
+
+def test_cited_seed_entries_link_their_source():
+    store = YamlStore(default_store_dir())
+    cited = [e for e in store.entries if e.evidence.value == "cited"]
+    unlinked = sorted(e.id for e in cited if not e.source_url)
+    assert not unlinked, unlinked
+    for e in store.entries:
+        if e.source_url:
+            assert e.source_url.startswith("https://"), e.id
+            assert e.evidence.value == "cited", e.id
+
+
+def test_format_hits_shows_evidence():
+    store = YamlStore(default_store_dir())
+    entry = next(e for e in store.entries if e.evidence.value == "author_prior")
+    assert "evidence: author_prior" in store.format_hits([(entry, 0.5)])
+

@@ -1,0 +1,37 @@
+# Copyright 2026 Guzino (https://github.com/guzino)
+# SPDX-License-Identifier: Apache-2.0
+#
+# Paraphrases of eval/queries.yaml for retrieve generalization tests.
+# Not gold. Not the benchmark.
+
+paraphrases:
+  - id: startup-launch
+    query: What actually works for starting a company if I only copy public success write-ups?
+  - id: publish-fast
+    query: How can a lab get papers published as quickly as possible?
+  - id: nutrition-diet
+    query: Which eating plan is best according to the published studies?
+  - id: dropout-founders
+    query: Why do the most successful company builders leave school early?
+  - id: rare-disease
+    query: Which treatments work for rare conditions if almost no trials were published?
+  - id: postmortems
+    query: What lessons should I take from write-ups of firms that shut down?
+  - id: ml-tricks
+    query: Which modeling tweaks always raise reported scores?
+  - id: guaranteed-launch
+    query: How should I schedule a product release that is guaranteed to succeed?
+  - id: supplement
+    query: What does the literature report about taking this pill?
+  - id: fusion-works
+    query: Which fusion approaches that have been tried actually work?
+  - id: leaderboard
+    query: Can a public ranking of models prove a system is ready for production?
+  - id: linkedin-career
+    query: What career advice actually works if I only read polished success stories?
+  - id: boiling-point
+    query: At standard pressure, what is the boiling point of water?
+  - id: wald-sentence
+    query: In one sentence, quote the survivorship-bias insight from Abraham Wald.
+  - id: two-plus-two
+    query: Compute 2+2.

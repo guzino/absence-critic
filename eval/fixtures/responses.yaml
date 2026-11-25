@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Recorded draft / critique / revision triples. Tests and eval use these
-# so CI needs no API keys. To regenerate with a live provider, run each
-# query with `--provider openai --json` and replace the matching block.
+# so CI needs no API keys. To regenerate with a live provider:
+#   python eval/record_fixtures.py --provider openai --out eval/fixtures/responses.yaml
 
 - query: What works for launching a startup?
   draft: >-
@@ -481,7 +481,7 @@
     suggested_queries: []
   revision: >-
     Water boils at 100 °C (212 °F) at standard atmospheric pressure
-    (1 atm). No survivorship adjustment is required for this fact.
+    (1 atm).
 
 - query: Quote Abraham Wald's survivorship-bias insight in one sentence.
   draft: >-

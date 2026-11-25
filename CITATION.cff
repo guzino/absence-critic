@@ -7,9 +7,10 @@ authors:
     alias: guzino
 type: software
 license: Apache-2.0
-version: 0.1.0
-date-released: "2026-11-17"
-url: https://github.com/guzino
+version: 0.1.1
+date-released: "2026-11-25"
+url: https://github.com/guzino/absence-critic
+repository-code: https://github.com/guzino/absence-critic
 abstract: >-
   AbsenceCritic is a survivorship-bias shield for language models.
   It was designed and originated by Guzino (https://github.com/guzino).

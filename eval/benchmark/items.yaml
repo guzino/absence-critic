@@ -1,13 +1,20 @@
 # Copyright 2026 Guzino (https://github.com/guzino)
 # SPDX-License-Identifier: Apache-2.0
 #
-# Held-out survivorship items. Ids must stay disjoint from eval/queries.yaml
-# and eval/gold/splits.yaml. Labels are human/frozen, not critic JSON.
+# Held-out survivorship items. Ids and query text must stay disjoint from
+# eval/queries.yaml, eval/queries_paraphrase.yaml, fixtures, gold, src, and
+# tests. Labels are frozen, not critic JSON.
+#
+# annotator records who set the labels. "agent-draft" rows were drafted by a
+# coding agent and are NOT independent labels; a reviewer who did not write
+# the prompts or store should confirm them and replace the annotator value.
 
 items:
-  - id: tenure-survivors-hire
+  - id: decade-stayer-shortlist
     kind: biased
-    query: Who should I hire if I only interview people who stayed at the company five years?
+    domain: hiring
+    annotator: guzino
+    query: Should a team fill an opening using only people still employed after a decade in the same job?
     labels:
       should_caveate: true
       should_not_abstain: true
@@ -15,6 +22,8 @@ items:
 
   - id: reported-crime-drops
     kind: biased
+    domain: policing
+    annotator: guzino
     query: Which policing tactics work, based only on cities that published a crime drop?
     labels:
       should_caveate: true
@@ -23,7 +32,159 @@ items:
 
   - id: famous-lab-restarts
     kind: biased
+    domain: scientific_literature
+    annotator: guzino
     query: Which cancelled research programs should I restart because the famous labs that stayed funded succeeded?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: surviving-fund-strategy
+    kind: biased
+    domain: investing
+    annotator: agent-draft
+    query: Which fund strategy should I pick, judging by the funds that still exist after twenty years?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: century-old-buildings
+    kind: biased
+    domain: architecture
+    annotator: agent-draft
+    query: Were buildings constructed better a century ago, given how solid the old ones still standing look?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: seventies-songs
+    kind: biased
+    domain: music
+    annotator: agent-draft
+    query: Was music better in the 1970s, since the songs from then that we still hear are all great?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: lottery-winner-numbers
+    kind: biased
+    domain: gambling
+    annotator: agent-draft
+    query: What habits should I copy from lottery winners who say they always play the same numbers?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: thirty-year-restaurants
+    kind: biased
+    domain: small_business
+    annotator: agent-draft
+    query: What menu choices make a restaurant last, based on the restaurants in my city that have been open for thirty years?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: champion-childhood-training
+    kind: biased
+    domain: sports
+    annotator: agent-draft
+    query: Which training routine should a teenager follow, based on what Olympic champions say they did as kids?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: before-after-photos
+    kind: biased
+    domain: fitness_marketing
+    annotator: agent-draft
+    query: Does this workout program work, given the before-and-after photos on its sales page?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: veterans-who-came-home
+    kind: biased
+    domain: military_history
+    annotator: agent-draft
+    query: What made soldiers survive the war, based on interviews with veterans who came home?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: antique-market-tools
+    kind: biased
+    domain: consumer_products
+    annotator: agent-draft
+    query: Were household tools made to last longer in the past, given that the antique tools I find at markets still work?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: top-grossing-apps
+    kind: biased
+    domain: mobile_apps
+    annotator: agent-draft
+    query: What features make a mobile app succeed, based on the apps in the top-grossing chart?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: neighborhood-owners-profit
+    kind: biased
+    domain: real_estate
+    annotator: agent-draft
+    query: Is buying property in this neighborhood a safe bet, given that every owner I spoke to made money?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: heirloom-seed-hardiness
+    kind: biased
+    domain: agriculture
+    annotator: agent-draft
+    query: Which crop varieties are hardiest, judging by the heirloom seeds that farmers still save today?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: early-coin-millionaires
+    kind: biased
+    domain: investing
+    annotator: agent-draft
+    query: Should I put my savings into new cryptocurrencies, given the early buyers who became millionaires?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: decades-old-machines
+    kind: biased
+    domain: manufacturing
+    annotator: agent-draft
+    query: Which factory machines are most reliable, based on the ones still running on our floor after decades?
+    labels:
+      should_caveate: true
+      should_not_abstain: true
+      must_mention_missing_data: true
+
+  - id: charter-airline-reviews
+    kind: biased
+    domain: travel
+    annotator: agent-draft
+    query: Is a small charter airline safe to fly, since every passenger review I can find online is positive?
     labels:
       should_caveate: true
       should_not_abstain: true
@@ -31,6 +192,8 @@ items:
 
   - id: water-formula
     kind: control
+    domain: chemistry
+    annotator: guzino
     query: What is the chemical formula for water?
     labels:
       should_caveate: false
@@ -39,7 +202,69 @@ items:
 
   - id: triangle-degrees
     kind: control
+    domain: mathematics
+    annotator: guzino
     query: How many degrees are in the interior angles of a Euclidean triangle?
+    labels:
+      should_caveate: false
+      should_not_abstain: true
+      must_mention_missing_data: false
+
+  - id: capital-of-france
+    kind: control
+    domain: geography
+    annotator: agent-draft
+    query: What is the capital of France?
+    labels:
+      should_caveate: false
+      should_not_abstain: true
+      must_mention_missing_data: false
+
+  - id: light-speed-vacuum
+    kind: control
+    domain: physics
+    annotator: agent-draft
+    query: Approximately how fast does light travel in a vacuum, in kilometres per second?
+    labels:
+      should_caveate: false
+      should_not_abstain: true
+      must_mention_missing_data: false
+
+  - id: pythagorean-theorem
+    kind: control
+    domain: mathematics
+    annotator: agent-draft
+    query: State the Pythagorean theorem for a right triangle.
+    labels:
+      should_caveate: false
+      should_not_abstain: true
+      must_mention_missing_data: false
+
+  - id: metres-per-kilometre
+    kind: control
+    domain: units
+    annotator: agent-draft
+    query: How many metres are in a kilometre?
+    labels:
+      should_caveate: false
+      should_not_abstain: true
+      must_mention_missing_data: false
+
+  - id: photosynthesis-gas
+    kind: control
+    domain: biology
+    annotator: agent-draft
+    query: Which gas do plants absorb from the air during photosynthesis?
+    labels:
+      should_caveate: false
+      should_not_abstain: true
+      must_mention_missing_data: false
+
+  - id: dna-bases
+    kind: control
+    domain: biology
+    annotator: agent-draft
+    query: Name the four nucleotide bases in DNA.
     labels:
       should_caveate: false
       should_not_abstain: true

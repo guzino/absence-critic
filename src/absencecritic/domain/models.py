@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class ConfidenceAdjustment(str, Enum):
@@ -26,6 +26,15 @@ class StoreCollection(str, Enum):
 class StoreStatus(str, Enum):
     pending = "pending"
     accepted = "accepted"
+
+
+class StoreEvidence(str, Enum):
+    cited = "cited"
+    author_prior = "author_prior"
+
+
+AUTHOR_PRIOR_PREFIX = "author prior"
+MAX_AUTHOR_PRIOR_CONFIDENCE = 0.5
 
 
 class NonSurvivorHit(BaseModel):
@@ -58,9 +67,16 @@ class StoreEntry(BaseModel):
     provenance: str
     collection: StoreCollection = StoreCollection.seed
     status: StoreStatus = StoreStatus.accepted
+    evidence: StoreEvidence = StoreEvidence.cited
     source_url: Optional[str] = None
     ingested_at: Optional[str] = None
     source_path: Optional[str] = None
+
+    @model_validator(mode="after")
+    def _author_prior_from_provenance(self) -> "StoreEntry":
+        if self.provenance.strip().lower().startswith(AUTHOR_PRIOR_PREFIX):
+            self.evidence = StoreEvidence.author_prior
+        return self
 
 
 @dataclass

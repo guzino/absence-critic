@@ -1,0 +1,51 @@
+<!--
+Copyright 2026 Guzino (https://github.com/guzino)
+SPDX-License-Identifier: Apache-2.0
+-->
+
+# Changelog
+
+## 0.1.1 - 2026-11-25
+
+Fixes and eval additions. No API or store schema changes.
+
+### Fixed
+
+- `retrieve_k=0` now turns retrieval off for every question; before, some questions still reached the store, so the critic-only eval arm was not store-free.
+- Factoid control questions are detected by their shape (short "what is", "how many", "which" questions without "because" or "given") instead of a list of topic phrases.
+- A critic reply that is not valid `Critique` JSON raises `CritiqueParseError` (a `ValueError`), which keeps the raw reply for diagnosis.
+
+### Added
+
+- Eval: a `generic` arm that revises against one fixed survivorship-bias caution with no critic call, so the four arms (baseline, generic, critic-only, shield) separate "critic vs reminder" from "store vs no store". The README explains the arms. Fixture output marks arm differences as not meaningful.
+- Eval error rows keep the critic's raw reply (`raw_critique`).
+- The benchmark runner shares one draft across arms.
+- `eval/export_gold.py --overlay`, and an xAI example in the README and `.env.example`.
+- Store: every cited entry now links its source (19 of 26; the other 7 are author priors).
+
+## 0.1.0 - 2026-11-24
+
+First public alpha. The API, store schema, and prompts may still change.
+
+### What it does
+
+- Wald loop: the primary model drafts an answer without seeing the store, a separate critic reads retrieved Non-Survivor Store entries and returns structured `Critique` JSON, and the primary model revises the draft. CLI: `absencecritic "question"`. Library: `from absencecritic import run, score`.
+- `score()` and `absencecritic --judge` critique an existing draft without generating or revising.
+- Providers: recorded fixtures (default, no API key), any OpenAI-compatible endpoint (OpenAI, OpenRouter, local servers) with retries and backoff, and an optional local critic endpoint (`--critic local`).
+- Non-Survivor Store: 26 seed entries with provenance. Entries backed only by the curator are tagged `evidence: author_prior`, capped at confidence 0.5, and flagged to the critic as weaker evidence.
+- Store tooling: curated and catalog ingest (`absencecritic ingest`), a pending feedback queue that does not retrieve until accepted (`absencecritic feedback`), and a separate org store directory via `ABSENCECRITIC_STORE`.
+- The wheel bundles the seed store and demo fixtures, so `pip install absencecritic` runs without a checkout.
+
+### Evaluation tooling (repo checkout only)
+
+- `eval/run_eval.py`: baseline, critic-only, and full-shield arms on one shared draft, with repeated samples and per-case error capture.
+- `eval/benchmark/`: 26 held-out items (18 biased, 8 control) across 23 domains, a runner, a regex scorer, and a rubric judge that never calls the critic under test.
+- Gold critique export with committed train and held-out splits, a human overlay, and a quarantine for live critic dumps.
+- Out-of-CI recipes for critic fine-tuning and primary-model preference training.
+
+### Known limitations
+
+- Fixture eval 15/15 is a regression check against recorded answers, not a measured result.
+- Benchmark labels are not yet independent: they were written by the project author or drafted by a coding agent (see issue #40). Treat benchmark numbers as provisional.
+- Retrieval is keyword overlap, not embeddings.
+- No live-model result is published with this release.

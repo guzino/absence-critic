@@ -9,6 +9,7 @@ alwaysApply: false
 Every entry needs `id`, `domain`, `selection_process`, `survivor_pattern`, `non_survivor_evidence`, `confidence` (0-1), and `provenance`. Optional: `collection` (seed|catalog|feedback, default seed), `source_url`, `ingested_at`.
 
 - `provenance` is a real citation or the exact phrase `author prior, low confidence`
+- Provenance starting with "author prior" sets `evidence: author_prior`; confidence must be <= 0.5 (ingest rejects higher)
 - Quote YAML scalars that contain `:` or inner quotes
 - Do not invent specific unpublished events as fact
 - After adding an entry, smoke retrieval on a related query

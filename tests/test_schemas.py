@@ -61,6 +61,34 @@ def test_store_entry_defaults_collection_seed_when_omitted():
     assert e.ingested_at is None
 
 
+def _entry(**kw) -> StoreEntry:
+    base = dict(
+        id="x",
+        domain="startups",
+        selection_process="s",
+        survivor_pattern="p",
+        non_survivor_evidence="e",
+        confidence=0.5,
+        provenance="test",
+    )
+    base.update(kw)
+    return StoreEntry(**base)
+
+
+def test_store_entry_evidence_defaults_cited():
+    assert _entry(provenance="Ioannidis, PLoS Medicine, 2005").evidence.value == "cited"
+
+
+def test_store_entry_author_prior_inferred_from_provenance():
+    e = _entry(provenance="Author prior, low confidence; platform incentives")
+    assert e.evidence.value == "author_prior"
+
+
+def test_store_entry_author_prior_wins_over_explicit_cited():
+    e = _entry(provenance="author prior, low confidence", evidence="cited")
+    assert e.evidence.value == "author_prior"
+
+
 def test_store_entry_rejects_unknown_collection():
     with pytest.raises(ValidationError):
         StoreEntry(

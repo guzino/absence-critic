@@ -13,6 +13,14 @@ from absencecritic.application.retrieve import suggested_retrieve_k
 from absencecritic.domain.models import Critique, PipelineResult
 
 
+class CritiqueParseError(ValueError):
+    """Critic reply was not a valid Critique. Keeps the raw reply for diagnosis."""
+
+    def __init__(self, message: str, *, raw: str) -> None:
+        super().__init__(message)
+        self.raw = raw
+
+
 def _critique_draft(
     query: str,
     draft: str,
@@ -22,12 +30,17 @@ def _critique_draft(
     retrieve_k: int,
 ) -> tuple[list[str], Critique]:
     k = suggested_retrieve_k(query, high=retrieve_k)
-    hits = store.retrieve(query, draft, k=k)
+    hits = store.retrieve(query, draft, k=k) if k > 0 else []
     retrieved_ids = [entry.id for entry, _ in hits]
     raw_critique = critic.critique(
         query=query, draft=draft, store_hits=store.format_hits(hits)
     )
-    critique = Critique.model_validate(parse_json_object(raw_critique))
+    try:
+        critique = Critique.model_validate(parse_json_object(raw_critique))
+    except ValueError as exc:
+        raise CritiqueParseError(
+            f"critic reply is not a valid Critique: {exc}", raw=raw_critique
+        ) from exc
     return retrieved_ids, critique
 
 
@@ -63,31 +76,37 @@ def run(
     store_dir: Optional[Path] = None,
     shield: bool = True,
     retrieve_k: int = 5,
+    draft: Optional[str] = None,
 ) -> PipelineResult:
     """Wald loop. `provider` may implement both LLM ports; calls stay separate."""
     del store_dir  # adapters construct the store; kept for call-site compatibility
     gen = generator or provider
     cri = critic or provider
-    if gen is None:
-        raise TypeError("run() requires generator= or provider=")
-    draft = gen.generate(query=query)
+    if draft is None:
+        if gen is None:
+            raise TypeError("run() requires generator= or provider=")
+        text = gen.generate(query=query)
+    else:
+        text = draft
     if not shield:
-        return PipelineResult(query=query, draft=draft, final=draft, shielded=False)
+        return PipelineResult(query=query, draft=text, final=text, shielded=False)
     if store is None:
         raise TypeError("run() requires store= when shield=True")
     if cri is None:
         raise TypeError("run() requires critic= or provider= when shield=True")
+    if gen is None:
+        raise TypeError("run() requires generator= or provider= when shield=True")
     retrieved_ids, critique = _critique_draft(
-        query, draft, critic=cri, store=store, retrieve_k=retrieve_k
+        query, text, critic=cri, store=store, retrieve_k=retrieve_k
     )
     revision = gen.revise(
         query=query,
-        draft=draft,
+        draft=text,
         critique_json=json.dumps(critique.model_dump(mode="json")),
     )
     return PipelineResult(
         query=query,
-        draft=draft,
+        draft=text,
         retrieved_ids=retrieved_ids,
         critique=critique,
         final=revision,

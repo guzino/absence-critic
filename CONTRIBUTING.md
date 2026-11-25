@@ -24,6 +24,14 @@ AbsenceCritic is Apache-2.0. Origin and architecture: [Guzino](https://github.co
 - New LLM or store backends implement ports; do not edit the loop unless the port changes.
 - Reviews: architecture and SOLID first, then tests, then nits. Origin `docs/` stay frozen unless the PR is explicitly about them.
 
+## Releasing
+
+1. In a PR: bump `version` in `pyproject.toml`, `src/absencecritic/__init__.py`, and `CITATION.cff`; add a `CHANGELOG.md` section; set the release date in both the changelog and `CITATION.cff`.
+2. After it merges, create a GitHub Release on `main` with tag `vX.Y.Z` (same as the version). Publishing it runs [`.github/workflows/release.yml`](.github/workflows/release.yml): tests, build, `twine check`, upload to PyPI via Trusted Publishing, then attach the sdist and wheel to the release.
+3. The workflow refuses to publish if the tag and the package version differ. PyPI never accepts the same version twice; fix forward with a new patch version.
+
+One-time setup (maintainer): on pypi.org add a Trusted Publisher for project `absencecritic`, owner `guzino`, repository `absence-critic`, workflow `release.yml`, environment `pypi`. In GitHub repo settings, create the `pypi` environment (optionally with required reviewers).
+
 ## Coding agents
 
 Any tool: treat [`AGENTS.md`](AGENTS.md) as canonical. Do not fork rules per product.

@@ -1,9 +1,11 @@
 # Copyright 2026 Guzino (https://github.com/guzino)
 # SPDX-License-Identifier: Apache-2.0
 #
-# Phase 0 Non-Survivor Store. Public, citable sources only.
+# Phase 0 Non-Survivor Store. Public, citable sources where they exist.
 # Confidence is the author's assessment of how well the source
 # identifies a selection filter, not a claim of a precise rate.
+# Provenance starting with "Author prior" marks evidence: author_prior
+# and must keep confidence <= 0.5.
 
 - id: bls-establishment-survival
   domain: startups
@@ -12,6 +14,7 @@
   non_survivor_evidence: U.S. Bureau of Labor Statistics Business Employment Dynamics data show that a large share of new establishments close within a few years (on the order of half by year five in long-run BED survival tables). Silent closures dominate documented successes.
   confidence: 0.85
   provenance: "U.S. Bureau of Labor Statistics, Business Employment Dynamics, establishment survival tables (https://www.bls.gov/bdm/)"
+  source_url: "https://www.bls.gov/bdm/"
 
 - id: cbinsights-postmortem-filter
   domain: startups
@@ -20,22 +23,24 @@
   non_survivor_evidence: Most failed ventures never publish a post-mortem. Aggregators such as CB Insights compile reasons from the visible shutdown subset, not from the full attempt distribution.
   confidence: 0.7
   provenance: "CB Insights, The Top Reasons Startups Fail (post-mortem compilation; selection is announced shutdowns with write-ups)"
+  source_url: "https://www.cbinsights.com/research/report/startup-failure-reasons-top/"
 
 - id: vc-portfolio-survivorship
   domain: startups
   selection_process: Venture narratives overweight funds and founders who raised later rounds or exited.
   survivor_pattern: Interviews with funded founders about what "works."
   non_survivor_evidence: Most attempts never raise institutional capital. Advice conditioned on funded survivors understates base rates of non-funding and quiet shutdown.
-  confidence: 0.65
+  confidence: 0.5
   provenance: "Author prior, low confidence; consistent with BLS establishment attrition and the unobserved mass of unfunded attempts"
 
 - id: college-dropout-founder-myth
   domain: startups
   selection_process: Media selects spectacular dropout-founders; the many dropouts without famous companies are not sampled.
   survivor_pattern: Stories that college is optional because famous founders left school.
-  non_survivor_evidence: Conditioning on famous outcomes hides the base rate of dropouts who do not found valuable firms. Visible holes are fame, not a causal recipe.
-  confidence: 0.75
-  provenance: "Classic survivorship-bias example in entrepreneurship commentary; see also Quora/press sampling of celebrity founders vs unobserved dropouts"
+  non_survivor_evidence: Conditioning on famous outcomes hides the base rate of dropouts who do not found valuable firms. A Kauffman Foundation survey of U.S. technology and engineering founders found most held at least a bachelor's degree. Visible holes are fame, not a causal recipe.
+  confidence: 0.7
+  provenance: "Vivek Wadhwa, Richard Freeman, Ben Rissing, Education and Tech Entrepreneurship, Ewing Marion Kauffman Foundation, 2008"
+  source_url: https://doi.org/10.2139/ssrn.1127248
 
 - id: ioannidis-2005
   domain: scientific_literature
@@ -44,6 +49,7 @@
   non_survivor_evidence: Ioannidis (2005) argues that under realistic power, bias, and flexibility, a large fraction of published research findings are expected to be false. The file drawer is the missing plane.
   confidence: 0.8
   provenance: "John P. A. Ioannidis, Why Most Published Research Findings Are False, PLoS Medicine, 2005"
+  source_url: "https://doi.org/10.1371/journal.pmed.0020124"
 
 - id: franco-2014-file-drawer
   domain: scientific_literature
@@ -52,6 +58,7 @@
   non_survivor_evidence: "Franco, Malhotra, and Simonovits (2014) tracked social-science experiments from NSF-related programs and found strong publication bias: null results were much less likely to be published."
   confidence: 0.85
   provenance: "Franco, Malhotra, Simonovits, Publication bias in the social sciences, Science, 2014"
+  source_url: "https://doi.org/10.1126/science.1255484"
 
 - id: fanelli-2010-positive-results
   domain: scientific_literature
@@ -60,6 +67,7 @@
   non_survivor_evidence: Fanelli (2010) documented that the share of papers supporting the tested hypothesis is high and varies by discipline, consistent with selection rather than universal truth of hypotheses.
   confidence: 0.8
   provenance: "Daniele Fanelli, Positive Results Increase Down the Hierarchy of the Sciences, PLoS ONE, 2010"
+  source_url: "https://doi.org/10.1371/journal.pone.0010068"
 
 - id: osc-2015-reproducibility
   domain: scientific_literature
@@ -68,6 +76,7 @@
   non_survivor_evidence: The Open Science Collaboration (2015) reproduced 100 psychology findings and observed a substantial drop in significance and effect size relative to originals.
   confidence: 0.85
   provenance: "Open Science Collaboration, Estimating the reproducibility of psychological science, Science, 2015"
+  source_url: "https://doi.org/10.1126/science.aac4716"
 
 - id: hopewell-trial-publication-bias
   domain: medical
@@ -75,7 +84,8 @@
   survivor_pattern: Published trials supporting a treatment.
   non_survivor_evidence: Cochrane methodology reviews (e.g. Hopewell et al.) find that published trials over-represent beneficial effects compared with all registered or completed trials.
   confidence: 0.8
-  provenance: "Hopewell et al., Publication bias in clinical trials, Cochrane Methodology Review; see also WHO/ICMJE trial registration norms"
+  provenance: "Hopewell, Loudon, Clarke, Oxman, Dickersin, Publication bias in clinical trials due to statistical significance or direction of trial results, Cochrane Database of Systematic Reviews, 2009"
+  source_url: "https://doi.org/10.1002/14651858.MR000006.pub3"
 
 - id: faers-underreporting
   domain: medical
@@ -84,14 +94,16 @@
   non_survivor_evidence: FDA FAERS documentation states reports do not establish rates; under-reporting is expected. Absence of a report is not evidence of safety.
   confidence: 0.8
   provenance: "U.S. FDA, FAERS data limitations (https://www.fda.gov/drugs/surveillance/questions-and-answers-fdas-adverse-event-reporting-system-faers)"
+  source_url: "https://www.fda.gov/drugs/surveillance/questions-and-answers-fdas-adverse-event-reporting-system-faers"
 
 - id: rare-disease-evidence-gap
   domain: medical
   selection_process: Common diseases generate trials, guidelines, and EHR density; rare conditions do not.
   survivor_pattern: Treatment recommendations extrapolated from well-studied populations.
-  non_survivor_evidence: Rare-disease literature is sparse, often case series, and patients may never enter a registry. Empty regions are missing patients, not proven benignity.
-  confidence: 0.7
-  provenance: "Author prior informed by rare-disease registry literature (e.g. Orphanet/EURORDIS descriptions of evidence gaps), low-to-moderate confidence on any specific rate"
+  non_survivor_evidence: The Orphanet database lists thousands of rare diseases, the bulk of them affecting very few people, so trials and guidelines exist for only a small share of them. Rare-disease evidence is often case series, and patients may never enter a registry. Empty regions are missing patients, not proven benignity.
+  confidence: 0.65
+  provenance: "Nguengang Wakap et al., Estimating cumulative point prevalence of rare diseases: analysis of the Orphanet database, European Journal of Human Genetics, 2020"
+  source_url: "https://doi.org/10.1038/s41431-019-0508-0"
 
 - id: nutrition-publication-bias
   domain: medical
@@ -100,13 +112,14 @@
   non_survivor_evidence: Observational nutrition findings are sensitive to residual confounding and selective reporting; null diet studies are less visible. Ioannidis has separately criticized reliability of much nutritional epidemiology.
   confidence: 0.7
   provenance: "Ioannidis, The Challenge of Reforming Nutritional Epidemiologic Research, JAMA, 2018; plus general file-drawer pattern from Franco et al. 2014"
+  source_url: "https://doi.org/10.1001/jama.2018.11025"
 
 - id: linkedin-success-narratives
   domain: everyday_reasoning
   selection_process: Career advice platforms amplify people whose paths look good enough to post.
   survivor_pattern: Threads claiming a tactic "always works."
   non_survivor_evidence: Failed applications, stalled careers, and abandoned tactics are under-posted. Advice is conditioned on narrative survivors.
-  confidence: 0.6
+  confidence: 0.45
   provenance: "Author prior, low confidence; selection filter is platform incentives, not a measured base rate"
 
 - id: tacit-knowledge-unwritten
@@ -116,13 +129,14 @@
   non_survivor_evidence: "Polanyi's tacit-knowledge thesis: much skilled practice is not fully articulable. Models trained on text miss the unwritten remainder."
   confidence: 0.7
   provenance: "Michael Polanyi, The Tacit Dimension, 1966"
+  source_url: https://press.uchicago.edu/ucp/books/book/chicago/T/bo6035368.html
 
 - id: abandoned-experiments
   domain: everyday_reasoning
   selection_process: People document finished projects more than abandoned ones.
   survivor_pattern: Polished explanations of what was done.
   non_survivor_evidence: Private dead-ends and unpublished prototypes never enter the corpus. "What was tried" is not recoverable from finished artifacts.
-  confidence: 0.65
+  confidence: 0.5
   provenance: "Author prior, low confidence; analogous to the scientific file drawer (Franco et al. 2014)"
 
 - id: wikipedia-notability-filter
@@ -131,15 +145,17 @@
   survivor_pattern: Topics with dense Wikipedia/news coverage treated as the full set of important events.
   non_survivor_evidence: Local, unpublished, or non-notable events are absent. Coverage intensity is not a base rate.
   confidence: 0.7
-  provenance: "Wikipedia notability guidelines (https://en.wikipedia.org/wiki/Wikipedia:Notability); author interpretation of the selection filter"
+  provenance: "Wikipedia, Notability guideline (the inclusion filter itself, quoted as the selection process)"
+  source_url: "https://en.wikipedia.org/wiki/Wikipedia:Notability"
 
 - id: ml-papers-positive-results
   domain: model_evaluation
   selection_process: ML papers and blogs preferentially report methods that beat a baseline on a chosen split.
   survivor_pattern: Tricks that "always improve accuracy."
-  non_survivor_evidence: Failed ablations and negative results are rarely published. Apparent universal tricks often fail off the reported setup.
+  non_survivor_evidence: Failed ablations and negative results are rarely published. Melis et al. found that a carefully tuned older architecture matched or beat newer language-model architectures, so reported gains partly reflected unequal tuning. Apparent universal tricks often fail off the reported setup.
   confidence: 0.7
-  provenance: "Author prior consistent with publication-bias literature (Ioannidis 2005; Fanelli 2010); see also Gencoglu et al. and community discussion of ML negative results"
+  provenance: "Melis, Dyer, Blunsom, On the State of the Art of Evaluation in Neural Language Models, ICLR 2018; Lipton and Steinhardt, Troubling Trends in Machine Learning Scholarship, 2018"
+  source_url: "https://arxiv.org/abs/1707.05589"
 
 - id: leaderboard-overfitting
   domain: model_evaluation
@@ -148,29 +164,31 @@
   non_survivor_evidence: Repeated test-set access and selection of lucky seeds produce inflated numbers. Held-out or shifted distributions are the missing planes.
   confidence: 0.75
   provenance: "Recht et al., Do ImageNet classifiers generalize to ImageNet?, ICML 2019; Dwork et al. on adaptive overfitting of holdout sets"
+  source_url: "https://arxiv.org/abs/1902.10811"
 
 - id: demo-production-gap
   domain: model_evaluation
   selection_process: Demos are chosen because they look impressive.
   survivor_pattern: Curated examples in announcements.
   non_survivor_evidence: Ordinary long-tail failures are not demoed. Production incident logs, when they exist, are the non-survivor store for product claims.
-  confidence: 0.7
-  provenance: "Author prior, low-to-moderate confidence; standard train/demo vs production distribution shift"
+  confidence: 0.5
+  provenance: "Author prior, low confidence; standard train/demo vs production distribution shift"
 
 - id: chatbot-arena-selection
   domain: model_evaluation
   selection_process: Human preference arenas sample users who show up and prompts they bother to enter.
   survivor_pattern: Elo-like scores as overall quality.
   non_survivor_evidence: Tasks that are boring, private, or professionally specialized are under-sampled. Arena winners can still fail on the silent tail.
-  confidence: 0.65
-  provenance: "Author prior on volunteer-arena sampling; see LMSYS Chatbot Arena methodology notes on prompt/user self-selection"
+  confidence: 0.6
+  provenance: "Chiang et al., Chatbot Arena: An Open Platform for Evaluating LLMs by Human Preference, ICML 2024 (crowdsourced, user-chosen prompts); the under-sampled tail is the curator's reading"
+  source_url: "https://arxiv.org/abs/2403.04132"
 
 - id: github-star-survivorship
   domain: model_evaluation
   selection_process: Open-source popularity metrics count repositories that attracted stars, not all attempts.
   survivor_pattern: Best-library lists from stars and blog posts.
   non_survivor_evidence: Abandoned repos, internal tools, and unpublished experiments are invisible. Stars are not a failure-rate estimator.
-  confidence: 0.6
+  confidence: 0.45
   provenance: "Author prior, low confidence; analogous to notability filters on public artifacts"
 
 - id: replication-crisis-psychology
@@ -179,7 +197,8 @@
   survivor_pattern: Famous named effects used as advice.
   non_survivor_evidence: Several high-profile effects shrank or vanished under replication; advice that cites only the original hit is survivor-conditioned.
   confidence: 0.8
-  provenance: "Open Science Collaboration, Science, 2015; Many Labs projects"
+  provenance: "Open Science Collaboration, Science, 2015; Klein et al., Many Labs 2: Investigating Variation in Replicability Across Samples and Settings, Advances in Methods and Practices in Psychological Science, 2018"
+  source_url: "https://doi.org/10.1177/2515245918810225"
 
 - id: current-employee-tenure-filter
   domain: hiring
@@ -194,16 +213,17 @@
   domain: medical
   selection_process: Global pharmacovigilance depends on voluntary reporting through national centres.
   survivor_pattern: Known boxed warnings as the complete risk list.
-  non_survivor_evidence: WHO and national agencies note that spontaneous reporting captures an unknown fraction of events. Unlisted harms may be unreported, not absent.
+  non_survivor_evidence: A systematic review of under-reporting studies found that spontaneous systems capture only a small minority of adverse drug reactions. Unlisted harms may be unreported, not absent.
   confidence: 0.75
-  provenance: "WHO pharmacovigilance guidance on spontaneous reporting limitations"
+  provenance: "Hazell and Shakir, Under-reporting of adverse drug reactions: a systematic review, Drug Safety, 2006"
+  source_url: "https://doi.org/10.2165/00002018-200629050-00003"
 
 - id: fusion-announcement-filter
   domain: scientific_literature
   selection_process: Energy breakthrough coverage follows announcements that survive press offices and journals.
-  survivor_pattern: Stories that a approach "works" after a milestone.
+  survivor_pattern: Stories that an approach "works" after a milestone.
   non_survivor_evidence: Decades of approaches that missed net-gain targets are less narrated as a base rate. Milestone survival is not a deployment recipe.
-  confidence: 0.6
+  confidence: 0.45
   provenance: "Author prior, low confidence; historical fusion milestone journalism vs unpublished or failed device campaigns"
 
 - id: self-help-book-filter
@@ -211,5 +231,5 @@
   selection_process: Published advice books are those that sold or were marketed; counter-examples do not get sequels.
   survivor_pattern: Universal habit recipes.
   non_survivor_evidence: Readers for whom the recipe failed rarely publish at comparable scale. The literature of "what works" is the returning bombers.
-  confidence: 0.6
+  confidence: 0.45
   provenance: "Author prior, low confidence; same selection logic as Franco et al. 2014 applied to commercial advice"

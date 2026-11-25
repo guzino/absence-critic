@@ -46,7 +46,7 @@ def test_cli_ingest(tmp_path, capsys):
   selection_process: journals prefer positive results
   survivor_pattern: published significant findings
   non_survivor_evidence: unpublished nulls are missing from the visible literature
-  confidence: 0.8
+  confidence: 0.5
   provenance: Author prior, low confidence
 """,
         encoding="utf-8",
