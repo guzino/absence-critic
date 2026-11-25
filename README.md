@@ -7,6 +7,15 @@ SPDX-License-Identifier: Apache-2.0
 
 AbsenceCritic is a survivorship-bias shield for language models: a dedicated critic (the Wald Module) that reasons about the evidence that never made it into the training corpus, the retrieval index, or the evaluation set.
 
+## What it does, measured
+
+Two findings from live runs on `grok-4-fast-non-reasoning` (small samples, one model; rerun them on yours):
+
+1. **The critic knows when to stay quiet.** On the main eval (15 questions, 3 samples each), the plain draft passed 24% of samples. A one-line "watch for survivorship bias" reminder fixed every biased question, and so did the critic. The difference is on control questions: the reminder added an unneeded bias caveat to 14 of 17 control answers ("Paris." plus a warning about missing failures), while the critic added one to 0 of 17. A blanket caution is cheap; one that leaves "What is 2+2?" alone needs a critic.
+2. **The store is for failures the model cannot know.** On public questions, strong models already know the classic evidence, so the Non-Survivor Store changed little. With a team's own post-mortems in the store, it is the only arm that brings them in: on [`eval/org_store/`](eval/org_store/) (8 fictional internal records), the full shield used the private fact in 8 of 8 answers, and the plain draft and the critic without a store used it in 0 of 8.
+
+So the useful setup is the critic everywhere, and the store pointed at failure records your organisation has and the model has never seen.
+
 **AbsenceCritic was designed and originated by [Guzino](https://github.com/guzino).** The name, the architecture (Wald Module, Non-Survivor Store, Wald checklist), and the design documents in this repository are original work of that author. The historical inspiration is Abraham Wald’s 1943 aircraft-vulnerability analysis; the application of that method as an explicit second-brain critic for contemporary LLMs originated here.
 
 ## License
@@ -154,6 +163,7 @@ print(judged.critique)
 python eval/run_eval.py --provider fixture
 python eval/benchmark/run.py --provider fixture --out eval/benchmark/answers.jsonl
 python eval/benchmark/score.py --answers eval/benchmark/answers.jsonl
+python eval/org_store/run.py
 python -m pytest
 ```
 
@@ -171,6 +181,8 @@ The two middle arms are separate on purpose: `generic` answers "is a Wald critic
 [`eval/queries.yaml`](eval/queries.yaml) has ~12 survivor-biased questions and 3 controls. [`eval/fixtures/responses.yaml`](eval/fixtures/responses.yaml) holds recorded draft/critique/revision triples. Phase 2 gold critic JSONL is [`eval/gold/critiques.jsonl`](eval/gold/critiques.jsonl), split by committed ids in [`eval/gold/splits.yaml`](eval/gold/splits.yaml) into `train.jsonl` and `heldout.jsonl` (`python eval/export_gold.py` after fixture edits). Optional human edits go in [`eval/gold/overlay.yaml`](eval/gold/overlay.yaml) and win on the train/held-out export only; they do not rewrite fixtures. Live critic dumps go to gitignored `eval/gold/incoming/` via `python eval/log_incoming.py --query "..." --provider openai` and stay out of train until a human PR. Fixture 15/15 is product regression, not a training score. To refresh fixtures from a live model: `python eval/record_fixtures.py --provider openai --out eval/fixtures/responses.yaml`. Then `python eval/export_gold.py` (or `--check` without writing).
 
 Critic fine-tune stays off CI: [`scripts/critic_train.md`](scripts/critic_train.md) (`python scripts/train_critic.py --dry-run`). Serve the result through `--critic local`. Do not train the generator on critique JSON. Primary-model DPO on pair export is [`scripts/primary_preference.md`](scripts/primary_preference.md) (`python scripts/train_primary.py --pairs ... --dry-run`). The default generator stays `--provider`; if controls start abstaining, the experiment failed.
+
+Private-store eval: [`eval/org_store/run.py`](eval/org_store/run.py) layers fictional org post-mortems on the seed store and checks whether each arm uses the private fact. Fixture mode (CI) checks retrieval and the recorded shield answers; `--provider openai --samples 2` gives the per-arm rate.
 
 Held-out survivorship items (disjoint ids, frozen labels, not critic JSON): [`eval/benchmark/`](eval/benchmark/README.md). Preference pairs (shielded vs unshielded, store bodies stripped): `python eval/export_pairs.py --provider fixture --out eval/pairs/out.jsonl`. Chosen is not a truth label.
 
