@@ -37,7 +37,9 @@ Pass/fail saturates: any caveat about missing data passes, so a one-line generic
 
 ## Coverage and independence
 
-`python eval/benchmark/score.py` with no `--answers` prints the current stats. As of this change: 26 items (18 biased, 8 control) across 23 domains, most of them not represented in the Non-Survivor Store.
+`python eval/benchmark/score.py` with no `--answers` prints the current stats. As of this change: 38 items (26 biased, 12 control) across 34 domains, most of them not represented in the Non-Survivor Store.
+
+12 items are marked `difficulty: hard`. Hard biased items do not name the filter in the question (cats that survived the fall reach the vet; the helmet law turns deaths into admissions). Hard controls are advice- or how-to-shaped questions that still need no survivorship caveat (a knot, basil, a comma rule). The report's `by_difficulty` gives judge pass rates, control false alarms, and rubric means for each level, since the standard items saturate.
 
 Every item records an `annotator`. Labels from `guzino` (the author of the prompts and store) and `agent-draft` (drafted by a coding agent) are not independent; `independent_label_items` counts the rest and is 0 today. To raise it, a reviewer who did not write the prompts or store checks an item's labels and replaces `annotator` with their handle in a PR.
 

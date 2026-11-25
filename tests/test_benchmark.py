@@ -267,6 +267,29 @@ def test_rubric_grades_a_specific_caveat_above_a_generic_one():
     assert judge.heuristic_judge(item, GENERIC_CAVEAT)["rubric_score"] == 0.0
 
 
+def test_score_splits_the_report_by_difficulty(tmp_path, capsys):
+    items = _score_mod().load_items()
+    hard_control = next(i for i in items if i.get("difficulty") == "hard" and i["kind"] == "control")
+    rows = [
+        {"id": hard_control["id"], "arm": "generic", "answer": "Answer.", "draft": "Answer."},
+        {"id": "water-formula", "arm": "generic", "answer": "H2O", "draft": "H2O"},
+    ]
+    answers = tmp_path / "answers.jsonl"
+    answers.write_text("\n".join(json.dumps(r) for r in rows) + "\n", encoding="utf-8")
+    _score_mod().main(["--answers", str(answers)])
+    split = json.loads(capsys.readouterr().out)["by_difficulty"]
+    assert set(split) == {"hard", "standard"}
+    assert split["hard"]["control_false_alarm_rate"] == {"generic": 0.0}
+    assert split["hard"]["judge_pass_by_arm"] == {"generic": 1.0}
+
+
+def test_hard_items_are_labelled_and_balanced():
+    hard = [i for i in _score_mod().load_items() if i.get("difficulty") == "hard"]
+    kinds = {i["kind"] for i in hard}
+    assert kinds == {"biased", "control"}
+    assert all(i["annotator"] for i in hard)
+
+
 def test_rubric_is_not_scored_on_controls():
     judged = _judge_mod().heuristic_judge(_item("water-formula"), "H2O")
     assert judged["rubric"] is None
