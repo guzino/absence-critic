@@ -5,6 +5,28 @@ SPDX-License-Identifier: Apache-2.0
 
 # Changelog
 
+## 0.1.2 - 2026-11-25
+
+Fixes found by live runs on a real model. No API or store schema changes.
+
+### Changed
+
+- Revisions state concrete facts from cited, confident store entries (counts, rates, identifiers) and change a conclusion the evidence contradicts instead of appending a caveat. Author priors still only name a selection filter.
+- Final answers no longer mention the draft, critique, store, or retrieval.
+- Plain factual answers no longer get a "no adjustment needed" note.
+- Retrieval drops off-topic entries: a standard stop list, plural matching, the question itself must touch an entry, and a minimum score. Off-topic questions now retrieve nothing instead of filling k with unrelated entries.
+- The CLI prints a short error instead of a traceback for an unrecorded fixture question, a missing API key, a failed provider call, or an invalid critic reply. `--debug` shows the full traceback.
+
+### Eval
+
+- Control answers fail when an arm adds an unneeded survivorship caveat; eval and benchmark report a per-arm control false-alarm rate. The rubric judge has an `unneeded_caveat` field.
+- Answers that mention the pipeline fail scoring (`pipeline_leak`).
+- `eval/benchmark/score.py` loads the repo `.env`.
+
+### Findings
+
+On grok-4-fast-non-reasoning the critic arms beat a generic survivorship reminder because the reminder adds caveats to factual questions. The store adds little on public knowledge the model already has, but with private records it supplied the exact facts (16/16 in a fictional internal post-mortem test, versus 0/16 without it).
+
 ## 0.1.1 - 2026-11-25
 
 Fixes and eval additions. No API or store schema changes.
