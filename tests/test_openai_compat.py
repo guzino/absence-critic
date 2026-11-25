@@ -124,3 +124,21 @@ def test_connection_error_retries():
     )
     assert llm.generate(query="hi") == "recovered"
     assert calls["n"] == 3
+
+
+def test_usage_totals_count_calls_and_tokens():
+    bodies = iter(
+        [
+            {"choices": [{"message": {"content": "a"}}], "usage": {"prompt_tokens": 10, "completion_tokens": 4}},
+            {"choices": [{"message": {"content": "b"}}]},
+        ]
+    )
+
+    def urlopen(req, timeout=None):
+        del req, timeout
+        return _Resp(json.dumps(next(bodies)).encode("utf-8"))
+
+    llm = OpenAICompat(api_key="k", retries=0, urlopen=urlopen)
+    llm.generate(query="one")
+    llm.generate(query="two")
+    assert llm.usage == {"calls": 2, "prompt_tokens": 10, "completion_tokens": 4}
