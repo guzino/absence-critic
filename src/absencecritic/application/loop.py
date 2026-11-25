@@ -37,16 +37,22 @@ def _critique_draft(
     k = suggested_retrieve_k(query, high=retrieve_k)
     hits = store.retrieve(query, draft, k=k) if k > 0 else []
     retrieved_ids = [entry.id for entry, _ in hits]
-    raw_critique = critic.critique(
-        query=query, draft=draft, store_hits=store.format_hits(hits)
-    )
-    try:
-        critique = Critique.model_validate(parse_json_object(raw_critique))
-    except ValueError as exc:
-        raise CritiqueParseError(
-            f"critic reply is not a valid Critique: {exc}", raw=raw_critique
-        ) from exc
-    return retrieved_ids, critique
+    store_hits = store.format_hits(hits)
+    raw_critique = ""
+    last_exc: Exception | None = None
+    # One retry: open-weight critics often emit broken JSON once, then recover.
+    for _attempt in range(2):
+        raw_critique = critic.critique(
+            query=query, draft=draft, store_hits=store_hits
+        )
+        try:
+            critique = Critique.model_validate(parse_json_object(raw_critique))
+            return retrieved_ids, critique
+        except ValueError as exc:
+            last_exc = exc
+    raise CritiqueParseError(
+        f"critic reply is not a valid Critique: {last_exc}", raw=raw_critique
+    ) from last_exc
 
 
 def score(

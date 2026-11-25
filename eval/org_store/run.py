@@ -34,7 +34,7 @@ if str(SRC) not in sys.path:
 from absencecritic.adapters.llm.fixture import FixtureLLM  # noqa: E402
 from absencecritic.adapters.llm.openai_compat import OpenAICompat  # noqa: E402
 from absencecritic.adapters.store.yaml_store import YamlStore  # noqa: E402
-from absencecritic.application.loop import run  # noqa: E402
+from absencecritic.application.loop import CritiqueParseError, run  # noqa: E402
 from absencecritic.application.retrieve import suggested_retrieve_k  # noqa: E402
 from absencecritic.envfile import load_repo_env  # noqa: E402
 
@@ -75,20 +75,40 @@ def score_arm(question: dict, result) -> dict:
     }
 
 
+def _empty_arm(question: dict, *, error: str) -> dict:
+    return {
+        "final": "",
+        "retrieved_ids": [],
+        "right_entry": False,
+        "fact": False,
+        "error": error,
+    }
+
+
 def run_question(question: dict, *, provider, store: YamlStore) -> dict:
     query = question["query"]
     draft = provider.generate(query=query)
-    results = {
-        "baseline": run(query, provider=provider, store=store, shield=False, draft=draft),
-        "critic_only": run(query, provider=provider, store=store, retrieve_k=0, draft=draft),
-        "shield": run(query, provider=provider, store=store, draft=draft),
-    }
+    arm_fns = (
+        ("baseline", lambda: run(query, provider=provider, store=store, shield=False, draft=draft)),
+        ("critic_only", lambda: run(query, provider=provider, store=store, retrieve_k=0, draft=draft)),
+        ("shield", lambda: run(query, provider=provider, store=store, draft=draft)),
+    )
+    arms: dict = {}
+    shield_critique = None
+    for arm, fn in arm_fns:
+        try:
+            result = fn()
+            arms[arm] = score_arm(question, result)
+            if arm == "shield" and result.critique is not None:
+                shield_critique = result.critique.model_dump(mode="json")
+        except (CritiqueParseError, ValueError, OSError) as exc:
+            arms[arm] = _empty_arm(question, error=f"{type(exc).__name__}: {exc}")
     return {
         "id": question["id"],
         "entry": question["entry"],
         "draft": draft,
-        "arms": {arm: score_arm(question, res) for arm, res in results.items()},
-        "critique": results["shield"].critique.model_dump(mode="json"),
+        "arms": arms,
+        "critique": shield_critique,
     }
 
 
@@ -190,6 +210,12 @@ def main(argv: list[str] | None = None) -> int:
     fixture = args.provider == "fixture"
     misses = Counter(row["id"] for row in rows if not row["arms"]["shield"]["right_entry"])
     no_fact = Counter(row["id"] for row in rows if not row["arms"]["shield"]["fact"])
+    arm_errors = [
+        {"id": row["id"], "arm": arm, "error": row["arms"][arm]["error"]}
+        for row in rows
+        for arm in ARMS
+        if row["arms"][arm].get("error")
+    ]
     payload = {
         "provider": args.provider,
         "questions": len(questions),
@@ -197,6 +223,7 @@ def main(argv: list[str] | None = None) -> int:
         "arms": summarise(rows),
         "retrieval_misses": sorted(misses),
         "shield_missing_fact": sorted(no_fact),
+        "arm_errors": arm_errors,
         "arm_deltas_meaningful": not fixture,
     }
     if fixture:
