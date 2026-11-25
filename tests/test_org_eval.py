@@ -7,6 +7,7 @@ import re
 import sys
 from pathlib import Path
 
+import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,6 +38,40 @@ def test_every_question_retrieves_its_entry(tmp_path):
     for question in mod.load_questions():
         hits = [e.id for e, _ in store.retrieve(question["query"], k=5)]
         assert question["entry"] in hits, question["id"]
+
+
+def test_custom_org_store_needs_a_live_provider(tmp_path, capsys):
+    with pytest.raises(SystemExit):
+        _org_mod().main(["--org-store", str(tmp_path)])
+    assert "need --provider openai" in capsys.readouterr().err
+
+
+def test_retrieval_only_runs_without_a_provider(tmp_path, capsys):
+    team = tmp_path / "team"
+    team.mkdir()
+    mod = _org_mod()
+    (team / "org.yaml").write_text(
+        (mod.ORG_STORE / "org.yaml").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    assert mod.main(["--retrieval-only", "--org-store", str(team)]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["retrieval_misses"] == []
+    assert payload["questions"] == len(mod.load_questions())
+
+
+def test_build_store_layers_a_team_directory(tmp_path):
+    mod = _org_mod()
+    team = tmp_path / "team"
+    team.mkdir()
+    (team / "notes.yaml").write_text(
+        (mod.ORG_STORE / "org.yaml").read_text(encoding="utf-8"), encoding="utf-8"
+    )
+    work = tmp_path / "work"
+    work.mkdir()
+    store = mod.build_store(work, team, seed=False)
+    assert [p.name for p in work.glob("*.yaml")] == ["team-notes.yaml"]
+    hits = [e.id for e, _ in store.retrieve(mod.load_questions()[0]["query"], k=5)]
+    assert mod.load_questions()[0]["entry"] in hits
 
 
 def test_fictional_entries_stay_out_of_the_seed_store():

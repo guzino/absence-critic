@@ -35,6 +35,7 @@ from absencecritic.adapters.llm.fixture import FixtureLLM  # noqa: E402
 from absencecritic.adapters.llm.openai_compat import OpenAICompat  # noqa: E402
 from absencecritic.adapters.store.yaml_store import YamlStore  # noqa: E402
 from absencecritic.application.loop import run  # noqa: E402
+from absencecritic.application.retrieve import suggested_retrieve_k  # noqa: E402
 from absencecritic.envfile import load_repo_env  # noqa: E402
 
 ORG_DIR = Path(__file__).resolve().parent
@@ -56,9 +57,10 @@ def load_questions(path: Path = QUESTIONS_PATH) -> list[dict]:
     return yaml.safe_load(path.read_text(encoding="utf-8"))["questions"]
 
 
-def build_store(workdir: Path) -> YamlStore:
+def build_store(workdir: Path, org_store: Path = ORG_STORE, *, seed: bool = True) -> YamlStore:
     """Seed store plus org entries in one directory, as a team would layer them."""
-    for source in (SEED_STORE, ORG_STORE):
+    sources = (SEED_STORE, org_store) if seed else (org_store,)
+    for source in sources:
         for path in sorted(source.glob("*.yaml")):
             shutil.copy(path, workdir / f"{source.name}-{path.name}")
     return YamlStore(workdir)
@@ -102,6 +104,19 @@ def summarise(rows: list[dict]) -> dict:
     return out
 
 
+def retrieval_check(questions: list[dict], org_store: Path, *, seed: bool) -> int:
+    rows = []
+    with tempfile.TemporaryDirectory() as tmp:
+        store = build_store(Path(tmp), org_store, seed=seed)
+        for question in questions:
+            k = suggested_retrieve_k(question["query"], high=5)
+            hits = [entry.id for entry, _ in store.retrieve(question["query"], k=k)]
+            rows.append({"id": question["id"], "found": question["entry"] in hits, "retrieved_ids": hits})
+    misses = [row["id"] for row in rows if not row["found"]]
+    print(json.dumps({"questions": len(rows), "retrieval_misses": misses, "rows": rows}, indent=2))
+    return 0 if not misses else 1
+
+
 def write_fixtures(path: Path, questions: list[dict], rows: list[dict]) -> None:
     by_id = {q["id"]: q for q in questions}
     recorded = []
@@ -131,17 +146,35 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--samples", type=int, default=1)
     parser.add_argument("--jsonl", type=Path, help="Write every row as JSONL")
     parser.add_argument("--record", type=Path, help="Write shield runs as fixtures (live only)")
+    parser.add_argument(
+        "--org-store", type=Path, default=ORG_STORE, help="Directory of org entry YAML files"
+    )
+    parser.add_argument("--questions", type=Path, default=QUESTIONS_PATH, help="Questions YAML")
+    parser.add_argument("--no-seed", action="store_true", help="Do not layer the seed store")
+    parser.add_argument(
+        "--retrieval-only", action="store_true", help="Check retrieval only; no LLM calls"
+    )
     args = parser.parse_args(argv)
     if args.samples < 1:
         parser.error("--samples must be >= 1")
     if args.record and args.provider == "fixture":
         parser.error("--record needs --provider openai")
+    if not args.org_store.is_dir():
+        parser.error(f"--org-store is not a directory: {args.org_store}")
+    if args.retrieval_only:
+        return retrieval_check(load_questions(args.questions), args.org_store, seed=not args.no_seed)
+    custom = args.org_store != ORG_STORE or args.questions != QUESTIONS_PATH
+    if custom and args.provider == "fixture":
+        parser.error(
+            "--org-store and --questions need --provider openai or --retrieval-only "
+            "(fixtures cover Northwind only)"
+        )
     load_repo_env()
     provider = FixtureLLM(FIXTURES_PATH) if args.provider == "fixture" else OpenAICompat()
-    questions = load_questions()
+    questions = load_questions(args.questions)
     rows: list[dict] = []
     with tempfile.TemporaryDirectory() as tmp:
-        store = build_store(Path(tmp))
+        store = build_store(Path(tmp), args.org_store, seed=not args.no_seed)
         for sample in range(args.samples):
             for question in questions:
                 row = run_question(question, provider=provider, store=store)
