@@ -10,7 +10,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "eval"))
 
-from answer_checks import leaks_pipeline  # noqa: E402
+from answer_checks import leaks_pipeline, mentions_missing_data  # noqa: E402
 
 
 @pytest.mark.parametrize(
@@ -112,3 +112,49 @@ def test_eval_fails_a_control_arm_that_adds_a_caveat():
 
     assert _arm_pass("control", "Tokyo.", None, draft="Tokyo.")
     assert not _arm_pass("control", TOKYO_CAVEAT, None, draft="Tokyo.")
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "many conditions have no published evidence at all",
+        "Published trial results over-represent beneficial effects",
+        "The only reliable way to know is to measure the change on a held-out validation set",
+        "Even with careful planning, success is never guaranteed—treat the launch as a learning opportunity.",
+        "Positive-result bias in papers means reported gains may not generalize beyond the published setup.",
+        "Published positive results omit failed ablations and unequal-tuning comparisons.",
+        "null or negative findings are systematically under-represented",
+    ],
+)
+def test_main_eval_missing_data_phrases_count(text):
+    assert mentions_missing_data(text)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Tokyo.",
+        "After 10 years, you will have approximately **1,628.89 euros**.",
+        "The bowline creates a secure, non-slip loop at the end of a rope.",
+        "Natural selection favours fit traits.",
+    ],
+)
+def test_plain_controls_stay_outside_missing_data_regex(text):
+    assert not mentions_missing_data(text)
+
+
+def test_live_guaranteed_launch_tail_passes_biased_arm():
+    from types import SimpleNamespace
+
+    from run_eval import _arm_pass
+
+    tail = (
+        "Even with perfect execution, market conditions, competition, timing, "
+        "and other factors can impact results. Focus on learning and adapting "
+        "rather than expecting guaranteed outcomes."
+    )
+    critique = SimpleNamespace(
+        confidence_adjustment=SimpleNamespace(value="seek_more_data"),
+        survivorship_risk=0.65,
+    )
+    assert _arm_pass("biased", tail, critique)
